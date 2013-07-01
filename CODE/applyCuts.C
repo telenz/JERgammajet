@@ -1,0 +1,421 @@
+#include "myDeclarations.h"
+#include "myClasses.h"
+#include "TVector2.h"
+#include "TLorentzVector.h"
+#include "TMath.h"
+
+bool applyCuts(){
+
+
+  // Check if array is large enough
+  if( nobjJet > NJETS || nobjPhoton > NPHOTONS) {
+    std::cerr << "\nERROR: 'nobjJet = " << nobjJet << " > NJETS = " << NJETS << "'" << std::endl;
+    std::cerr << "\nERROR: 'nobjPhoton = " << nobjJet << " > NPHOTONS = " << NPHOTONS << "'" << std::endl;
+    return 0;
+  }
+
+  deltaRJets = 0;
+  lead_jet = 0;
+  jet_2    = 0;
+  alpha    = 0;
+
+  //------------------------------------------------------------------------------(1. CUT)------------------------
+  // Select events with at least 1 Photon (1. CUT) 
+  if( nobjPhoton < 1 ){
+    cut1 = cut1 +1;
+    //cout<<"Discarded because there is no photon in this event!"<<endl;
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------(12. CUT)-----------------------
+  // Cuts on Trigger        (12. CUT)
+  if(!isMC || applyTriggeronMC){
+    if((photonPt[0] >= bd[0] && photonPt[0] < bd[1]) && !hltPhoton[0]){
+      cut12[0] += 1;
+      return 0;}
+    if((photonPt[0] >= bd[1] && photonPt[0] < bd[2]) && !hltPhoton[1]){
+      cut12[1] += 1; 
+      return 0;}
+    if((photonPt[0] >= bd[2] && photonPt[0] < bd[3]) && !hltPhoton[2]){
+      cut12[2] += 1; 
+      return 0;}
+    if((photonPt[0] >= bd[3] && photonPt[0] < bd[4]) && !hltPhoton[3]){
+      cut12[3] += 1;
+      return 0;}
+    if((photonPt[0] >= bd[4] && photonPt[0] < bd[5]) && !hltPhoton[4]){
+      cut12[4] += 1;
+      return 0;}
+    if(date == 2012){
+      if((photonPt[0] >= bd[5] && photonPt[0] < bd[6]) && !hltPhoton[5]){
+	cut12[5] += 1; 
+	return 0;}
+      if((photonPt[0] >= bd[6] && photonPt[0] < bd[7]) && !hltPhoton[6]){
+	cut12[6] += 1;
+	return 0;}
+      if((photonPt[0] >= bd[7]) && !hltPhoton[7]){
+	cut12[7] += 1; 
+	return 0;}
+    }
+  }  
+  //--------------------------------------------------------------------------------------------------------------
+  
+  // Correct the photon Pt to evaluate the systematic uncertainty
+  // if(photonEta[0]<1.479) photonPt[0]=photonPt[0]*(1.+0.006);
+  // else photonPt[0]=photonPt[0]*(1.+0.014);   // But those are dismissed later on
+   
+  // Correct Jets and Order them 
+  corrJets.clear();
+  for(int j = 0; j < nobjJet; j++) corrJets.add(j,/*(1.+jetUncert[j])*/jetCorrL1[j]*jetCorrL2L3[j]*jetPt[j]);
+  corrJets.sort();
+  
+  // Definition of some variables
+  double_t deta[nobjJet];
+  double_t dR[nobjJet];
+  double_t dphi[nobjJet];
+  
+  int j_jet    = 0;
+  int j_photon = 0;
+  lead_jet     = -1;
+  jet_2        = -1;
+  photonidx    = -1;
+    
+  // Find out to what index the photon belongs to in the jet sample
+  for (int i=0 ; i<nobjJet ; i++) {
+    
+    if(j_jet==2 && j_photon==1) continue;
+
+    dphi[i] = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(i)]-photonPhi[0]));
+    deta[i] = std::abs(jetEta[corrJets.idx(i)] - photonEta[0]);
+    dR[i]   = TMath::Sqrt(dphi[i]*dphi[i] + deta[i]*deta[i]);
+
+    if(dR[i] > 0.5 && j_jet<2) {
+      
+      if(j_jet == 0){
+        lead_jet = i;
+        j_jet    = j_jet+1;
+      }       
+      else if(j_jet == 1){
+	jet_2 = i;
+	j_jet = j_jet+1;
+      }
+      else cout<<"something wrong here"<<endl;      
+    }
+    else if(dR[i]<=0.5){
+     
+      photonidx = i; 
+      j_photon  = j_photon+1;              
+    }
+  }
+
+  //Get rid of strange events (just for 2011 data)
+  if(date == 2011 && photonidx!=-1 && corrJets.pt(photonidx)/photonPt[0]<0.5) return 0;
+  
+
+  //------------------------------------------------------------------------------(2. CUT)------------------------
+  // Select only events with tight leading Photon (2. CUT)
+  //if(!tight[0]){
+  if(!tight[0]){
+    cut2 = cut2 +1;
+    //cout<<"Discarded because leading Photon is not tight!"<<endl;
+    return 0;
+  }
+  //--------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------(3. CUT)------------------------
+  // Discard events with no leading Jet in the sample (3. CUT)
+  if(lead_jet==-1) {
+    cut3 = cut3 +1;
+    //cout<<"Discarded because there is no balancing Jet in the Jet Sample!"<<endl;
+    return 0;   
+  }
+  //--------------------------------------------------------------------------------------------------------------
+ 
+  //-------------------------------------------------    
+  // Find the respective generator Jet 
+
+  genJetidx    = -20000000;
+  gen2ndJetidx = -20000000;
+
+  jetPt1stJet  = log(0.);
+
+  float cSmearing = 1.;
+  int  test       = 0;
+  bool jet1       = true;
+  bool jet2       = true;
+
+  if(isMC || testClosure){
+    for (int i=0 ; i<nobjGenJet ; i++) {
+      
+      if(genJetColJetIdx[i] == corrJets.idx(lead_jet) && jet1){
+      	genJetidx = i;
+	test += 1;
+	jet1 = false;
+      }
+      
+      if(jet_2 != -1){
+	if(genJetColJetIdx[i] == corrJets.idx(jet_2) && jet2){
+	  gen2ndJetidx = i;
+	  test += 1;
+	  jet2 = false;
+	}
+      }
+      
+      if(test == 2) break;      
+    }
+  }
+
+  //-------------------------------------------------    
+
+  //-------------------------------------------------
+  // Correct the second Jet Pt if it is smaller than 12 GeV
+  /*
+  if(jet_2 != -1){
+
+    if(corrJets.pt(jet_2) > 12.) jetPt2nd = corrJets.pt(jet_2);
+    else{
+      all2ndJets += 1;
+      for(int j=0; j<eta_int; j++){
+	if(std::abs(jetEta[corrJets.idx(lead_jet)])>= etaBin[j] && std::abs(jetEta[corrJets.idx(lead_jet)]) < etaBin[j+1] ){
+	  for(int i=0; i<pt_int; i++){ 
+	    if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
+	    
+	    jetPt2nd = h2ndgenJetPtle12GeV[i][j] -> GetMean(); 
+	    break;
+	    
+	    }
+	  }
+	break;
+	}
+      }
+
+
+    }
+
+  }
+  else{
+
+    for(int j=0; j<eta_int; j++){
+      if(std::abs(jetEta[corrJets.idx(lead_jet)])>= etaBin[j] && std::abs(jetEta[corrJets.idx(lead_jet)]) < etaBin[j+1] ){
+	for(int i=0; i<pt_int; i++){ 
+	  if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
+	    
+	    jetPt2nd = h2ndgenJetPtle12GeV[i][j] -> GetMean(); 
+	    break;
+	    
+	  }
+	}
+	break;
+      }
+    }
+    
+  }
+  */
+
+  if(jet_2 != -1){
+    
+    if(corrJets.pt(jet_2) > 10.) jetPt2nd = corrJets.pt(jet_2);
+    else return 0;
+  }
+  else{
+
+    jetPt2nd = 0.;
+    //return 0;
+  }
+  
+  //-------------------------------------------------    
+  
+  if(isMC || testClosure){
+
+    jetPt1stJet = corrJets.pt(lead_jet);
+
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // MC smearing Code piece
+    //cout<<"Smearing is activated!!"<<endl;
+    
+    // Smear Second Jet
+    if(testClosure && !isMC){
+      cout<<"You are Smearing all Jets!!"<<endl;
+      if(jet_2 != -1 && gen2ndJetidx >= 0){
+	if(std::abs(jetEta[corrJets.idx(jet_2)])<0.5) cSmearing = 1.05;
+	else if(std::abs(jetEta[corrJets.idx(jet_2)])<1.1 && std::abs(jetEta[corrJets.idx(jet_2)])>0.5) cSmearing = 1.07;
+	else if(std::abs(jetEta[corrJets.idx(jet_2)])<1.7 && std::abs(jetEta[corrJets.idx(jet_2)])>1.1) cSmearing = 1.09;
+	else if(std::abs(jetEta[corrJets.idx(jet_2)])<2.3 && std::abs(jetEta[corrJets.idx(jet_2)])>1.7) cSmearing = 1.11;
+	else cSmearing = 1.000;
+	jetPt2nd = genJetPt[gen2ndJetidx] + cSmearing*(jetPt2nd - genJetPt[gen2ndJetidx]);
+      }
+
+      // Smear first Jet
+      if(std::abs(jetEta[corrJets.idx(lead_jet)])<0.5) cSmearing = 1.05;
+      else if(std::abs(jetEta[corrJets.idx(lead_jet)])<1.1 && std::abs(jetEta[corrJets.idx(lead_jet)])>0.5) cSmearing = 1.07;
+      else if(std::abs(jetEta[corrJets.idx(lead_jet)])<1.7 && std::abs(jetEta[corrJets.idx(lead_jet)])>1.1) cSmearing = 1.09;
+      else if(std::abs(jetEta[corrJets.idx(lead_jet)])<2.3 && std::abs(jetEta[corrJets.idx(lead_jet)])>1.7) cSmearing = 1.11;
+      else cSmearing = 1.000;
+      
+      if(genJetidx >= 0) jetPt1stJet = genJetPt[genJetidx] + cSmearing*(corrJets.pt(lead_jet) - genJetPt[genJetidx]);
+      else return 0;
+    }
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    if(genJetidx >= 0) intrinsic   = jetPt1stJet/genJetPt[genJetidx];   
+    if(genJetidx >= 0) imbalance   = genJetPt[genJetidx]/photonPt[0]; 
+  }
+  else if(!isMC) jetPt1stJet = corrJets.pt(lead_jet);
+
+  
+
+  // Calculate response    
+  response  = jetPt1stJet/photonPt[0]; 
+  float deltaphi=std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(lead_jet)]-photonPhi[0]));
+ 
+  if(jet_2 != -1){
+    photonVector.SetPtEtaPhiE(photonPt[0],photonEta[0],photonPhi[0],photonE[0]);
+    jet2ndVector.SetPtEtaPhiE(jetPt[corrJets.idx(jet_2)],jetEta[corrJets.idx(jet_2)],jetPhi[corrJets.idx(jet_2)],jetE[corrJets.idx(jet_2)]); 
+    sumVector = photonVector + jet2ndVector;
+  }
+  alpha = jetPt2nd/photonPt[0] * 100.;
+  //alpha = jetPt2nd/(sumVector.Pt()) * 100.;
+ 
+  //------------------------------------------------------------------------------(5. CUT)------------------------
+  // Take only tight Jets (5. CUT)
+  if(!jetIDTight[corrJets.idx(lead_jet)]){
+    cut5 = cut5 +1;
+    // cout<<"Discarded because of tight Jet ID "<<endl;
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------(6. CUT)------------------------
+  // Reject events with |JetEta|>5                 (6. CUT)
+  if(std::abs(jetEta[corrJets.idx(lead_jet)])>5.0){  
+    cut6 = cut6 +1;
+    //cout<<"Discarded because of Jet eta!"<<endl; 
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+ 
+  
+  //------------------------------------------------------------------------------(8. CUT)------------------------
+  // Reject events with leading JetPt < 11 GeV     (8. CUT)
+  //if(corrJets.pt(lead_jet) < 11.){
+  if(jetPt1stJet < 10. || photonPt[0]<22){
+    cut8 = cut8 +1;
+    //cout<<"Discarded because of too low jet pt (smaller than 10 GeV)!"<<endl; 
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------(9. CUT)------------------------
+  // Some Filter cut                               (9. CUT)
+  if(!EcalBEFilter || !EcalTPFilter){
+    cut9 = cut9+1;
+    // cout<<"Discarded because of filters!"<<endl;
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+  
+  
+  //------------------------------------------------------------------------------(10. CUT)-----------------------
+  // photonEta > 1.3 Cut                          (10. CUT)
+  if(std::abs(photonEta[0])>1.3){  
+    cut10 = cut10+1;  
+    //cout<<"Discarded because of photon etacut!"<<endl; 
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+
+
+  //------------------------------------------------------------------------------(11. CUT)-----------------------
+  // Cut on highest Alpha                         (11. CUT)
+  if(jet_2!=-1){
+    if(jetPt2nd > alphaBin[alpha_int]/100. * photonPt[0]){
+      cut11=cut11+1;
+      return 0;
+      // cout<<"Discarded because of alpha constraint. alpha = "<<alpha <<endl;
+    }
+  }
+  //--------------------------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------(7. CUT)------------------------
+  // Select events with back-to-back photon and jet   (7. CUT)
+  if( deltaphi < 2.95){
+    cut7 = cut7 +1;
+    //  cout<<"Discarded because of delta phi!"<<endl;
+    return 0;}
+  //--------------------------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------(14. CUT)------------------------
+  // Photon Has Pixel Seed   (14. CUT)
+  if(photonHasPixelSeed[0]){
+    cut14 = cut14 +1;
+    //cout<<"Discarded because of PhotonHasPixelSeed!"<<endl;
+    return 0;
+  }
+  //--------------------------------------------------------------------------------------------------------------
+   
+  //------------------------------------------------------------------------------(15. CUT)------------------------
+  // photonPt shall be smaller than ptHat  (15. CUT)
+  //if(isMC){
+  //  if(photonPt[0]>genEvtScale){
+  //    cut15 = cut15 +1;
+  //  
+  //    return 0;
+  //  }
+  //}
+  //--------------------------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------(15. CUT)------------------------
+  //--------------------------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------(15. CUT)------------------------
+  // Upper and lower Bounds on all Binning variables  (3. CUT)
+  if(photonPt[0] < bd[0] || photonPt[0] > bd[pt_int] || std::abs(jetEta[corrJets.idx(lead_jet)]) > etaBin[eta_int]){
+    cut15 = cut15 +1;
+    return 0;
+  }
+  //--------------------------------------------------------------------------------------------------------------
+  
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // Make plots after whole selection
+ 
+  // Number of Vertices for different pt bins  
+  for(int i=0; i<numTrigger-1; i++){
+    if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
+      hVtxPtbinned[i] ->Fill(vtxN,weight*PUWeight);
+      //hRho[i] -> Fill(rho,weight*PUWeight);
+      break;
+    }
+    else if(photonPt[0]>=bd[numTrigger-1]){
+      hVtxPtbinned[numTrigger-1]->Fill(vtxN,weight*PUWeight); 
+      //hRho[numTrigger-1] -> Fill(rho,weight*PUWeight);
+      break;
+    }
+  }
+
+  
+  hPhoton1Pt        -> Fill(photonPt[0],weight*PUWeight);
+  hJet2Pt           -> Fill(jetPt2nd,weight*PUWeight);
+  hJet1Pt           -> Fill(jetPt1stJet,weight*PUWeight);
+  hMet              -> Fill(met_T1,weight*PUWeight);
+  hMetPhiPhotonPhi  -> Fill(metPhi_T1,photonPhi[0],weight*PUWeight);
+  hWeights          -> Fill(weight,PUWeight);
+  hWeightsPhotonPt  -> Fill(weight,photonPt[0],PUWeight);
+
+  hEcalRecHit      -> Fill(photonIsoEcal[0],weight*PUWeight);    
+  hSigmaIetaIeta   -> Fill(photonSigmaIetaIeta[0],weight*PUWeight); 
+  hHcalTowerSum    -> Fill(photonIsoHcal[0],weight*PUWeight); 
+  hTrkHollowCone   -> Fill(photonIsoTrk[0],weight*PUWeight); 
+  hHoverE          -> Fill(photonHadronicOverEM[0],weight*PUWeight); 
+  pixelSeedVeto    -> Fill(photonHasPixelSeed[0],weight*PUWeight); 
+
+  if(abs(genJetID_algo[corrJets.idx(lead_jet)]) == 1 || abs(genJetID_algo[corrJets.idx(lead_jet)]) == 2 || abs(genJetID_algo[corrJets.idx(lead_jet)]) == 3) hPhotonPtJetEtaFlavorLightQuarks_algo->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_algo[corrJets.idx(lead_jet)]) == 4)  hPhotonPtJetEtaFlavorCharm_algo->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_algo[corrJets.idx(lead_jet)]) == 5)  hPhotonPtJetEtaFlavorBottom_algo->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_algo[corrJets.idx(lead_jet)]) == 21) hPhotonPtJetEtaFlavorGluon_algo->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_algo[corrJets.idx(lead_jet)]) == 0)  hPhotonPtJetEtaFlavorNonDefined_algo->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+
+  if(abs(genJetID_phys[corrJets.idx(lead_jet)]) == 1 || abs(genJetID_phys[corrJets.idx(lead_jet)]) == 2 || abs(genJetID_phys[corrJets.idx(lead_jet)]) == 3) hPhotonPtJetEtaFlavorLightQuarks_phys->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_phys[corrJets.idx(lead_jet)]) == 4)  hPhotonPtJetEtaFlavorCharm_phys->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_phys[corrJets.idx(lead_jet)]) == 5)  hPhotonPtJetEtaFlavorBottom_phys->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_phys[corrJets.idx(lead_jet)]) == 21) hPhotonPtJetEtaFlavorGluon_phys->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+  else if(abs(genJetID_phys[corrJets.idx(lead_jet)]) == 0)  hPhotonPtJetEtaFlavorNonDefined_phys->Fill(photonPt[0],abs(jetEta[corrJets.idx(lead_jet)]),weight*PUWeight);
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  return 1;
+  
+}
