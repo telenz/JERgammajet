@@ -74,7 +74,7 @@ void plotTH2(TH2* histo,const TString &filename){
   tot_filename = PDFPath + filename + DataType + ".pdf";
   Int_t oldLevel = gErrorIgnoreLevel;
   gErrorIgnoreLevel = kWarning;
-  canvas -> SaveAs(tot_filename);
+  //canvas -> SaveAs(tot_filename);
   gErrorIgnoreLevel = oldLevel;
 
   tot_filename = RootPath + filename + DataType + ".root";
@@ -114,13 +114,11 @@ void plotTGraphErrors(TGraphErrors* graph, const TString &filename, const TStrin
   }
 
   tot_filename = PDFPath + filename + DataType + MethodType +".pdf";
-  //tot_filename = "test.pdf";
   Int_t oldLevel = gErrorIgnoreLevel;
   gErrorIgnoreLevel = kWarning;
-  canvas -> SaveAs(tot_filename);
+  //canvas -> SaveAs(tot_filename);
   gErrorIgnoreLevel = oldLevel;
   tot_filename = RootPath + filename + DataType + MethodType +".root";
-  //tot_filename = "test.root";
   f = new TFile(tot_filename,"RECREATE");
   f -> WriteTObject(graph,"Graph");
   f -> Close();
