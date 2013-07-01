@@ -226,7 +226,7 @@ int readGammaJet(int nEvents) {
   //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
   //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
   //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_MBXS69300_TEST/";
-  else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUWeights/PUData_2012ABCDrereco/weightsCMSSW5_3_5_MBXS69400_60Bins/";
+  else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUWeights/PUData_2012ABCDrereco/cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS69400/weights_60Bins/";
   else if(set == 5 && date == 2012 && addQCD)  PUVersion = "PUWeights/PUData_2012ABCD/weightsCMSSW_5_3_5_plusQCD/";
   //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_WithWeights/";
   //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsNVTX/";
