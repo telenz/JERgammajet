@@ -402,55 +402,34 @@ void CScaleRes::calculate(int length){
   fResolution -> SetParName(3,"m");
 
   //Set some constraints on the formula (which would lead to unphysical results) and give starting values 
-  fResolution -> SetParLimits(fResolution->GetParNumber("m"),-100.,0.9999);
+  fResolution -> SetParLimits(fResolution->GetParNumber("m"),-10000.,0.99999999);
   fResolution -> SetParLimits(fResolution->GetParNumber("C"),0.,100000.);
    
   //From Matthias Thesis   
   fResolution->SetParameter("N", -1.45); 
   fResolution->SetParameter("S", 1.034);   
   fResolution->SetParameter("m", -0.085); 
-  fResolution->SetParameter("C", 0.001); 
-
-  // In case you want to fix some parameters
-  //fResolution->FixParameter(fResolution->GetParNumber("N"), 0);
-  //fResolution -> FixParameter(fResolution->GetParNumber("C"), 0.0); 
+  fResolution->SetParameter("C", 0.05); 
   
   gResolution->Fit("fResolution","QRB");
-
-  // Those values are definite (even if there is an inflection point in the range -> see below)
-  m    = fResolution->GetParameter("m");  
-  mErr = fResolution->GetParError(fResolution->GetParNumber("m"));
-  S    = fResolution->GetParameter("S");
-  SErr = fResolution->GetParError(fResolution->GetParNumber("S"));
 
   maximum = fResolution->GetMaximumX();
   minimum = fResolution->GetMinimumX();
 
-  cout<<"Maximum is = "<<maximum<<endl;
-  cout<<"Minimum is = "<<minimum<<endl;
-  cout<<"pT[0] = "<<pT[0]<<endl;
-  
-  if(pT[0] < maximum){
+  if(pT[0] < maximum || minimum < 600.){
 
     cout<<endl<<"Maximum is larger than pT[0]"<<endl;
+    cout<<"Maximum is = "<<maximum<<endl;
+    cout<<"Minimum is = "<<minimum<<endl;
+    cout<<"pT[0] = "<<pT[0]<<endl;
+    cout<<"pT[0] - pTError[0] = "<<pT[0]-pTError[0]<<endl;
     
-    cout<<"N = "<<fResolution->GetParameter("N")<<endl;
+    fResolution -> FixParameter(fResolution->GetParNumber("N"),0.);
+    fResolution -> SetParameter("S", 1.034);   
+    fResolution -> SetParameter("m", -0.085); 
+    fResolution -> SetParameter("C", 0.05); 
 
-    fResolution -> FixParameter(fResolution->GetParNumber("S"),fResolution->GetParameter("S"));
-    fResolution -> FixParameter(fResolution->GetParNumber("m"),fResolution->GetParameter("m"));
-
-    double upperBound = (1.-m)/2.*S*S*pow(pT[0],m + 1.);
-
-    cout<<"lower bound = "<<(-1.)*upperBound<<endl<<endl;
-
-
-    fResolution -> SetParLimits(fResolution->GetParNumber("N"),(-1.)*upperBound,100000.);
-    fResolution -> SetParameter(fResolution->GetParNumber("N"),(-1.)*upperBound/2.);
-
-    cout<<"N = "<<fResolution->GetParameter("N")<<endl;
-    cout<<"m = "<<fResolution->GetParameter("m")<<endl;
-    cout<<"S = "<<fResolution->GetParameter("S")<<endl;    
-    cout<<"C = "<<fResolution->GetParameter("C")<<endl;
+    cout<<"Parameter N is set to zero!"<<endl;
 
     gResolution->Fit("fResolution","QRB");
 
@@ -466,6 +445,10 @@ void CScaleRes::calculate(int length){
   NErr = fResolution->GetParError(fResolution->GetParNumber("N"));
   C    = fResolution->GetParameter("C");
   CErr = fResolution->GetParError(fResolution->GetParNumber("C"));
+  m    = fResolution->GetParameter("m");  
+  mErr = fResolution->GetParError(fResolution->GetParNumber("m"));
+  S    = fResolution->GetParameter("S");
+  SErr = fResolution->GetParError(fResolution->GetParNumber("S"));
 
   cout<<"S    = "<<S<<endl;
   cout<<"SErr = "<<SErr<<endl;
