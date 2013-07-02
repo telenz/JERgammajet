@@ -40,7 +40,7 @@ public:
   TF1 *fScaleAlpha, *fResolutionAlpha;
   TGraphErrors *gJetScaleAlpha, *gJetResolutionAlpha ;
   double pT, pTError, scale, scaleError, resolution, resolutionError;   
-  double alpha[2*alpha_int], alphaError[2*alpha_int], mean[2*alpha_int], meanError[2*alpha_int], sigma[2*alpha_int], sigmaError[2*alpha_int];
+  double alpha[2*nAlphaBins], alphaError[2*nAlphaBins], mean[2*nAlphaBins], meanError[2*nAlphaBins], sigma[2*nAlphaBins], sigmaError[2*nAlphaBins];
   float q, qprime, c, cprime, cprimeError, m, mprime, mprimeError, qError, qprimeError;
     
   CScaleResAlpha();
@@ -58,7 +58,7 @@ class CScaleRes{
   TF1* fScale, *fResolution;
   TGraphErrors* gScale, *gResolution, *gq, *gqprime;
   double scalenumber, scalenumberError, N, NErr, S, SErr, C, CErr, m, mErr;
-  double pT[pt_int], pTError[pt_int], scale[pt_int], scaleError[pt_int], resolution[pt_int], resolutionError[pt_int], q[pt_int], qError[pt_int], qprime[pt_int], qprimeError[pt_int];
+  double pT[nPtBins], pTError[nPtBins], scale[nPtBins], scaleError[nPtBins], resolution[nPtBins], resolutionError[nPtBins], q[nPtBins], qError[nPtBins], qprime[nPtBins], qprimeError[nPtBins];
   double maximum, minimum;
     
   CScaleRes();
@@ -118,60 +118,58 @@ public:
 
 // Declarations of class objects
 
-CResponse* JetResponsePhotonHemisphere[pt_int][eta_int][alpha_int];
-CResponse* JetResponseJetHemisphere[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsic[pt_int][eta_int][alpha_int];
-CResponse* JetImbalancePhotonHemisphere[pt_int][eta_int][alpha_int];
-CResponse* JetImbalanceJetHemisphere[pt_int][eta_int][alpha_int];
-CResponse* JetResponse[pt_int][eta_int][alpha_int];
+CResponse* JetResponsePhotonHemisphere[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetResponseJetHemisphere[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsic[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetImbalancePhotonHemisphere[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetImbalanceJetHemisphere[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetResponse[nPtBins][nEtaBins][nAlphaBins];
 
-CResponse* JetIntrinsicle5[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicle10gt5[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicle15gt10[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicle20gt15[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicgt20[pt_int][eta_int][alpha_int];
+CResponse* JetIntrinsicle5[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicle10gt5[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicle15gt10[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicle20gt15[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicgt20[nPtBins][nEtaBins][nAlphaBins];
 
-CScaleResAlpha* JetScaleResAlpha[pt_int][eta_int];
-CScaleResAlpha* JetIntrinsicAlpha[pt_int][eta_int];
-CScaleResAlpha* JetImbalanceAlpha[pt_int][eta_int];
+CScaleResAlpha* JetScaleResAlpha[nPtBins][nEtaBins];
+CScaleResAlpha* JetIntrinsicAlpha[nPtBins][nEtaBins];
+CScaleResAlpha* JetImbalanceAlpha[nPtBins][nEtaBins];
 
 
-CScaleRes* JetScaleRes[eta_int];
-CScaleRes* JetImbalancePt[eta_int];
-CScaleRes* JetIntrinsicPt[eta_int];
+CScaleRes* JetScaleRes[nEtaBins];
+CScaleRes* JetImbalancePt[nEtaBins];
+CScaleRes* JetIntrinsicPt[nEtaBins];
 
-CResponse* JetResponseGluon[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicGluon[pt_int][eta_int][alpha_int];
-CResponse* JetImbalanceGluon[pt_int][eta_int][alpha_int];
+CResponse* JetResponseGluon[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicGluon[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetImbalanceGluon[nPtBins][nEtaBins][nAlphaBins];
 
-CResponse* JetResponseQuark[pt_int][eta_int][alpha_int];
-CResponse* JetIntrinsicQuark[pt_int][eta_int][alpha_int];
-CResponse* JetImbalanceQuark[pt_int][eta_int][alpha_int];
+CResponse* JetResponseQuark[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetIntrinsicQuark[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetImbalanceQuark[nPtBins][nEtaBins][nAlphaBins];
 
 // For PU uncertainty
-CResponse* JetResponsePUle10[pt_int][eta_int][alpha_int];
-CResponse* JetResponsePUgt10le15[pt_int][eta_int][alpha_int];
-CResponse* JetResponsePUgt15le20[pt_int][eta_int][alpha_int];
-CResponse* JetResponsePUgt20[pt_int][eta_int][alpha_int];
+CResponse* JetResponsePUle10[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetResponsePUgt10le15[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetResponsePUgt15le20[nPtBins][nEtaBins][nAlphaBins];
+CResponse* JetResponsePUgt20[nPtBins][nEtaBins][nAlphaBins];
 
 
-CScaleResAlpha* JetScaleResAlphaGluon[pt_int][eta_int];
-CScaleResAlpha* JetIntrinsicAlphaGluon[pt_int][eta_int];
-CScaleResAlpha* JetImbalanceAlphaGluon[pt_int][eta_int];
+CScaleResAlpha* JetScaleResAlphaGluon[nPtBins][nEtaBins];
+CScaleResAlpha* JetIntrinsicAlphaGluon[nPtBins][nEtaBins];
+CScaleResAlpha* JetImbalanceAlphaGluon[nPtBins][nEtaBins];
 
-CScaleResAlpha* JetScaleResAlphaQuark[pt_int][eta_int];
-CScaleResAlpha* JetIntrinsicAlphaQuark[pt_int][eta_int];
-CScaleResAlpha* JetImbalanceAlphaQuark[pt_int][eta_int];
+CScaleResAlpha* JetScaleResAlphaQuark[nPtBins][nEtaBins];
+CScaleResAlpha* JetIntrinsicAlphaQuark[nPtBins][nEtaBins];
+CScaleResAlpha* JetImbalanceAlphaQuark[nPtBins][nEtaBins];
 
-CScaleRes* JetScaleResGluon[eta_int];
-CScaleRes* JetImbalancePtGluon[eta_int];
-CScaleRes* JetIntrinsicPtGluon[eta_int];
+CScaleRes* JetScaleResGluon[nEtaBins];
+CScaleRes* JetImbalancePtGluon[nEtaBins];
+CScaleRes* JetIntrinsicPtGluon[nEtaBins];
 
-CScaleRes* JetScaleResQuark[eta_int];
-CScaleRes* JetImbalancePtQuark[eta_int];
-CScaleRes* JetIntrinsicPtQuark[eta_int];
-
-//CsysUncerMC* sysUncer[eta_int];
+CScaleRes* JetScaleResQuark[nEtaBins];
+CScaleRes* JetImbalancePtQuark[nEtaBins];
+CScaleRes* JetIntrinsicPtQuark[nEtaBins];
 
 JetIndexCol corrJets;
 

@@ -53,18 +53,18 @@ void initializeControlPlots(){
 
   for(int i=0; i<numTrigger; i++){
 
-    if(i<numTrigger-1) sprintf(tname,"Photon Pt for %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else    sprintf(tname,"Photon Pt for %4.1f GeV < p_{T}",bd[i]);
+    if(i<numTrigger-1) sprintf(tname,"Photon Pt for %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"Photon Pt for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("hPhotonPt%i",i);
     hPhotonPt[i] = createTH1(hPhotonPt[i],histoName,tname,2000,0,2000,"Photon Pt");
 
-    if(i<pt_int-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else           sprintf(tname,"#Vtx for %4.1f GeV < p_{T}",bd[i]);
+    if(i<nPtBins-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else           sprintf(tname,"#Vtx for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("hVtxPtBinned%i",i);
     hVtxPtbinned[i] = createTH1(hVtxPtbinned[i],histoName,tname,60,0,60,"Number of Vertices");
   
-    if(i<numTrigger-1) sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else               sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T}",bd[i]);
+    if(i<numTrigger-1) sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else               sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("hPUgenMC%i",i);
     hPUgenMC[i] = createTH1(hPUgenMC[i],histoName,tname,600,0,60,"#PU");  
   }
@@ -80,7 +80,7 @@ void initializeControlPlots(){
   hInvMassMETPhoton = createTH1(hInvMassMETPhoton,"hInvMassMETPhoton","hInvMassMETPhoton",1000,0,1000,"inv. mass");
   double xBins[7] = {0, 0.0003, 0.002,0.01, 0.4,23,83};
   hWeights         = new TH1D("hWeights","hWeights",6,xBins);
-  hWeightsPhotonPt = new TH2D("hWeightsPhotonPt","hWeightsPhotonPt",6,xBins,pt_int,bd);
+  hWeightsPhotonPt = new TH2D("hWeightsPhotonPt","hWeightsPhotonPt",6,xBins,nPtBins,ptBins);
 
   hMetPhiPhotonPhi = createTH2(hMetPhiPhotonPhi,"hMetPhiPhotonPhi",100,0,3.2,100,0,3.2,"Photon_Phi","MET_Phi");
 

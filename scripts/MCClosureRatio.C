@@ -53,8 +53,8 @@ int plotDataMCComparison(int eta, int variable){
   else if(variable == 2){
 
     // Fast Jets
-    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1FastJet/mc/root_files/Resolution_for_%d_eta_bin_PF_mc.root",etaBin);
-    //sprintf(rootFileData,"../jetphoton/plots_2012/PF_L1FastJet/data/root_files/Resolution_for_%d_eta_bin_PF_data.root",etaBin);
+    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1FastJet/mc/root_files/Resolution_for_%d_eta_bin_PF_mc.root",etaBins);
+    //sprintf(rootFileData,"../jetphoton/plots_2012/PF_L1FastJet/data/root_files/Resolution_for_%d_eta_bin_PF_data.root",etaBins);
     // CHS Jets
 
     if(method == "RMS95"){
@@ -72,24 +72,24 @@ int plotDataMCComparison(int eta, int variable){
     sprintf(rootFileMC,"../plots_2012/PF_L1CHS/mc/root_files_NOTSMEARED_NEW/Resolution_for_%d_eta_bin_PFCHS_mc_gaus.root",eta);
     sprintf(rootFileData,"../plots_2012/PF_L1CHS/mc/root_files_SMEARED_NEW/Resolution_for_%d_eta_bin_PFCHS_mc_gaus.root",eta);
     }
-    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_2sigma/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBin);
-    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_2sigma_200/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBin);
-    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_RMS95_EvenFinerBinning/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBin);
-    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_RMS95/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBin);
-    //sprintf(rootFileData,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBin);
+    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_2sigma/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBins);
+    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_2sigma_200/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBins);
+    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_RMS95_EvenFinerBinning/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBins);
+    //sprintf(rootFileMC,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files_MC_RMS95/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBins);
+    //sprintf(rootFileData,"../jetphoton/plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%d_eta_bin_PFCHS_mc.root",etaBins);
 
     //2011
-    //sprintf(rootFileMC,"../jetphoton/plots_2011/PF_L1FastJet/mc/root_files/Resolution_for_%d_eta_bin_PF_mc.root",etaBin);
-    //sprintf(rootFileData,"../jetphoton/plots_2011/PF_L1FastJet/data/root_files/Resolution_for_%d_eta_bin_PF_data.root",etaBin);
+    //sprintf(rootFileMC,"../jetphoton/plots_2011/PF_L1FastJet/mc/root_files/Resolution_for_%d_eta_bin_PF_mc.root",etaBins);
+    //sprintf(rootFileData,"../jetphoton/plots_2011/PF_L1FastJet/data/root_files/Resolution_for_%d_eta_bin_PF_data.root",etaBins);
    
     
     
 
-    if(eta == 1)      etaString = Form("Jet Energy Resolution for |#eta^{Jet}| < %4.1f",etaBin[1]);
-    else if(eta == 2) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[1],etaBin[2]);
-    else if(eta == 3) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[2],etaBin[3]);
-    else if(eta == 4) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[3],etaBin[4]);
-    else if(eta == 5) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[4],etaBin[5]);
+    if(eta == 1)      etaString = Form("Jet Energy Resolution for |#eta^{Jet}| < %4.1f",etaBins[1]);
+    else if(eta == 2) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[1],etaBins[2]);
+    else if(eta == 3) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[2],etaBins[3]);
+    else if(eta == 4) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[3],etaBins[4]);
+    else if(eta == 5) etaString = Form("Jet Energy Resolution for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[4],etaBins[5]);
   }
     
   TGraphErrors* JERMC = readTGraphErrors(rootFileMC,"Graph;1","Graph;1");  
@@ -228,25 +228,25 @@ int plotDataMCComparison(int eta, int variable){
   //char test[100] = "Ratio between Data and MC for";
   char test[100] = "Ratio  with/without pixelSeed Cut for";
   /*
-  if(eta == 1 )     ratioName = Form("Ratio between Data and MC for |#eta^{Jet}| < %4.1f",etaBin[1]);
-  else if(eta == 2) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[1],etaBin[2]);
-  else if(eta == 3) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[2],etaBin[3]);
-  else if(eta == 4) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[3],etaBin[4]);
-  else if(eta == 5) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[4],etaBin[5]);
+  if(eta == 1 )     ratioName = Form("Ratio between Data and MC for |#eta^{Jet}| < %4.1f",etaBins[1]);
+  else if(eta == 2) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[1],etaBins[2]);
+  else if(eta == 3) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[2],etaBins[3]);
+  else if(eta == 4) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[3],etaBins[4]);
+  else if(eta == 5) ratioName = Form("Ratio between Data and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[4],etaBins[5]);
   */
   
-  if(eta == 1 )     ratioName = Form("%s |#eta^{Jet}| < %4.1f",test,etaBin[1]);
-  else if(eta == 2) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBin[1],etaBin[2]);
-  else if(eta == 3) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBin[2],etaBin[3]);
-  else if(eta == 4) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBin[3],etaBin[4]);
-  else if(eta == 5) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBin[4],etaBin[5]);
+  if(eta == 1 )     ratioName = Form("%s |#eta^{Jet}| < %4.1f",test,etaBins[1]);
+  else if(eta == 2) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBins[1],etaBins[2]);
+  else if(eta == 3) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBins[2],etaBins[3]);
+  else if(eta == 4) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBins[3],etaBins[4]);
+  else if(eta == 5) ratioName = Form("%s  %4.1f < |#eta^{Jet}| < %4.1f",test,etaBins[4],etaBins[5]);
 
   /*
-  if(eta == 1 )     ratioName = Form("Ratio between MC_{smeared} and MC for |#eta^{Jet}| < %4.1f",etaBin[1]);
-  else if(eta == 2) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[1],etaBin[2]);
-  else if(eta == 3) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[2],etaBin[3]);
-  else if(eta == 4) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[3],etaBin[4]);
-  else if(eta == 5) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBin[4],etaBin[5]);
+  if(eta == 1 )     ratioName = Form("Ratio between MC_{smeared} and MC for |#eta^{Jet}| < %4.1f",etaBins[1]);
+  else if(eta == 2) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[1],etaBins[2]);
+  else if(eta == 3) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[2],etaBins[3]);
+  else if(eta == 4) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[3],etaBins[4]);
+  else if(eta == 5) ratioName = Form("Ratio between MC_{smeared} and MC for  %4.1f < |#eta^{Jet}| < %4.1f",etaBins[4],etaBins[5]);
   */
   Ratio -> SetTitle(ratioName); 
   Ratio -> GetXaxis() -> SetTitle("Photon pT");

@@ -7,29 +7,29 @@
 void extrapolate(){
 
   int idx,length;
-  TString etaRegion[eta_int], ptRegion[pt_int], filename, graphTitle, tot_filename, ResImbFilenameScale, ResImbFilenameResolution;
+  TString etaRegion[nEtaBins], ptRegion[nPtBins], filename, graphTitle, tot_filename, ResImbFilenameScale, ResImbFilenameResolution;
   TFile *f;
-  TGraphErrors* ResImbScale[eta_int] = {0};
-  TGraphErrors* ResImbRes[eta_int]   = {0};  
+  TGraphErrors* ResImbScale[nEtaBins] = {0};
+  TGraphErrors* ResImbRes[nEtaBins]   = {0};  
   double_t *YResImbRes      = 0;
   double_t *XResImbRes      = 0;
   double_t *YResImbScale    = 0;
   double_t *YResImbResError = 0; 
   
   // Some description declarations
-  for(int j=0;j<eta_int;j++){
-    etaRegion[j].Form("%4.1f < |#eta| < %4.1f ",etaBin[j],etaBin[j+1]);  
+  for(int j=0;j<nEtaBins;j++){
+    etaRegion[j].Form("%4.1f < |#eta| < %4.1f ",etaBins[j],etaBins[j+1]);  
   }
 
-  for(int i=0;i<pt_int;i++){
-    if(i!=pt_int-1)  ptRegion[i].Form("and %4.0f GeV < p_{T}^{#gamma} < %4.0f GeV",bd[i],bd[i+1]);
-    else             ptRegion[i].Form("and %4.0f GeV < p_{T}^{#gamma} ",bd[i]);
+  for(int i=0;i<nPtBins;i++){
+    if(i!=nPtBins-1)  ptRegion[i].Form("and %4.0f GeV < p_{T}^{#gamma} < %4.0f GeV",ptBins[i],ptBins[i+1]);
+    else             ptRegion[i].Form("and %4.0f GeV < p_{T}^{#gamma} ",ptBins[i]);
   }
 
 
   if(!isMC){
 
-    for(int j=0; j<eta_int; j++){
+    for(int j=0; j<nEtaBins; j++){
       if(date==2012){
       
 	if(jetType == 1){
@@ -74,7 +74,7 @@ void extrapolate(){
   }
 
   // Write in other object all relevant numbers (only if they are different from zero)
-  for(int j=0; j<eta_int; j++){
+  for(int j=0; j<nEtaBins; j++){
 
     if(!isMC){
       YResImbScale    = ResImbScale[j] -> GetY();        
@@ -83,11 +83,11 @@ void extrapolate(){
       YResImbResError = ResImbRes[j]   -> GetEY();
     }
 
-    for(int i=0; i<pt_int; i++){
+    for(int i=0; i<nPtBins; i++){
   
-      length = alpha_int;     
+      length = nAlphaBins;     
       idx = 0;      
-      for(int k=0; k<alpha_int;k++){
+      for(int k=0; k<nAlphaBins;k++){
 	
         if(JetResponseJetHemisphere[i][j][k]->mean_array == 0 ){
 	  length = length - 1;  
@@ -172,7 +172,7 @@ void extrapolate(){
       }
       
       	    
-      cout<<endl<<endl<<"ptBoundLow = "<<bd[i]<<endl;
+      cout<<endl<<endl<<"ptBoundLow = "<<ptBins[i]<<endl;
       cout<<"Eta bin = "<<j+1<<endl;
 
       if(isMC){
@@ -208,16 +208,16 @@ void extrapolate(){
 	  filename.Form("jet_energy_scale_for_%i_eta_bin_%i_pTGamma_bin",j+1,i+1);
 	  graphTitle = "Scale for " + etaRegion[j] + " " + ptRegion[i];
 	  
-	  plotTGraphErrors(JetScaleResAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha", "JES",0,alphaBin[alpha_int],0.8,1.2, "",0);
+	  plotTGraphErrors(JetScaleResAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha", "JES",0,alphaBins[nAlphaBins],0.8,1.2, "",0);
 	  filename = (TString) "jet_energy_scale_for_" + (long) (j+1) + (TString) "_eta_bin_" + (long) (i+1) + (TString) "_pTGamma_bin_intrinsic";
 	  graphTitle = "Scale for " + etaRegion[j] + " " + ptRegion[i] + " (intrinsic)";
 
 	  if(isMC){
-	    plotTGraphErrors(JetIntrinsicAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha","JES",0,alphaBin[alpha_int],0.8,1.2,"",0);
+	    plotTGraphErrors(JetIntrinsicAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha","JES",0,alphaBins[nAlphaBins],0.8,1.2,"",0);
 	    filename.Form("jet_energy_scale_for_%i_eta_bin_%i_pTGamma_bin_imbalance",j+1,i+1);
 	    graphTitle = "Scale for " + etaRegion[j] + " " + ptRegion[i] + " (imbalance)";
 	    
-	    plotTGraphErrors(JetImbalanceAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha","JES",0,alphaBin[alpha_int],0.8,1.2,"",0);  
+	    plotTGraphErrors(JetImbalanceAlpha[i][j] -> gJetScaleAlpha, filename, graphTitle, "alpha","JES",0,alphaBins[nAlphaBins],0.8,1.2,"",0);  
 
 	    
 	    TF1* totalScale = new TF1("totalScale"," [0]*(1. - [1] - [2] *TMath::Power(x,2))",0,600); 
@@ -234,17 +234,17 @@ void extrapolate(){
 	  filename.Form("jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin",j+1,i+1);
 	  graphTitle = "Resolution for " + etaRegion[j] + " " + ptRegion[i];
 	  sprintf(legEntry,"#splitline{Chi^2 = %4.2f}{ndof = %i}",JetScaleResAlpha[i][j] -> gJetResolutionAlpha->GetFunction("fResolutionAlpha")->GetChisquare(),JetScaleResAlpha[i][j] -> gJetResolutionAlpha->GetFunction("fResolutionAlpha") ->GetNDF());
-	  plotTGraphErrors(JetScaleResAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBin[alpha_int],0.,0.4,legEntry,1);
+	  plotTGraphErrors(JetScaleResAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBins[nAlphaBins],0.,0.4,legEntry,1);
 
 	  if(isMC){
 	    filename.Form("jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_intrinsic",j+1,i+1);
 	    graphTitle = "Resolution for " + etaRegion[j] + " " + ptRegion[i] + " (intrinsic)";
 	    sprintf(legEntry,"#splitline{Chi^2 = %4.2f}{ndof = %i}",JetIntrinsicAlpha[i][j]->gJetResolutionAlpha->GetFunction("fResolutionAlpha")->GetChisquare(),JetIntrinsicAlpha[i][j] -> gJetResolutionAlpha->GetFunction("fResolutionAlpha") ->GetNDF());
-	    plotTGraphErrors(JetIntrinsicAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBin[alpha_int],0.,0.4,legEntry,1);
+	    plotTGraphErrors(JetIntrinsicAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBins[nAlphaBins],0.,0.4,legEntry,1);
 	    filename.Form("jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_imbalance",j+1,i+1);
 	    graphTitle = "Resolution for " + etaRegion[j] + " " + ptRegion[i] + " (imbalance)";
 	    sprintf(legEntry,"#splitline{Chi^2 = %4.2f}{ndof = %i}",JetImbalanceAlpha[i][j]->gJetResolutionAlpha->GetFunction("fResolutionAlpha")->GetChisquare(),JetImbalanceAlpha[i][j]->gJetResolutionAlpha->GetFunction("fResolutionAlpha")->GetNDF());
-	    plotTGraphErrors(JetImbalanceAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBin[alpha_int],0.,0.4,legEntry,1); 
+	    plotTGraphErrors(JetImbalanceAlpha[i][j] -> gJetResolutionAlpha, filename, graphTitle, "alpha","JER",0,alphaBins[nAlphaBins],0.,0.4,legEntry,1); 
 	  
 	    TF1* totalResolution = new TF1("totalResolution","TMath::Sqrt(TMath::Power([0],2) + TMath::Power([1],2) + 2*[1]*[2]*x + TMath::Power(([2]*x),2) )",0,600);
 	    totalResolution -> SetParameters(JetIntrinsicAlpha[i][j]->cprime, JetImbalanceAlpha[i][j]->qprime,JetImbalanceAlpha[i][j]->mprime);
@@ -262,16 +262,16 @@ void extrapolate(){
   
   // DRAW LAST PLOTS
   char legEntry[100];
-  double q[pt_int],qprime[pt_int],qError[pt_int],qprimeError[pt_int]; 
-  double pT[pt_int],pTError[pt_int];
+  double q[nPtBins],qprime[nPtBins],qError[nPtBins],qprimeError[nPtBins]; 
+  double pT[nPtBins],pTError[nPtBins];
   
   
-  for(int j=0; j<eta_int; j++){
+  for(int j=0; j<nEtaBins; j++){
     
-    length = pt_int;
+    length = nPtBins;
     idx = 0;
     
-    for(int i=0; i<pt_int; i++){
+    for(int i=0; i<nPtBins; i++){
 
 
       if(isMC){
@@ -321,8 +321,8 @@ void extrapolate(){
       
     }
       
-    TGraphErrors *gq          = new TGraphErrors(pt_int, pT , q, pTError, qError);
-    TGraphErrors *gqprime     = new TGraphErrors(pt_int, pT , qprime, pTError, qprimeError);  
+    TGraphErrors *gq          = new TGraphErrors(nPtBins, pT , q, pTError, qError);
+    TGraphErrors *gqprime     = new TGraphErrors(nPtBins, pT , qprime, pTError, qprimeError);  
 
     // Calculate Fit variable for Resolution and Scale
     cout<<"Fit is done for JER(photonPt) (Full Resolution):"<<endl;

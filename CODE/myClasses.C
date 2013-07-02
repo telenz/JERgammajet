@@ -33,7 +33,7 @@ CResponse::CResponse(int typeResponse){
   else if(typeResponse==2) hResponse  = createTH1(hResponse,"","Intrinsic Response",5000,0,2,"p_{T}^{recoJet}/p_{T}^{genJet}");
   else if(typeResponse==3) hResponse  = createTH1(hResponse,"","Imbalance Response",5000,0,2,"p_{T}^{genJet}/p_{T}^{#gamma}");
 
-  hAlpha = createTH1(hAlpha,"","p_{T}^(Jet_{2})/p_{T}^{#gamma}",10000,0,alphaBin[alpha_int],"alpha");
+  hAlpha = createTH1(hAlpha,"","p_{T}^(Jet_{2})/p_{T}^{#gamma}",10000,0,alphaBins[nAlphaBins],"alpha");
   hPt = createTH1(hPt,"","p_{T}^{#gamma} - Distribution",10000,0,1500,"p^{#gamma}_{T}");
   hPtLeadingJet    = createTH1(hPt,"","p_{T}^{1st jet} - Distribution",10000,0,1500,"p^{1st jet}_{T}");
   hgenPtLeadingJet = createTH1(hPt,"","p_{T}^{1st gen. jet} - Distribution",10000,0,1500,"p^{1st gen. jet}_{T}");
@@ -180,7 +180,7 @@ CScaleResAlpha::CScaleResAlpha(){
   mprime = 0;
   mprimeError = 0;
   
-  for(int i=0; i<2*alpha_int; i++){
+  for(int i=0; i<2*nAlphaBins; i++){
     alpha[i] = 0;
     alphaError[i] = 0;
     mean[i] = 0;
@@ -200,13 +200,13 @@ void CScaleResAlpha::calculate(int length, int fit){
     gJetResolutionAlpha = new TGraphErrors(length, alpha , sigma, alphaError, sigmaError);
     
     if(fit == 2){  //mc intrinsic
-      fScaleAlpha = new TF1("fScaleAlpha","[0]",0,alphaBin[alpha_int]);
+      fScaleAlpha = new TF1("fScaleAlpha","[0]",0,alphaBins[nAlphaBins]);
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");
       c = fScaleAlpha -> GetParameter(0);
       scale      = fScaleAlpha -> GetParameter(0);
       scaleError = fScaleAlpha -> GetParError(0);
       
-      fResolutionAlpha = new TF1("fResolutionAlpha","[0]",0,alphaBin[alpha_int]); 
+      fResolutionAlpha = new TF1("fResolutionAlpha","[0]",0,alphaBins[nAlphaBins]); 
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
       cprime      = fResolutionAlpha -> GetParameter(0);
       cprimeError = fResolutionAlpha -> GetParError(0);
@@ -219,7 +219,7 @@ void CScaleResAlpha::calculate(int length, int fit){
     }
     else if(fit == 3){   //mc imbalance
       
-      fScaleAlpha = new TF1("fScaleAlpha","1. - [0] - [1]*TMath::Power(x,2)",0,alphaBin[alpha_int]); 
+      fScaleAlpha = new TF1("fScaleAlpha","1. - [0] - [1]*TMath::Power(x,2)",0,alphaBins[nAlphaBins]); 
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");
       q = fScaleAlpha -> GetParameter(0);
       qError = fScaleAlpha -> GetParError(0);
@@ -227,7 +227,7 @@ void CScaleResAlpha::calculate(int length, int fit){
       scale      = 1 - fScaleAlpha -> GetParameter(0);
       scaleError = fScaleAlpha -> GetParError(0);
      
-      fResolutionAlpha = new TF1("fResolutionAlpha","[0] + [1]*x",0,alphaBin[alpha_int]); 
+      fResolutionAlpha = new TF1("fResolutionAlpha","[0] + [1]*x",0,alphaBins[nAlphaBins]); 
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
       qprime      = fResolutionAlpha -> GetParameter(0);
       qprimeError = fResolutionAlpha -> GetParError(0);
@@ -271,14 +271,14 @@ void CScaleResAlpha::calculate(int length, int fit){
     }
     else if(fit == 4){ //data and MC
       
-      fScaleAlpha      = new TF1("fScaleAlpha","[0]*(1. - [1] - [2]*TMath::Power(x,2))",0,alphaBin[alpha_int]); 
+      fScaleAlpha      = new TF1("fScaleAlpha","[0]*(1. - [1] - [2]*TMath::Power(x,2))",0,alphaBins[nAlphaBins]); 
       fScaleAlpha -> FixParameter(1,q);
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");    
       scale      = fScaleAlpha -> GetParameter(0);
       scaleError = fScaleAlpha -> GetParError(0);
 
       // Resolution       
-      fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(TMath::Power([0],2) +TMath::Power([1],2) +2*[1]*[2]*x + TMath::Power(([2]*x),2) )",0,alphaBin[alpha_int]); 
+      fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(TMath::Power([0],2) +TMath::Power([1],2) +2*[1]*[2]*x + TMath::Power(([2]*x),2) )",0,alphaBins[nAlphaBins]); 
       fResolutionAlpha    -> FixParameter(1,qprime);        
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");
 
@@ -366,7 +366,7 @@ CScaleRes::CScaleRes(){
   scalenumberError = 0;
   maximum = 0.;
   minimum = 0.;
-  for(int i=0; i<pt_int; i++){
+  for(int i=0; i<nPtBins; i++){
     
     pT[i] = 0;
     pTError[i] = 0;

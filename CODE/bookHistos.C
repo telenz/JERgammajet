@@ -64,8 +64,8 @@ void bookHistos() {
   
   hVtxN = createTH1(hVtxN,"hVtxN","Number of Vertices",60,0,60,"Number of vertices");
 
-  for(int i=0; i<pt_int; i++){
-      for(int j=0; j<eta_int; j++){
+  for(int i=0; i<nPtBins; i++){
+      for(int j=0; j<nEtaBins; j++){
       
 	hVtxN1[i][j] = createTH1(hVtxN1[i][j],"","Number of Vertices",60,0,60,"Number of vertices");
 	hVtxN2[i][j] = createTH1(hVtxN2[i][j],"","Number of Vertices",60,0,60,"Number of vertices");
@@ -80,8 +80,8 @@ void bookHistos() {
 
   
   for(int i=0; i<numTrigger; i++){
-    if(i<pt_int-1) sprintf(tname,"rho %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else    sprintf(tname,"rho for %4.1f GeV < p_{T}",bd[i]);
+    if(i<nPtBins-1) sprintf(tname,"rho %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"rho for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("hRhoPtBinned%i",i);
     hRho[i] = createTH1(hRho[i],histoName,tname,60,0,60,"#Vtx");
   }
@@ -92,15 +92,15 @@ void bookHistos() {
   }
 
   for(int i=0; i<numTrigger; i++){
-    if(i<pt_int-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV (before)",bd[i],bd[i+1]);
-    else    sprintf(tname,"#Vtx for %4.1f GeV < p_{T} (before)",bd[i]);
+    if(i<nPtBins-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV (before)",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"#Vtx for %4.1f GeV < p_{T} (before)",ptBins[i]);
     histoName.Form("hTriggerEffPtBinnedBefore%i",i);
     hTriggerEffBefore[i] = createTH1(hTriggerEffBefore[i],histoName,tname,60,0,60,"#Vtx");
   }
 
   for(int i=0; i<numTrigger; i++){
-    if(i<pt_int-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV (after)",bd[i],bd[i+1]);
-    else    sprintf(tname,"#Vtx for %4.1f GeV < p_{T} (after)",bd[i]);
+    if(i<nPtBins-1) sprintf(tname,"#Vtx %4.1f GeV < p_{T} < %4.1f GeV (after)",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"#Vtx for %4.1f GeV < p_{T} (after)",ptBins[i]);
     histoName.Form("hTriggerEffPtBinnedAfter%i",i);
     hTriggerEffAfter[i] = createTH1(hTriggerEffAfter[i],histoName,tname,60,0,60,"#Vtx");
   }
@@ -119,8 +119,8 @@ void bookHistos() {
   // 1d PUWeights
   
   for(int i=0; i<numTrigger; i++){
-    if(i<numTrigger-1) sprintf(tname,"PU-Weights for %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else    sprintf(tname,"PU-Weights for %4.1f GeV < p_{T}",bd[i]);
+    if(i<numTrigger-1) sprintf(tname,"PU-Weights for %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"PU-Weights for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("PUWeight%i",i);
     hPUWeight[i] = createTH1(hPUWeight[i],histoName,tname,600,0,60,"# Pileup");
     //hPUWeight[i] = createTH1(hPUWeight[i],histoName,tname,60,0,60,"# Pileup");
@@ -137,8 +137,8 @@ void bookHistos() {
 
   // PU Distribution for several PU bins (for sys uncertainty)
   for(int k=0; k<4; k++){
-    for(int i=0; i<pt_int; i++){
-      for(int j=0; j<eta_int; j++){
+    for(int i=0; i<nPtBins; i++){
+      for(int j=0; j<nEtaBins; j++){
 	sprintf(tname,"PU Distribution for %d. PU %d Pt and %d eta bin",k+1,i+1,j+1);
 	histoName.Form("hPUsysY%iPU%iPT%iEta",k,i,j);
 	hPUsysY[k][i][j] = createTH1(hPUsysY[k][i][j],histoName,tname,40,0,40,"PU");
@@ -148,7 +148,7 @@ void bookHistos() {
   
   hEnergyBalance =  createTH1(hEnergyBalance,"hEnergyBalance","hEnergyBalance",100,0,2,"sumJetPt/photonPt");
   hEnergyBalance2 =  createTH1(hEnergyBalance2,"hEnergyBalance2","hEnergyBalance2",100,0,2,"sumJetPt/photonPt");
-  for(int k=0; k<alpha_int; k++){
+  for(int k=0; k<nAlphaBins; k++){
 
     histoName.Form("h2ndJetPt1stJetHemisphere_%i_alphaBin",k);
     h2ndJetPt1stJetHemisphere[k] =  createTH1(h2ndJetPt1stJetHemisphere[k],histoName,histoName,400,0,400,"2ndJetPt");
@@ -305,8 +305,8 @@ void bookHistos() {
   // Photon Pt against Vtx
   
   for(int i=0; i<numTrigger-1;i++){
-    if(i<numTrigger-2) sprintf(tname,"Photon Pt against Number of Vertices for %4.1f GeV < p_{T} < %4.1f GeV ",bd[i],bd[i+1]);
-    else    sprintf(tname,"Photon Pt against Number of Vertices for %4.1f GeV < p_{T}",bd[i]);
+    if(i<numTrigger-2) sprintf(tname,"Photon Pt against Number of Vertices for %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
+    else    sprintf(tname,"Photon Pt against Number of Vertices for %4.1f GeV < p_{T}",ptBins[i]);
     hPhotonPtVtxBinned[i]= createTH2(hPhotonPtVtxBinned[i],tname,100,0,upp_pt,60,0,60,"Photon PT","NVtx");
   }
   

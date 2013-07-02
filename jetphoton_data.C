@@ -125,9 +125,9 @@ void calcSample() {
 
   initializeControlPlots();
 
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
-      for(int k=0; k<alpha_int; k++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
+      for(int k=0; k<nAlphaBins; k++){
 	
 	JetResponseJetHemisphere[i][j][k]          = new CResponse(1); 	
 	JetResponsePhotonHemisphere[i][j][k]       = new CResponse(1); 	      
@@ -135,16 +135,6 @@ void calcSample() {
     }
   }
   //-----------------------------------------------------------------------------
-
-  /*
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){ 
-      h2ndgenJetPtle12GeV[i][j] = createTH1(h2ndgenJetPtle12GeV[i][j],""," 2nd gen Jet pt for jets < 12 GeV ",1000,0,12,"genJetPt");
-      TString Filename = HistogramsSmall2ndJetPt + "h2ndgenJetPtle12GeV_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin.root";
-      h2ndgenJetPtle12GeV[i][j] = readTH1(Filename, "histo", "histo");
-    }
-  }
-  */
   // Loop over nMax entries, read variables and fill histogram
   
   std::cout << "Processing events" << std::endl;
@@ -172,32 +162,32 @@ void calcSample() {
     
     
     // Fill Response Functions    
-    for(int k=0; k<alpha_int; k++){
-      if(alpha >= alphaBin[k] && alpha < alphaBin[k+1]){ 
+    for(int k=0; k<nAlphaBins; k++){
+      if(alpha >= alphaBins[k] && alpha < alphaBins[k+1]){ 
 	
-	for(int j=0; j<eta_int; j++){
+	for(int j=0; j<nEtaBins; j++){
 	  
-	  if(std::abs(jetEta[corrJets.idx(lead_jet)])>= etaBin[j] && std::abs(jetEta[corrJets.idx(lead_jet)]) < etaBin[j+1] ){
+	  if(std::abs(jetEta[corrJets.idx(idx1stJet)])>= etaBins[j] && std::abs(jetEta[corrJets.idx(idx1stJet)]) < etaBins[j+1] ){
 	    
-	    for(int i=0; i<pt_int; i++){ 
+	    for(int i=0; i<nPtBins; i++){ 
               
-              if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
+              if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
 
 		
 		float deltaphi1stJetPhoton = 0;
 		float deltaphi2ndJetPhoton = 0;
-		if(jet_2 != -1){
-		  if(std::abs(TVector2::Phi_mpi_pi((jetPhi[corrJets.idx(lead_jet)]+photonPhi[0])/2. - jetPhi[corrJets.idx(jet_2)])) < TMath::Pi()/2.){
+		if(idx2ndJet != -1){
+		  if(std::abs(TVector2::Phi_mpi_pi((jetPhi[corrJets.idx(idx1stJet)]+photonPhi[0])/2. - jetPhi[corrJets.idx(idx2ndJet)])) < TMath::Pi()/2.){
 		    
-		    deltaphi1stJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(lead_jet)]-photonPhi[0]));
+		    deltaphi1stJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
 		  }
-		  else deltaphi1stJetPhoton = TMath::Pi()*2. - std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(lead_jet)]-photonPhi[0]));
+		  else deltaphi1stJetPhoton = TMath::Pi()*2. - std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
 		  
-		  deltaphi2ndJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(jet_2)]-photonPhi[0])); 
+		  deltaphi2ndJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx2ndJet)]-photonPhi[0])); 
 		}
 		
 				 
-		if(deltaphi2ndJetPhoton > deltaphi1stJetPhoton/2. || jet_2 == -1){
+		if(deltaphi2ndJetPhoton > deltaphi1stJetPhoton/2. || idx2ndJet == -1){
 		  JetResponseJetHemisphere[i][j][k] -> hResponse      -> Fill(response,weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);
@@ -225,39 +215,39 @@ void calcSample() {
     
     
     // SMALL RESPONSE DIAGNOSTIC::Plots just for small response region
-    //if( corrJets.pt(lead_jet)/photonPt[0] <= 0.3 ){
+    //if( corrJets.pt(idx1stJet)/photonPt[0] <= 0.3 ){
     //hPhotonEta_low_resp_reg -> Fill(photonEta[0],weight);
     
     //if(!filestr.is_open()) cout<<"wrong"<<endl;
     //filestr<<runNum<<":"<<lumiNum<<":"<<eventNum<<endl;	   
     //if(!EventVariables.is_open()) cout<<"EventVariable.txt is not open"<<endl;
-    //EventVariables<<photonPt[0]<<":"<<corrJets.pt(lead_jet)<<":"<<photonEta[0]<<":"<<jetEta[corrJets.idx(lead_jet)]<<":"<<photonPhi[0]<<":"<<jetPhi[corrJets.idx(lead_jet)]<<":"<<photonIsoEcal[0]<<":"<<photonIsoHcal[0]<<":"<<photonIsoTrk[0]<<endl;
+    //EventVariables<<photonPt[0]<<":"<<corrJets.pt(idx1stJet)<<":"<<photonEta[0]<<":"<<jetEta[corrJets.idx(idx1stJet)]<<":"<<photonPhi[0]<<":"<<jetPhi[corrJets.idx(idx1stJet)]<<":"<<photonIsoEcal[0]<<":"<<photonIsoHcal[0]<<":"<<photonIsoTrk[0]<<endl;
     //}
     
-    //if(( hltPhoton[5] ||  hltPhoton[6] || hltPhoton[7])  && corrJets.pt(lead_jet)/photonPt[0]<=1.0 && photonPt[0]>130.){
-    //  hSmallJetPtResponse -> Fill(corrJets.pt(lead_jet),corrJets.pt(lead_jet)/photonPt[0],weight);
-    //  hPhotonEta_high_pt_reg_Response -> Fill(photonEta[0],corrJets.pt(lead_jet)/photonPt[0],weight);      
+    //if(( hltPhoton[5] ||  hltPhoton[6] || hltPhoton[7])  && corrJets.pt(idx1stJet)/photonPt[0]<=1.0 && photonPt[0]>130.){
+    //  hSmallJetPtResponse -> Fill(corrJets.pt(idx1stJet),corrJets.pt(idx1stJet)/photonPt[0],weight);
+    //  hPhotonEta_high_pt_reg_Response -> Fill(photonEta[0],corrJets.pt(idx1stJet)/photonPt[0],weight);      
     //}
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
     
     /*// Fill 2d Diagram Response L1 correctio
-      hResponseL1 -> Fill(corrJets.pt(lead_jet)/photonPt[0],jetCorrL1[corrJets.idx(lead_jet)],weight);
-      hResponseL2L3 -> Fill(corrJets.pt(lead_jet)/photonPt[0],jetCorrL2L3[corrJets.idx(lead_jet)],weight);
+      hResponseL1 -> Fill(corrJets.pt(idx1stJet)/photonPt[0],jetCorrL1[corrJets.idx(idx1stJet)],weight);
+      hResponseL2L3 -> Fill(corrJets.pt(idx1stJet)/photonPt[0],jetCorrL2L3[corrJets.idx(idx1stJet)],weight);
       
       //Fill 2d histogram Response agaist Photon Eta
-      hRespPhotonEta -> Fill(corrJets.pt(lead_jet)/photonPt[0],photonEta[0],weight);
+      hRespPhotonEta -> Fill(corrJets.pt(idx1stJet)/photonPt[0],photonEta[0],weight);
       
       // Fill 2d Diagram Response against JetEMF JetFHPD JetFRBX
-      hResponseJetEMF -> Fill(response,jetEMF[corrJets.idx(lead_jet)],weight);
-      hResponseJetFHPD -> Fill(response,jetFHPD[corrJets.idx(lead_jet)],weight);
-      hResponseJetFRBX -> Fill(response,jetFRBX[corrJets.idx(lead_jet)],weight);
+      hResponseJetEMF -> Fill(response,jetEMF[corrJets.idx(idx1stJet)],weight);
+      hResponseJetFHPD -> Fill(response,jetFHPD[corrJets.idx(idx1stJet)],weight);
+      hResponseJetFRBX -> Fill(response,jetFRBX[corrJets.idx(idx1stJet)],weight);
       
       // Fill 2d Diagram Response against PhotonEMF PhotonFHPD PhotonFRBX
-      if(photonidx!=-1){
-      hResponsePhotonEMF -> Fill(response,jetEMF[corrJets.idx(photonidx)],weight);
-      hResponsePhotonFHPD -> Fill(response,jetFHPD[corrJets.idx(photonidx)],weight);
-      hRespoxnsePhotonFRBX -> Fill(response,jetFRBX[corrJets.idx(photonidx)],weight);
-      if(response<=1 && corrJets.pt(photonidx)/photonPt[0]<=2)    hResponsePhotonPtRatio -> Fill(response,corrJets.pt(photonidx)/photonPt[0],weight);
+      if(idxPhoton!=-1){
+      hResponsePhotonEMF -> Fill(response,jetEMF[corrJets.idx(idxPhoton)],weight);
+      hResponsePhotonFHPD -> Fill(response,jetFHPD[corrJets.idx(idxPhoton)],weight);
+      hRespoxnsePhotonFRBX -> Fill(response,jetFRBX[corrJets.idx(idxPhoton)],weight);
+      if(response<=1 && corrJets.pt(idxPhoton)/photonPt[0]<=2)    hResponsePhotonPtRatio -> Fill(response,corrJets.pt(idxPhoton)/photonPt[0],weight);
       }*/
     
     // Fill 2d histogram with first and second Photon of one event
@@ -270,14 +260,14 @@ void calcSample() {
 
   TString TotFilename;
 
-  for(int i=0;i<pt_int;i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0;i<nPtBins;i++){
+    for(int j=0; j<nEtaBins; j++){
 
 
       saveObject(JetResponseJetHemisphere[i][j][0]->hPt, RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo");   
       saveObject(JetResponsePhotonHemisphere[i][j][0]->hPt, RootPath + "hPt_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
 
-      for(int k=0; k<alpha_int; k++){	
+      for(int k=0; k<nAlphaBins; k++){	
 
 	saveObject(JetResponseJetHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_jet_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
 	saveObject(JetResponsePhotonHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_photon_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
@@ -314,9 +304,6 @@ void calcSample() {
   cutflow<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;
  
 
-
-  cout<<endl<<"count2nd = "<<count2nd<<endl<<endl;
-  cout<<endl<<"all2ndJets = "<<all2ndJets<<endl<<endl;
   cutflow.close();
 
   delete chain;
@@ -343,9 +330,9 @@ void calcScale(){
 
   initializeControlPlotsInCalcScale();
 
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
-      for(int k=0; k<alpha_int; k++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
+      for(int k=0; k<nAlphaBins; k++){
 
 	JetResponseJetHemisphere[i][j][k]         = new CResponse(1); 		
 	JetResponsePhotonHemisphere[i][j][k]      = new CResponse(1); 	
@@ -356,8 +343,8 @@ void calcScale(){
 
   TFile *file;
   TString TotFilename;  
-  for(int i=0;i<pt_int;i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0;i<nPtBins;i++){
+    for(int j=0; j<nEtaBins; j++){
 
         
       TotFilename = RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";    
@@ -372,7 +359,7 @@ void calcScale(){
       JetResponsePhotonHemisphere[i][j][0]->hPt -> SetDirectory(0);
       delete file;       
 
-      for(int k=0; k<alpha_int; k++){
+      for(int k=0; k<nAlphaBins; k++){
 	
 	TotFilename = RootPath + "response_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
 	file = new TFile(TotFilename);      
@@ -424,8 +411,8 @@ void calcScale(){
   gROOT->ProcessLine(command);
   
 
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
       
       JetScaleResAlpha[i][j] = new CScaleResAlpha;
     }
@@ -436,13 +423,13 @@ void calcScale(){
   std::cout << "Calculation of Jet energy scale and resolution" << std::endl;
     
   // Fit a Gaussian to all Response Functions (conducted in function calculate()) 
-  for(int i=0; i<pt_int; i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0; i<nPtBins; i++){
+    for(int j=0; j<nEtaBins; j++){
 
       JetResponseJetHemisphere[i][j][0]          -> calculatePt();
       JetResponsePhotonHemisphere[i][j][0]       -> calculatePt();
       
-      for(int k=0; k<alpha_int; k++){
+      for(int k=0; k<nAlphaBins; k++){
 
 	//cout<<"JetResponseJetHemisphere["<<i<<"]["<<j<<"]["<<k<<"]->hResponse->GetEntries() = "<<JetResponseJetHemisphere[i][j][k]->hResponse->GetEntries()<<endl;
 	//cout<<"JetResponsePhotonHemisphere["<<i<<"]["<<j<<"]["<<k<<"]->hResponse->GetEntries() = "<<JetResponsePhotonHemisphere[i][j][k]->hResponse->GetEntries()<<endl;

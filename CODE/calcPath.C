@@ -35,7 +35,6 @@ void calcPath(int step){
    // The whole path to save in the End the .root and .pdf files 
    PDFPath  = pathYear + pathSample + pathType + "/pdfs/"; 
    RootPath = pathYear + pathSample + pathType + "/root_files/"; 
-   HistogramsSmall2ndJetPt =  pathYear + pathSample + "HistogramsSmall2ndJetPt/";
    // Suffix to be determined for the filenames in the end
    DataType += pathType;
   

@@ -99,7 +99,7 @@ int plotDataMCComparison(int eta){
   info->SetTextFont(132);
   info-> SetNDC();
   info->SetTextSize(0.048);
-  TString AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBin[eta-1],etaBin[eta]);
+  TString AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
   info->DrawLatex(0.6,0.7,AuxString);
   
   legend -> Draw("same");
@@ -188,7 +188,7 @@ int plotDataMCComparison(int eta){
   info1->DrawLatex(0.22,0.82,legname);
 
 
-  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBin[eta-1],etaBin[eta]);
+  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
   info1->DrawLatex(0.6,0.7,AuxString);
 
   pdfFile = (TString) "plots/Ratio_Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_data_comparison_" + method + (TString) ".pdf";
@@ -207,9 +207,7 @@ int plotDataMCComparisonFINAL(){
   const TString JetType = "PFCHS";
   TString Method;
   
-  const int nEta =4;
-
-  double eta_bins[5] = {0., 0.5, 1.1, 1.7, 2.3};
+  const int nEta =nEtaBins;
 
   TString etaString, filename;   
   
@@ -232,7 +230,7 @@ int plotDataMCComparisonFINAL(){
 
     cout<<endl<<endl<<"METHOD :   "<<Method<<endl;
   
-  for(int eta = 0; eta < nEta; eta++){
+  for(int eta = 0; eta < nEtaBins; eta++){
     
     cout<< endl<<endl<<endl<<eta+1<<". eta Bin!!"<<endl;
     
@@ -242,8 +240,8 @@ int plotDataMCComparisonFINAL(){
     rootFiles = (TString) "../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_mc_" + Method + (TString) ".root";
     TGraphErrors* JERMC = readTGraphErrors(rootFiles,"Graph","Graph");
     
-    if(eta+1 == 1) etaString = Form("JER for |#eta| < %4.1f",etaBin[eta+1]);
-    else           etaString = Form("JER for %4.1f <|#eta|< %4.1f",etaBin[eta+1],etaBin[eta+2]);
+    if(eta+1 == 1) etaString = Form("JER for |#eta| < %4.1f",etaBins[eta+1]);
+    else           etaString = Form("JER for %4.1f <|#eta|< %4.1f",etaBins[eta+1],etaBins[eta+2]);
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // 1.) Calculate the ratio w/o systematic Uncertainties  
@@ -285,8 +283,8 @@ int plotDataMCComparisonFINAL(){
     
     TGraphErrors *Ratio = new TGraphErrors(nData,ratioX,ratioY,ratioEX,ratioEY);
 
-    if(eta+1 == 1 ) AuxString = Form("Ratio between Data and MC for |#eta| < %4.1f",etaBin[eta+1]);
-    else            AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBin[eta+1],etaBin[eta+2]);
+    if(eta+1 == 1 ) AuxString = Form("Ratio between Data and MC for |#eta| < %4.1f",etaBins[eta+1]);
+    else            AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBins[eta+1],etaBins[eta+2]);
  
     Ratio -> SetTitle(AuxString); 
     Ratio -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
@@ -347,12 +345,12 @@ int plotDataMCComparisonFINAL(){
     info -> SetTextSize(0.05); 
     info -> DrawLatex(0.20,0.78,Form("#chi^{2}/ndof = %4.2f / %i",f1 -> GetChisquare(),f1 -> GetNDF()));
     info -> DrawLatex(0.60,0.78,Form("f = %4.3f #pm %4.3f", f1 -> GetParameter(0), f1->GetParError(0)));
-    info -> DrawLatex(0.60,0.85,Form("#bf{%4.1f < |#eta^{Jet}| < %4.1f}",etaBin[eta],etaBin[eta+1]));
+    info -> DrawLatex(0.60,0.85,Form("#bf{%4.1f < |#eta^{Jet}| < %4.1f}",etaBins[eta],etaBins[eta+1]));
 
     filename = (TString) "plots/Ratio_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_comparison_" + Method + (TString) ".pdf";
     c11 -> SaveAs(filename);
     
-    ratioEtaBinnedX[eta]  = (eta_bins[eta+1] + eta_bins[eta])/2.; 
+    ratioEtaBinnedX[eta]  = (etaBins[eta+1] + etaBins[eta])/2.; 
     ratioEtaBinnedY[eta]  = f1 -> GetParameter(0);
     ratioEtaBinnedEX[eta] = 0;
     ratioEtaBinnedEY[eta] = f1->GetParError(0);
@@ -400,7 +398,7 @@ int plotDataMCComparisonFINAL(){
   cFinal -> cd();  
 
 
-  TH1F *Res_2011Final = new TH1F("Data_MC_ratio_2011","", 4, eta_bins);
+  TH1F *Res_2011Final = new TH1F("Data_MC_ratio_2011","", 4, etaBins);
   Res_2011Final->SetBinContent(1, 1.052);
   Res_2011Final->SetBinContent(2, 1.057);
   Res_2011Final->SetBinContent(3, 1.096);

@@ -9,24 +9,15 @@
 #include "TString.h"
 #include "TLorentzVector.h"
 
-int countAlpha0 =0;
 // Numbers of alpha, pTGamma and eta bins 
-const int pt_int    = 12;     // numbers of Pt bins
-const int alpha_int = 6;      // numbers of alpha bins 
-const int eta_int   = 4;      // number of eta bins
+const int nPtBins    = 12;     // numbers of Pt bins
+const int nAlphaBins = 6;      // numbers of alpha bins 
+const int nEtaBins   = 4;      // number of eta bins
 
 // Definition of all bin intervals
-const double alphaBin[alpha_int+1] = {0,7.5,10,12.5,15,17.5,20};
-//const double alphaBin[alpha_int+1] = {0,2.5,5.0,7.5,10,12.5,15,17.5,20};
-//const double alphaBin[alpha_int+1] = {0,10,15,20,25,30,40};
-const double etaBin[eta_int+1]     = {0.0,0.5,1.1,1.7,2.3};
-//const double etaBin[eta_int+1]     = {0.0,0.5};
-//const double etaBin[eta_int+1]     = {0.0,1.3,2.3};
-//const double bd[pt_int+1]          = {22,36,60,88,105,148.5,165,176,200,250,300,400,1000000}; 
-const double bd[pt_int+1]          = {22,36,60,88,105,148.5,165,176,200,250,300,400,1000000}; 
-//const double bd[pt_int+1]          = {100,150,200,250,300,400,1000000}; 
-//const double bd[pt_int+1]          = {100,110,120,130,140,150,160,170,180,190,200,225,250,300,400,1000000}; 
-
+const double alphaBins[nAlphaBins+1] = {0.,7.5,10.,12.5,15.,17.5,20.};
+const double etaBins[nEtaBins+1]     = {0.0,0.5,1.1,1.7,2.3};
+const double ptBins[nPtBins+1]       = {22,36,60,88,105,148.5,165,176,200,250,300,400,1000000}; 
 
 const int numTrigger = 8;      // 8 for 2012 and 5 for 2011
 
@@ -34,60 +25,131 @@ const int  detJER=3;         // = 1 (2sigma Gaus) = 2 (RMS 95%) = 3 (RMS 99%)
 const int  jetType = 2;      // 1 = PF_L1Fast , 2 = PF_CHS Jets , 3 = Calo_L1FastJ, 4 = ak7 PF_CHS Jetset 
 const int  date    = 2012;   // 2012 or 2011
 const int  set     = 5;      // 1=AB; 2= ABC; 3=AB rereco; 4=C; 5=ABCD rereco
-const bool applyTriggeronMC = true;
-const bool PUreweighting    = true;
-const bool addQCD  = false;
-const bool addWJet = false;
 
-const bool testClosure = false;
+const bool applyTriggeronMC = true;  //shall the triggers also applied on MC
+const bool PUreweighting    = true;  // shall MC be PU reweighted to the data distribution
+const bool addQCD  = false;          // add QCD sample
+const bool addWJet = false;          // add W+jet sample
 
-bool readOnly2ndJetPtHistos = true;
-
+const bool testClosure = false;      // for ratio closure test
 
 // Declaration of the path where all files shall be saved in the end 
-TString PDFPath, RootPath, DataType, MethodType, HistogramsSmall2ndJetPt; 
+TString PDFPath, RootPath, DataType, MethodType; 
      
-// To save strange events
+// To save strange events for 2011
 ofstream filestr, EventVariables, cutflow;
 
 TChain* chain;
 
-int genJetidx;
-int gen2ndJetidx;
-
+// sum indices for the jet collection
 int idx2ndJet = -1;
 int idx1stJet = -1;
-
-int lead_jet=-1; 
-int jet_2=-1;
-int photonidx=-1;
-float alpha = 0; 	
+int idxPhoton =-1;
+int gen1stJetidx = -1;
+int gen2ndJetidx = -1;
 
 // Define some global variables 
-float response = 0;
+float response  = 0;
 float imbalance = 0;
 float intrinsic = 0; 
+float alpha     = 0; 
 
-double deltaRJets = 0;
-
-float jetPt2nd = 0;
+// 1st and 2nd Jet Pt
+float jetPt2nd    = 0;
 float jetPt1stJet = 0;
 
 TLorentzVector photonVector;
 TLorentzVector jet2ndVector;
 TLorentzVector sumVector;
 
-
-int countForClosure = 0;
 float PUWeight = 1;
-
-TH1D* h2ndgenJetPtle12GeV[pt_int][eta_int] = {{0}}; 
-
-int count2nd = 0;
-int all2ndJets = 0;
 int count1stJetNotMatched = 0;
-//------------------------ Histograms ----------------------------------------
 
+
+// ------ Book variables to be read from tree [needed in: readGammaJet.C] ------------------
+const int NJETS    = 200;   // Maximum number of jets per event
+const int NPHOTONS = 100;   // Maximum number of Photons per event
+
+float crossSection;
+int nobjPhoton;                // Number of Photons in an event
+int nobjJet;                   // Number of jets in an event
+bool tight[NPHOTONS];          // tight Photon or not
+bool loose[NPHOTONS];          // loose Photon or not
+bool jetIDTight[NJETS];         // tight jet or not
+bool jetIDLoose[NJETS];         // loose jet or not
+float photonPt[NPHOTONS];      // Pt of Photons in an event
+float photonE[NPHOTONS];      // E of Photons in an event
+float photonEta[NPHOTONS];     // Photon Eta
+float photonPhi[NPHOTONS];     // Phi of Photons in an event  
+float genPhotonPt[NPHOTONS];
+float genPhotonEta[NPHOTONS];     // Photon Eta
+float genPhotonPhi[NPHOTONS];     // Phi of Photons in an event 
+float jetPt[NJETS];            // Pt of jets in an event
+float jetCorrL2L3[NJETS];	 // Jet energy correction factors (L2 = flat vs eta  ;L3 = flat vs pt; for data also residual corrections are included)
+float jetCorrL1[NJETS];        // Jet energy correction Factor L1 (pileup corrections)
+float jetUncert[NJETS];        // Jet energy correction uncertainty
+float jetPhi[NJETS];           // Phi of jets in an event
+float jetEta[NJETS];	         // Jet eta  
+float jetE[NJETS];          // Generated Jet Pt
+
+int vtxN;                     // number of vertices in an event 
+bool EcalBEFilter; //Ecal bool BE Filter = Boundary Bnergy Filter
+bool EcalTPFilter; //Ecal bool TP Filter = Trigger Primitive Filter
+unsigned int runNum;    // run number
+unsigned int lumiNum;   // lumi block number 
+unsigned int eventNum;  // event number 
+float photonIsoEcal[NPHOTONS];   // isolation Photon Ecal
+float photonIsoHcal[NPHOTONS];   // isolation Photon Hcal
+float photonIsoTrk[NPHOTONS];    // isolation Photon Tracker 
+float photonSigmaIetaIeta[NPHOTONS];    
+float photonHadronicOverEM[NPHOTONS];
+float jetFRBX[NJETS];            // fraction of jet energy carried by the most energetic readout box
+float jetFHPD[NJETS];            // fraction of jet energy carried by the ``hottest'' (or most energetic) HPD (Hybrid Photo Diodes)
+float jetEMF[NJETS];             // energy fraction measured in the calorimeter (E_ECAL/E_{HCAL+ECAL})/ EMF = ElectroMagnetic Fraction
+float weight;
+// only needed in in calcPUWeights.C
+float PUMCNumTruth;            // Number of PU events
+// MC specific
+float genJetPt[NJETS];          // Generated Jet Pt
+float genJetEta[NJETS];          // Generated Jet Pt
+float genJetPhi[NJETS];          // Generated Jet Pt
+bool photonHasPixelSeed[NPHOTONS];
+float genEvtScale;
+
+float met_T1;
+float metPhi_T1;
+
+int genJetID_phys[NJETS];            // Generated Jet ID
+int genJetID_algo[NJETS];            // Generated Jet ID
+float rho;
+bool hltPhoton[numTrigger];     // Trigger
+float photonEt;
+unsigned int genJetColJetIdx[NJETS];
+
+int nobjGenJet;
+int nobjGenPhoton;
+
+int nMax;
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Cut variables for the cutflow
+int cut1=0;
+int cut2=0;
+int cut3=0;
+int cut4=0;
+int cut5=0;
+int cut6=0;
+int cut7=0;
+int cut8=0;
+int cut9=0;
+int cut10=0;
+int cut11=0; 
+int cut12[numTrigger] = {0};
+int cut13[3] = {0};
+int cut14 = 0;
+int cut15 = 0;
+int nocut=0;  
+
+//------------------------ Histograms ----------------------------------------
 float deltaRPhoton1stJet = 0;
 float deltaRPhoton2ndJet = 0;
 float deltaR1stJet2ndJet = 0;
@@ -123,10 +185,10 @@ TH2D* hImbalance2ndGenJetID = 0;
 TH2D* hPhotonEta2ndJet = 0;
 TH1D* hEnergyBalance = 0;
 TH2D* hImbalanceRatioPhotonPtJetColPt = 0;
-TH1D* h2ndJetPt1stJetHemisphere[alpha_int] = {0};
-TH1D* h2ndJetPtPhotonHemisphere[alpha_int] = {0};
-TH1D* h2ndJetEta1stJetHemisphere[alpha_int] = {0};
-TH1D* h2ndJetEtaPhotonHemisphere[alpha_int] = {0};
+TH1D* h2ndJetPt1stJetHemisphere[nAlphaBins] = {0};
+TH1D* h2ndJetPtPhotonHemisphere[nAlphaBins] = {0};
+TH1D* h2ndJetEta1stJetHemisphere[nAlphaBins] = {0};
+TH1D* h2ndJetEtaPhotonHemisphere[nAlphaBins] = {0};
 TH1D* hAlpha = 0;
 TH2D* hJet1PtPhoton1Pt2 =0;
 TH2D* hImbalanceJetN2     = 0;   
@@ -189,11 +251,11 @@ TH1D* hPhotonPhi    = 0;     // Phi of first Photon in an event
 TH1D* hPhotonEta    = 0;     // Eta of first Photon in an event
 TH2D* hPhoton12Pt   = 0;     // 2d plot of Photon pt
 TH1D* hVtxN    = 0;
-TH1D* hVtxN1[pt_int][eta_int]    = {{0}};
-TH1D* hVtxN2[pt_int][eta_int]    = {{0}};
-TH1D* hVtxN3[pt_int][eta_int]    = {{0}};
-TH1D* hVtxN4[pt_int][eta_int]    = {{0}};
-TH1D* hVtxN5[pt_int][eta_int]    = {{0}};
+TH1D* hVtxN1[nPtBins][nEtaBins]    = {{0}};
+TH1D* hVtxN2[nPtBins][nEtaBins]    = {{0}};
+TH1D* hVtxN3[nPtBins][nEtaBins]    = {{0}};
+TH1D* hVtxN4[nPtBins][nEtaBins]    = {{0}};
+TH1D* hVtxN5[nPtBins][nEtaBins]    = {{0}};
 TH1D* hDphi      = 0;        // delta phi of Jet and Photon
 TH1D* hRatioPt   = 0;        // Jet2Pt/Photon1Pt
 TH2D* hResponsePt= 0;        // 2d Response and Pt of first Photon
@@ -211,106 +273,6 @@ TH1D* hRho[numTrigger] = {0};
 TH1D* hTriggerEffBefore[numTrigger] = {0};
 TH1D* hTriggerEffAfter[numTrigger] = {0};
 TH1D* hRhoVtxBinned[40] = {0};
-TH1D* hPUsysY[4][pt_int][eta_int] = {{{0}}};
-
-
-// Book variables to be read from tree [needed in: readGammaJet.C]
-const int NJETS    = 200;   // Maximum number of jets per event
-const int NPHOTONS = 100;   // Maximum number of Photons per event
-
-float crossSection;
-int nobjPhoton;                // Number of Photons in an event
-int nobjJet;                   // Number of jets in an event
-bool tight[NPHOTONS];          // tight Photon or not
-bool loose[NPHOTONS];          // loose Photon or not
-bool jetIDTight[NJETS];         // tight jet or not
-bool jetIDLoose[NJETS];         // loose jet or not
-float photonPt[NPHOTONS];      // Pt of Photons in an event
-float photonE[NPHOTONS];      // E of Photons in an event
-float photonEta[NPHOTONS];     // Photon Eta
-float photonPhi[NPHOTONS];     // Phi of Photons in an event  
-float genPhotonPt[NPHOTONS];
-float genPhotonEta[NPHOTONS];     // Photon Eta
-float genPhotonPhi[NPHOTONS];     // Phi of Photons in an event 
-float jetPt[NJETS];            // Pt of jets in an event
-float jetCorrL2L3[NJETS];	 // Jet energy correction factors (L2 = flat vs eta  ;L3 = flat vs pt; for data also residual corrections are included)
-float jetCorrL1[NJETS];        // Jet energy correction Factor L1 (pileup corrections)
-float jetUncert[NJETS];        // Jet energy correction uncertainty
-float jetPhi[NJETS];           // Phi of jets in an event
-float jetEta[NJETS];	         // Jet eta  
-float jetE[NJETS];          // Generated Jet Pt
-
-int   vtxN;                     // number of vertices in an event 
-bool EcalBEFilter; //Ecal bool BE Filter = Boundary Bnergy Filter
-bool EcalTPFilter; //Ecal bool TP Filter = Trigger Primitive Filter
-unsigned int runNum;    // run number
-unsigned int lumiNum;   // lumi block number 
-unsigned int eventNum;  // event number 
-float photonIsoEcal[NPHOTONS];   // isolation Photon Ecal
-float photonIsoHcal[NPHOTONS];   // isolation Photon Hcal
-float photonIsoTrk[NPHOTONS];    // isolation Photon Tracker 
-float photonSigmaIetaIeta[NPHOTONS];    
-float photonHadronicOverEM[NPHOTONS];
-float jetFRBX[NJETS];            // fraction of jet energy carried by the most energetic readout box
-float jetFHPD[NJETS];            // fraction of jet energy carried by the ``hottest'' (or most energetic) HPD (Hybrid Photo Diodes)
-float jetEMF[NJETS];             // energy fraction measured in the calorimeter (E_ECAL/E_{HCAL+ECAL})/ EMF = ElectroMagnetic Fraction
-float weight;
-// only needed in in calcPUWeights.C
-float PUMCNumTruth;            // Number of PU events
-// MC specific
-float genJetPt[NJETS];          // Generated Jet Pt
-float genJetEta[NJETS];          // Generated Jet Pt
-float genJetPhi[NJETS];          // Generated Jet Pt
-bool photonHasPixelSeed[NPHOTONS];
-float genEvtScale;
-
-float met_T1;
-float metPhi_T1;
-
-
-int genJetID_phys[NJETS];            // Generated Jet ID
-int genJetID_algo[NJETS];            // Generated Jet ID
-float rho;
-bool hltPhoton[numTrigger];     // Trigger
-float photonEt;
-unsigned int genJetColJetIdx[NJETS];
-
-int numMatching;
-int noDefMatch0;
-int noDefMatch2;
-int nobjGenJet;
-int nobjGenPhoton;
-
-int countPhotons = 0;
-int nMax;
-
-int cut1=0;
-int cut2=0;
-int cut3=0;
-int cut4=0;
-int cut5=0;
-int cut6=0;
-int cut7=0;
-int cut8=0;
-int cut9=0;
-int cut10=0;
-int cut11=0; 
-int cut12[numTrigger] = {0};
-int cut13[3] = {0};
-int cut14 = 0;
-int cut15 = 0;
-int nocut=0;  
-
-
-int countMix = 0;
-int idxLeadPhoton = -1;
-int countPhotonJet = 0;
-
-TLorentzVector Jet1st; 
-TLorentzVector Jet2nd;
-TLorentzVector sumJet;
-TLorentzVector photon;
-
-int countID = 0;
+TH1D* hPUsysY[4][nPtBins][nEtaBins] = {{{0}}};
 
 #endif

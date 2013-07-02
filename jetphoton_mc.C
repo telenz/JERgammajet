@@ -120,12 +120,10 @@ void calcSample() {
 
   
   initializeControlPlots();
-  noDefMatch0 = 0;
-  noDefMatch2 = 0;
  
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
-      for(int k=0; k<alpha_int; k++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
+      for(int k=0; k<nAlphaBins; k++){
 
 	JetResponseJetHemisphere[i][j][k]         = new CResponse(1); 	
 	JetImbalanceJetHemisphere[i][j][k]        = new CResponse(3);
@@ -160,13 +158,13 @@ void calcSample() {
     // Calculating PUWeight for this event   
     if(PUreweighting){
       for(int i=0; i<numTrigger-1; i++){
-	if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
+	if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
 	
 	  PUWeight = hPUWeight[i]->GetBinContent(hPUWeight[i]->FindBin(PUMCNumTruth));
 	  hPUgenMC[i]     -> Fill(PUMCNumTruth,weight*PUWeight);
 	  break;
 	}
-	else if(photonPt[0]>=bd[numTrigger-1]){
+	else if(photonPt[0]>=ptBins[numTrigger-1]){
 	
 	  PUWeight = hPUWeight[numTrigger-1]->GetBinContent(hPUWeight[numTrigger-1]->FindBin(PUMCNumTruth));
 	  hPUgenMC[numTrigger-1]    -> Fill(PUMCNumTruth,weight*PUWeight);
@@ -192,38 +190,38 @@ void calcSample() {
 
     
     // Fill Response functions for whole sample    
-    for(int k=0; k<alpha_int; k++){
+    for(int k=0; k<nAlphaBins; k++){
 
-      if(alpha >= alphaBin[k] && alpha < alphaBin[k+1]){ 
+      if(alpha >= alphaBins[k] && alpha < alphaBins[k+1]){ 
 		
-	for(int j=0; j<eta_int; j++){
+	for(int j=0; j<nEtaBins; j++){
 	  
-	  if(std::abs(jetEta[corrJets.idx(lead_jet)])>= etaBin[j] && std::abs(jetEta[corrJets.idx(lead_jet)]) < etaBin[j+1] ){
+	  if(std::abs(jetEta[corrJets.idx(idx1stJet)])>= etaBins[j] && std::abs(jetEta[corrJets.idx(idx1stJet)]) < etaBins[j+1] ){
 	    
 	    
-	    for(int i=0; i<pt_int; i++){ 
+	    for(int i=0; i<nPtBins; i++){ 
 	      
-	      if(photonPt[0] >= bd[i] && photonPt[0] < bd[i+1]){
-	      //if(sumVector.Pt() >= bd[i] && sumVector.Pt() < bd[i+1]){
-	      //if(genJetPt[genJetidx] >= bd[i] && genJetPt[genJetidx] < bd[i+1]){
-	      //if(jetPt[corrJets.idx(lead_jet)] >= bd[i] && jetPt[corrJets.idx(lead_jet)] < bd[i+1]){
+	      if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
+	      //if(sumVector.Pt() >= ptBins[i] && sumVector.Pt() < ptBins[i+1]){
+	      //if(genJetPt[gen1stJetidx] >= ptBins[i] && genJetPt[gen1stJetidx] < ptBins[i+1]){
+	      //if(jetPt[corrJets.idx(idx1stJet)] >= ptBins[i] && jetPt[corrJets.idx(idx1stJet)] < ptBins[i+1]){
 	   	
 		float deltaphi1stJetPhoton = 0;
 		float deltaphi2ndJetPhoton = 0;
 
-		if(jet_2 != -1){
-		  if(std::abs(TVector2::Phi_mpi_pi((jetPhi[corrJets.idx(lead_jet)]+photonPhi[0])/2. - jetPhi[corrJets.idx(jet_2)])) < TMath::Pi()/2.){
+		if(idx2ndJet != -1){
+		  if(std::abs(TVector2::Phi_mpi_pi((jetPhi[corrJets.idx(idx1stJet)]+photonPhi[0])/2. - jetPhi[corrJets.idx(idx2ndJet)])) < TMath::Pi()/2.){
 		    
-		    deltaphi1stJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(lead_jet)]-photonPhi[0]));
+		    deltaphi1stJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
 		  }
-		  else deltaphi1stJetPhoton = TMath::Pi()*2. - std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(lead_jet)]-photonPhi[0]));
+		  else deltaphi1stJetPhoton = TMath::Pi()*2. - std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
 		  
 		  
-		  deltaphi2ndJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(jet_2)]-photonPhi[0])); 
+		  deltaphi2ndJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx2ndJet)]-photonPhi[0])); 
 		}
 	       	
 		
-		if(genJetidx < 0) count1stJetNotMatched += 1;
+		if(gen1stJetidx < 0) count1stJetNotMatched += 1;
 			
 		  
 		if(deltaphi2ndJetPhoton > deltaphi1stJetPhoton/2.){
@@ -235,11 +233,11 @@ void calcSample() {
 		  JetResponseJetHemisphere[i][j][k] -> hResponse      -> Fill(response,weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);	
-		  JetResponseJetHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(lead_jet)],weight*PUWeight);
+		  JetResponseJetHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
 		 
 
-		  if(genJetidx >= 0){
-		    JetResponseJetHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[genJetidx],weight*PUWeight);  
+		  if(gen1stJetidx >= 0){
+		    JetResponseJetHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
 		    JetImbalanceJetHemisphere[i][j][k] -> hResponse  -> Fill(imbalance,weight*PUWeight);
 		    JetImbalanceJetHemisphere[i][j][0] -> hPt        -> Fill(photonPt[0],weight*PUWeight);
 		    JetImbalanceJetHemisphere[i][j][k] -> hAlpha     -> Fill(alpha,weight*PUWeight);
@@ -252,10 +250,10 @@ void calcSample() {
 		  JetResponsePhotonHemisphere[i][j][k] -> hResponse -> Fill(response,weight*PUWeight);
 		  JetResponsePhotonHemisphere[i][j][0] -> hPt       -> Fill(photonPt[0],weight*PUWeight);
 		  JetResponsePhotonHemisphere[i][j][k] -> hAlpha    -> Fill(alpha,weight*PUWeight);
-		  JetResponsePhotonHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(lead_jet)],weight*PUWeight);
+		  JetResponsePhotonHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
 
-		  if(genJetidx >= 0){
-		    JetResponsePhotonHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[genJetidx],weight*PUWeight);  
+		  if(gen1stJetidx >= 0){
+		    JetResponsePhotonHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
 		    JetImbalancePhotonHemisphere[i][j][k]-> hResponse -> Fill(imbalance,weight*PUWeight); 
 		    JetImbalancePhotonHemisphere[i][j][0]-> hPt       -> Fill(photonPt[0],weight*PUWeight); 
 		    JetImbalancePhotonHemisphere[i][j][k]-> hAlpha    -> Fill(alpha,weight*PUWeight);
@@ -263,12 +261,12 @@ void calcSample() {
 
 		}
 
-		if(genJetidx >= 0){
+		if(gen1stJetidx >= 0){
 		  JetIntrinsic[i][j][k] -> hResponse      -> Fill(intrinsic,weight*PUWeight); 
 		  JetIntrinsic[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);	
 		  JetIntrinsic[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);
-		  JetIntrinsic[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(lead_jet)],weight*PUWeight);
-		  JetIntrinsic[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[genJetidx],weight*PUWeight);  
+		  JetIntrinsic[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
+		  JetIntrinsic[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
 		}
 	
 
@@ -277,9 +275,9 @@ void calcSample() {
 
   		
 
-		//if(jet_2 != -1 && i==pt_int-1 && k==alpha_int-1){
-		//  hDeltaPhi1st2ndJet ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(lead_jet)]-jetPhi[corrJets.idx(jet_2)]),weight*PUWeight); 
-		//  hDeltaPhi1st2ndJetDeltaPt ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(lead_jet)]-jetPhi[corrJets.idx(jet_2)]),std::abs(photonPt[0]-corrJets.pt(lead_jet)),weight*PUWeight); 
+		//if(idx2ndJet != -1 && i==nPtBins-1 && k==nAlphaBins-1){
+		//  hDeltaPhi1st2ndJet ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(idx1stJet)]-jetPhi[corrJets.idx(idx2ndJet)]),weight*PUWeight); 
+		//  hDeltaPhi1st2ndJetDeltaPt ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(idx1stJet)]-jetPhi[corrJets.idx(idx2ndJet)]),std::abs(photonPt[0]-corrJets.pt(idx1stJet)),weight*PUWeight); 
 		//}
 
 		
@@ -308,20 +306,18 @@ void calcSample() {
   TString TotFilename;  
 
   // Scale Response functions to MC statistics
-  for(int i=0;i<pt_int;i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0;i<nPtBins;i++){
+    for(int j=0; j<nEtaBins; j++){
 
       saveObject(JetResponseJetHemisphere[i][j][0]->hPt, RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo");   
       saveObject(JetResponsePhotonHemisphere[i][j][0]->hPt, RootPath + "hPt_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
       saveObject(JetImbalanceJetHemisphere[i][j][0]->hPt , RootPath + "hPt_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
       saveObject(JetImbalancePhotonHemisphere[i][j][0]->hPt, RootPath + "hPt_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
       saveObject(JetIntrinsic[i][j][0]->hPt, RootPath + "hPt_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
-      saveObject(h2ndgenJetPtle12GeV[i][j], RootPath + "h2ndgenJetPtle12GeV_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
- 
       
             
  
-      for(int k=0; k<alpha_int; k++){	
+      for(int k=0; k<nAlphaBins; k++){	
   
 	saveObject(JetResponseJetHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_jet_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
 	saveObject(JetResponsePhotonHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_photon_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
@@ -378,10 +374,6 @@ void calcSample() {
   cout<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;
   cutflow<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;
  
-
-
-  cout<<endl<<"count2nd = "<<count2nd<<endl<<endl;
-  cout<<endl<<"all2ndJets = "<<all2ndJets<<endl<<endl;
   cout<<endl<<"count1stJetNotMatched = "<<count1stJetNotMatched<<endl<<endl;
   cutflow.close();
 }
@@ -402,9 +394,9 @@ void calcScale(){
 
   std::cout << "Read Response Histograms!" << std::endl<< std::endl;
 
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
-      for(int k=0; k<alpha_int; k++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
+      for(int k=0; k<nAlphaBins; k++){
 
 	JetResponseJetHemisphere[i][j][k]         = new CResponse(1); 	
 	JetImbalanceJetHemisphere[i][j][k]        = new CResponse(3);
@@ -418,8 +410,8 @@ void calcScale(){
 
   TFile *file;
   TString TotFilename;  
-  for(int i=0;i<pt_int;i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0;i<nPtBins;i++){
+    for(int j=0; j<nEtaBins; j++){
 
       TotFilename = RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";    
       file = new TFile(TotFilename);      
@@ -452,7 +444,7 @@ void calcScale(){
       delete file;                         
       
 
-      for(int k=0; k<alpha_int; k++){
+      for(int k=0; k<nAlphaBins; k++){
 	
 	TotFilename = RootPath + "response_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
 	file = new TFile(TotFilename);      
@@ -546,8 +538,8 @@ void calcScale(){
 
   std::cout << "Calculation of Jet energy scale and resolution" << std::endl;
 
-  for(int j=0; j<eta_int; j++){
-    for(int i=0; i<pt_int; i++){
+  for(int j=0; j<nEtaBins; j++){
+    for(int i=0; i<nPtBins; i++){
       
       JetScaleResAlpha[i][j]  = new CScaleResAlpha;
       JetIntrinsicAlpha[i][j] = new CScaleResAlpha;
@@ -561,8 +553,8 @@ void calcScale(){
   
   // Fit a Gaussian to all Response Functions or Calculate the RMS (conducted in function calculate()) 
   
-  for(int i=0; i<pt_int; i++){
-    for(int j=0; j<eta_int; j++){
+  for(int i=0; i<nPtBins; i++){
+    for(int j=0; j<nEtaBins; j++){
       
       JetResponseJetHemisphere[i][j][0]          -> calculatePt(); 
       JetImbalanceJetHemisphere[i][j][0]         -> calculatePt();
@@ -570,7 +562,7 @@ void calcScale(){
       JetImbalancePhotonHemisphere[i][j][0]      -> calculatePt();
       JetIntrinsic[i][j][0]                      -> calculatePt(); 
       
-      for(int k=0; k<alpha_int; k++){
+      for(int k=0; k<nAlphaBins; k++){
 
 	// Fit Gaussian Functions to Response Histogram  
 	if( JetResponseJetHemisphere[i][j][k]->hResponse->GetEntries()>100  && JetResponsePhotonHemisphere[i][j][k]->hResponse->GetEntries()>100){
