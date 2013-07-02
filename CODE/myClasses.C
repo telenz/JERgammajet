@@ -34,9 +34,9 @@ CResponse::CResponse(int typeResponse){
   else if(typeResponse==3) hResponse  = createTH1(hResponse,"","Imbalance Response",5000,0,2,"p_{T}^{genJet}/p_{T}^{#gamma}");
 
   hAlpha = createTH1(hAlpha,"","p_{T}^(Jet_{2})/p_{T}^{#gamma}",10000,0,alphaBins[nAlphaBins],"alpha");
-  hPt = createTH1(hPt,"","p_{T}^{#gamma} - Distribution",10000,0,1500,"p^{#gamma}_{T}");
-  hPtLeadingJet    = createTH1(hPt,"","p_{T}^{1st jet} - Distribution",10000,0,1500,"p^{1st jet}_{T}");
-  hgenPtLeadingJet = createTH1(hPt,"","p_{T}^{1st gen. jet} - Distribution",10000,0,1500,"p^{1st gen. jet}_{T}");
+  hPt = createTH1(hPt,"","p_{T}^{#gamma} - Distribution",10000,0,5000,"p^{#gamma}_{T}");
+  hPtLeadingJet    = createTH1(hPt,"","p_{T}^{1st jet} - Distribution",10000,0,5000,"p^{1st jet}_{T}");
+  hgenPtLeadingJet = createTH1(hPt,"","p_{T}^{1st gen. jet} - Distribution",10000,0,5000,"p^{1st gen. jet}_{T}");
   
 };
  
