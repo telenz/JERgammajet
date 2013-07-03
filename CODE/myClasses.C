@@ -279,7 +279,9 @@ void CScaleResAlpha::calculate(int length, int fit){
 
       // Resolution       
       fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(TMath::Power([0],2) +TMath::Power([1],2) +2*[1]*[2]*x + TMath::Power(([2]*x),2) )",0,alphaBins[nAlphaBins]); 
-      fResolutionAlpha    -> FixParameter(1,qprime);        
+      fResolutionAlpha    -> FixParameter(1,qprime);
+      fResolutionAlpha    -> SetParameter(0,0.08);
+      fResolutionAlpha    -> SetParameter(2,0.008);
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");
 
       
