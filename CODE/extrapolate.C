@@ -85,14 +85,16 @@ void extrapolate(){
 
     for(int i=0; i<nPtBins; i++){
   
-      length = nAlphaBins;     
-      idx = 0;      
+      length = nAlphaBins;
+      idx = 0;
       for(int k=0; k<nAlphaBins;k++){
 	
         if(JetResponseJetHemisphere[i][j][k]->mean_array == 0 ){
 	  length = length - 1;  
 	  continue;
 	}
+	
+	
 	// Calculate the resulting Resolution from the two histograms in photon and jet hemissphere and write it into 
 	// Calculate weighted mean  
 	float weightPhoton = 1/TMath::Power(JetResponsePhotonHemisphere[i][j][k] -> sigma_error,2);
@@ -101,19 +103,21 @@ void extrapolate(){
 	//weightJet = 0;
 	float sigma = ((JetResponseJetHemisphere[i][j][k]->sigma_array)*weightJet + (JetResponsePhotonHemisphere[i][j][k]->sigma_array)*weightPhoton)/(weightJet+weightPhoton);
 	float sigmaError = TMath::Sqrt(1./(weightJet+weightPhoton));
+	float mean = ((JetResponseJetHemisphere[i][j][k]->mean_array)*weightJet + (JetResponsePhotonHemisphere[i][j][k]->mean_array)*weightPhoton)/(weightJet+weightPhoton);
+	float meanError = TMath::Sqrt(1./(weightJet+weightPhoton));
 	weightPhoton = 1/TMath::Power(JetResponsePhotonHemisphere[i][j][k] -> alpha_error,2);
 	//weightPhoton = 0;
 	weightJet = 1/TMath::Power(JetResponseJetHemisphere[i][j][k] -> alpha_error,2);	
-	//weightJet = 0 ;
+	//weightJet = 0;
 	float alphaVal = ((JetResponseJetHemisphere[i][j][k]->alpha_array)*weightJet + (JetResponsePhotonHemisphere[i][j][k]->alpha_array)*weightPhoton)/(weightJet+weightPhoton);
 	float alphaError = TMath::Sqrt(1./(weightJet+weightPhoton));
 	
 	JetScaleResAlpha[i][j]  -> alpha[idx]      = alphaVal;
-        JetScaleResAlpha[i][j]  -> alphaError[idx] = alphaError;
-	JetScaleResAlpha[i][j]  -> sigma[idx]      = sigma;         
-        JetScaleResAlpha[i][j]  -> sigmaError[idx] = sigmaError;	
-	JetScaleResAlpha[i][j]  -> mean[idx]       = JetResponseJetHemisphere[i][j][k] -> mean_array;         
-        JetScaleResAlpha[i][j]  -> meanError[idx]  = JetResponseJetHemisphere[i][j][k] -> mean_error;
+	JetScaleResAlpha[i][j]  -> alphaError[idx] = alphaError;
+	JetScaleResAlpha[i][j]  -> sigma[idx]      = sigma;
+	JetScaleResAlpha[i][j]  -> sigmaError[idx] = sigmaError;
+	JetScaleResAlpha[i][j]  -> mean[idx]       = mean;
+	JetScaleResAlpha[i][j]  -> meanError[idx]  = meanError;
 	
 
 	// Only for MC important (imbalance and intrinsic response)
@@ -124,6 +128,8 @@ void extrapolate(){
 	  //weightJet = 0;
 	  sigma = ((JetImbalanceJetHemisphere[i][j][k]->sigma_array)*weightJet + (JetImbalancePhotonHemisphere[i][j][k]->sigma_array)*weightPhoton)/(weightJet+weightPhoton);
 	  sigmaError = TMath::Sqrt(1./(weightJet+weightPhoton));
+	  mean = ((JetImbalanceJetHemisphere[i][j][k]->mean_array)*weightJet + (JetImbalancePhotonHemisphere[i][j][k]->mean_array)*weightPhoton)/(weightJet+weightPhoton);
+	  meanError = TMath::Sqrt(1./(weightJet+weightPhoton));
 	  weightPhoton = 1/TMath::Power(JetImbalancePhotonHemisphere[i][j][k] -> alpha_error,2);
 	  //weightPhoton = 0;
 	  weightJet = 1/TMath::Power(JetImbalanceJetHemisphere[i][j][k] -> alpha_error,2);
@@ -135,8 +141,8 @@ void extrapolate(){
 	  JetImbalanceAlpha[i][j] -> alphaError[idx] = alphaError; 
 	  JetImbalanceAlpha[i][j] -> sigma[idx]      = sigma;             
 	  JetImbalanceAlpha[i][j] -> sigmaError[idx] = sigmaError;   
-	  JetImbalanceAlpha[i][j] -> mean[idx]       = JetImbalanceJetHemisphere[i][j][k] -> mean_array;         
-	  JetImbalanceAlpha[i][j] -> meanError[idx]  = JetImbalanceJetHemisphere[i][j][k] -> mean_error;
+	  JetImbalanceAlpha[i][j] -> mean[idx]       = mean;         
+	  JetImbalanceAlpha[i][j] -> meanError[idx]  = meanError;
 
 	  
 	  JetIntrinsicAlpha[i][j] -> alpha[idx]      = JetIntrinsic[i][j][k] -> alpha_array;  
@@ -150,16 +156,17 @@ void extrapolate(){
 	
       }
 
+     
 
 
       // Calculate weighted mean of Photon Pt
       float weightPhoton = 1/TMath::Power(JetResponsePhotonHemisphere[i][j][0] -> pT_error,2);
       //weightPhoton = 0;
       float weightJet = 1/TMath::Power(JetResponseJetHemisphere[i][j][0] -> pT_error,2);	
-      float pT = ((JetResponseJetHemisphere[i][j][0]->pT_array)*weightJet + (JetResponsePhotonHemisphere[i][j][0]->pT_array)*weightPhoton)/(weightJet+weightPhoton);
       //weightJet = 0;
+      float pT = ((JetResponseJetHemisphere[i][j][0]->pT_array)*weightJet + (JetResponsePhotonHemisphere[i][j][0]->pT_array)*weightPhoton)/(weightJet+weightPhoton);
       float pTError = TMath::Sqrt(1./(weightJet+weightPhoton));
-
+      
       JetScaleResAlpha[i][j]  -> pT        = pT;
       JetScaleResAlpha[i][j]  -> pTError   = pTError;
 
