@@ -135,11 +135,9 @@ void calcSample() {
 	JetIntrinsicle15gt10[i][j][k]             = new CResponse(2);
 	JetIntrinsicle20gt15[i][j][k]             = new CResponse(2);
 	JetIntrinsicgt20[i][j][k]                 = new CResponse(2);	
-	
-      }
-      
-    }
-    
+   
+      } 
+    }  
   }
 
   //------------------------------------------------------------------------------------------------------------
@@ -180,15 +178,7 @@ void calcSample() {
     bool testVar = applyCuts();
     if(!testVar) continue;    
     //---------------------------------------------------------------------------------------------
-
-    //Calculate pt = ptPhoton+2ndJetpt
-    
-    
-    //cout<<"photonVector.pt = "<<photonVector.Pt()<<endl;
-    //cout<<"jet2ndVector.pt = "<<jet2ndVector.Pt()<<endl;
-    //cout<<"sumVector.pt = "<<sumVector.Pt()<<endl;
-
-    
+       
     // Fill Response functions for whole sample    
     for(int k=0; k<nAlphaBins; k++){
 
@@ -202,33 +192,21 @@ void calcSample() {
 	    for(int i=0; i<nPtBins; i++){ 
 	      
 	      if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
-	      //if(sumVector.Pt() >= ptBins[i] && sumVector.Pt() < ptBins[i+1]){
-	      //if(genJetPt[gen1stJetidx] >= ptBins[i] && genJetPt[gen1stJetidx] < ptBins[i+1]){
-	      //if(jetPt[corrJets.idx(idx1stJet)] >= ptBins[i] && jetPt[corrJets.idx(idx1stJet)] < ptBins[i+1]){
+		//if(sumVector.Pt() >= ptBins[i] && sumVector.Pt() < ptBins[i+1]){
+		//if(genJetPt[gen1stJetidx] >= ptBins[i] && genJetPt[gen1stJetidx] < ptBins[i+1]){
+		//if(jetPt[corrJets.idx(idx1stJet)] >= ptBins[i] && jetPt[corrJets.idx(idx1stJet)] < ptBins[i+1]){
 	   	
-		float deltaphi1stJetPhoton = 0;
+		float deltaphi2ndJet1stJet = 0;
 		float deltaphi2ndJetPhoton = 0;
-
 		if(idx2ndJet != -1){
-		  if(std::abs(TVector2::Phi_mpi_pi((jetPhi[corrJets.idx(idx1stJet)]+photonPhi[0])/2. - jetPhi[corrJets.idx(idx2ndJet)])) < TMath::Pi()/2.){
-		    
-		    deltaphi1stJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
-		  }
-		  else deltaphi1stJetPhoton = TMath::Pi()*2. - std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
-		  
-		  
+		 
+		  deltaphi2ndJet1stJet = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx2ndJet)]-jetPhi[corrJets.idx(idx1stJet)]));
 		  deltaphi2ndJetPhoton = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx2ndJet)]-photonPhi[0])); 
-		}
-	       	
 		
+	       	}
 		if(gen1stJetidx < 0) count1stJetNotMatched += 1;
-			
-		  
-		if(deltaphi2ndJetPhoton > deltaphi1stJetPhoton/2.){
-
-		  //cout<<"photonVector.pt = "<<photonVector.Pt()<<endl;
-		  //cout<<"jet2ndVector.pt = "<<jet2ndVector.Pt()<<endl;
-		  //cout<<"sumVector.pt = "<<sumVector.Pt()<<endl<<endl;
+					 		
+		if(deltaphi2ndJetPhoton > deltaphi2ndJet1stJet){
 
 		  JetResponseJetHemisphere[i][j][k] -> hResponse      -> Fill(response,weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
@@ -237,58 +215,38 @@ void calcSample() {
 		 
 
 		  if(gen1stJetidx >= 0){
-		    JetResponseJetHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
-		    JetImbalanceJetHemisphere[i][j][k] -> hResponse  -> Fill(imbalance,weight*PUWeight);
-		    JetImbalanceJetHemisphere[i][j][0] -> hPt        -> Fill(photonPt[0],weight*PUWeight);
-		    JetImbalanceJetHemisphere[i][j][k] -> hAlpha     -> Fill(alpha,weight*PUWeight);
-		  }	
-		 	
-
-		  		  	
+		    JetResponseJetHemisphere[i][j][k]  -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
+		    JetImbalanceJetHemisphere[i][j][k] -> hResponse         -> Fill(imbalance,weight*PUWeight);
+		    JetImbalanceJetHemisphere[i][j][0] -> hPt               -> Fill(photonPt[0],weight*PUWeight);
+		    JetImbalanceJetHemisphere[i][j][k] -> hAlpha            -> Fill(alpha,weight*PUWeight);
+		  }		  		  	
 		}  
 		else{
-		  JetResponsePhotonHemisphere[i][j][k] -> hResponse -> Fill(response,weight*PUWeight);
-		  JetResponsePhotonHemisphere[i][j][0] -> hPt       -> Fill(photonPt[0],weight*PUWeight);
-		  JetResponsePhotonHemisphere[i][j][k] -> hAlpha    -> Fill(alpha,weight*PUWeight);
+		  JetResponsePhotonHemisphere[i][j][k] -> hResponse      -> Fill(response,weight*PUWeight);
+		  JetResponsePhotonHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
+		  JetResponsePhotonHemisphere[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);
 		  JetResponsePhotonHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
 
 		  if(gen1stJetidx >= 0){
 		    JetResponsePhotonHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
-		    JetImbalancePhotonHemisphere[i][j][k]-> hResponse -> Fill(imbalance,weight*PUWeight); 
-		    JetImbalancePhotonHemisphere[i][j][0]-> hPt       -> Fill(photonPt[0],weight*PUWeight); 
-		    JetImbalancePhotonHemisphere[i][j][k]-> hAlpha    -> Fill(alpha,weight*PUWeight);
+		    JetImbalancePhotonHemisphere[i][j][k]-> hResponse         -> Fill(imbalance,weight*PUWeight); 
+		    JetImbalancePhotonHemisphere[i][j][0]-> hPt               -> Fill(photonPt[0],weight*PUWeight); 
+		    JetImbalancePhotonHemisphere[i][j][k]-> hAlpha            -> Fill(alpha,weight*PUWeight);
 		  } 
-
 		}
 
 		if(gen1stJetidx >= 0){
-		  JetIntrinsic[i][j][k] -> hResponse      -> Fill(intrinsic,weight*PUWeight); 
-		  JetIntrinsic[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);	
-		  JetIntrinsic[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);
-		  JetIntrinsic[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
+		  JetIntrinsic[i][j][k] -> hResponse         -> Fill(intrinsic,weight*PUWeight); 
+		  JetIntrinsic[i][j][0] -> hPt               -> Fill(photonPt[0],weight*PUWeight);	
+		  JetIntrinsic[i][j][k] -> hAlpha            -> Fill(alpha,weight*PUWeight);
+		  JetIntrinsic[i][j][k] -> hPtLeadingJet     -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
 		  JetIntrinsic[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
 		}
 	
-
 		hNPU -> Fill(PUMCNumTruth, weight*PUWeight);
-		hNPV -> Fill(vtxN, weight*PUWeight);
-
-  		
-
-		//if(idx2ndJet != -1 && i==nPtBins-1 && k==nAlphaBins-1){
-		//  hDeltaPhi1st2ndJet ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(idx1stJet)]-jetPhi[corrJets.idx(idx2ndJet)]),weight*PUWeight); 
-		//  hDeltaPhi1st2ndJetDeltaPt ->Fill(TVector2::Phi_0_2pi(jetPhi[corrJets.idx(idx1stJet)]-jetPhi[corrJets.idx(idx2ndJet)]),std::abs(photonPt[0]-corrJets.pt(idx1stJet)),weight*PUWeight); 
-		//}
-
-		
-		
+		hNPV -> Fill(vtxN, weight*PUWeight);	
+		nocut = nocut +1; 
 		break;
-	      }
-	      else{
-		//cout<<"i = "<<i<<endl;
-                
-                //cout<<"photonPt = "<<photonPt[0]<<endl;
-		//cout<<"Something wrong with Trigger and Pt Bin bounds (MC)"<<endl<<endl;
 	      }
 	    }
 	    break;
@@ -297,10 +255,7 @@ void calcSample() {
 	break;
       }
     }
-    
-        
-    nocut = nocut +1; 
-   
+       
   } // End of loop over entries
 
   TString TotFilename;  
@@ -308,7 +263,8 @@ void calcSample() {
   // Scale Response functions to MC statistics
   for(int i=0;i<nPtBins;i++){
     for(int j=0; j<nEtaBins; j++){
-
+      
+      // Photon Pt Histograms
       saveObject(JetResponseJetHemisphere[i][j][0]->hPt, RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo");   
       saveObject(JetResponsePhotonHemisphere[i][j][0]->hPt, RootPath + "hPt_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
       saveObject(JetImbalanceJetHemisphere[i][j][0]->hPt , RootPath + "hPt_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo"); 
@@ -318,27 +274,28 @@ void calcSample() {
             
  
       for(int k=0; k<nAlphaBins; k++){	
-  
+
+	// Alpha Histograms
 	saveObject(JetResponseJetHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_jet_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
 	saveObject(JetResponsePhotonHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_photon_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root","histo");
 	saveObject(JetImbalanceJetHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_imbalance_jet_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root", "histo");
 	saveObject(JetImbalancePhotonHemisphere[i][j][k]->hAlpha,RootPath+"hAlpha_imbalance_photon_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root", "histo");
 	saveObject(JetIntrinsic[i][j][k]->hAlpha,RootPath+"hAlpha_intrinsic_in_"+(long)(i+1)+"_Pt_bin_"+(long)(j+1)+"_eta_bin_"+(long)(k+1)+"_alpha_bin"+DataType+".root", "histo");
 
-
+	// Response Histograms
 	saveObject(JetResponseJetHemisphere[i][j][k]->hResponse, RootPath + "response_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
 	saveObject(JetImbalanceJetHemisphere[i][j][k]->hResponse, RootPath + "response_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
 	saveObject(JetResponsePhotonHemisphere[i][j][k]->hResponse, RootPath + "response_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
 	saveObject(JetImbalancePhotonHemisphere[i][j][k]->hResponse, RootPath + "response_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
 	saveObject(JetIntrinsic[i][j][k]->hResponse, RootPath + "response_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
+
 	// Leading Jet Pt
 	saveObject(JetResponseJetHemisphere[i][j][k]->hPtLeadingJet, RootPath + "hPtLeadingJet_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");   
-      saveObject(JetResponsePhotonHemisphere[i][j][k]->hPtLeadingJet, RootPath + "hPtLeadingJet_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
-      saveObject(JetIntrinsic[i][j][k]->hPtLeadingJet, RootPath + "hPtLeadingJet_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
-      saveObject(JetResponseJetHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");   
-      saveObject(JetResponsePhotonHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
-      saveObject(JetIntrinsic[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
-
+	saveObject(JetResponsePhotonHemisphere[i][j][k]->hPtLeadingJet, RootPath + "hPtLeadingJet_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+	saveObject(JetIntrinsic[i][j][k]->hPtLeadingJet, RootPath + "hPtLeadingJet_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+	saveObject(JetResponseJetHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");   
+	saveObject(JetResponsePhotonHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+	saveObject(JetIntrinsic[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
 
       }
     }
@@ -351,7 +308,6 @@ void calcSample() {
   delete chain;
   filestr.close();   
   //EventVariables.close();
-
 
   // Special files to write strange events in extra .txt files
   cutflow.open(RootPath + "cutflow.txt");
@@ -375,9 +331,9 @@ void calcSample() {
   cutflow<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;
  
   cout<<endl<<"count1stJetNotMatched = "<<count1stJetNotMatched<<endl<<endl;
+  cout<<"no2ndJetinEvent = "<<no2ndJetinEvent<<endl<<endl;
   cutflow.close();
 }
-
 
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
@@ -412,100 +368,28 @@ void calcScale(){
   TString TotFilename;  
   for(int i=0;i<nPtBins;i++){
     for(int j=0; j<nEtaBins; j++){
-
-      TotFilename = RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";    
-      file = new TFile(TotFilename);      
-      JetResponseJetHemisphere[i][j][0]->hPt =  (TH1D*) gDirectory->Get("histo");
-      JetResponseJetHemisphere[i][j][0]->hPt -> SetDirectory(0);
-      delete file;  
       
-      TotFilename = RootPath + "hPt_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";    
-      file = new TFile(TotFilename);      
-      JetResponsePhotonHemisphere[i][j][0]->hPt =  (TH1D*) gDirectory->Get("histo");
-      JetResponsePhotonHemisphere[i][j][0]->hPt -> SetDirectory(0);
-      delete file;       
+      JetResponseJetHemisphere[i][j][0]->hPt = readTH1(RootPath + "hPt_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo","histo");
+      JetResponsePhotonHemisphere[i][j][0]->hPt = readTH1(RootPath + "hPt_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo","histo");
+      JetImbalanceJetHemisphere[i][j][0]->hPt = readTH1(RootPath + "hPt_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo","histo");
+      JetImbalancePhotonHemisphere[i][j][0]->hPt = readTH1(RootPath+"hPt_imbalance_photon_in_"+(long)(i+1)+ "_Pt_bin_" + (long)(j+1) + "_eta_bin" +DataType + ".root", "histo","histo");
+      JetIntrinsic[i][j][0]->hPt = readTH1(RootPath + "hPt_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root", "histo","histo");
       
-      TotFilename = RootPath + "hPt_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";     
-      file = new TFile(TotFilename);      
-      JetImbalanceJetHemisphere[i][j][0]->hPt =  (TH1D*) gDirectory->Get("histo");
-      JetImbalanceJetHemisphere[i][j][0]->hPt -> SetDirectory(0);
-      delete file;           
-       
-      TotFilename = RootPath + "hPt_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + ".root";    
-      file = new TFile(TotFilename);      
-      JetImbalancePhotonHemisphere[i][j][0]->hPt =  (TH1D*) gDirectory->Get("histo");
-      JetImbalancePhotonHemisphere[i][j][0]->hPt -> SetDirectory(0);
-      delete file;           
-      TString FilenameIntrinsic = ".root";
-      TotFilename = RootPath + "hPt_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin" +  DataType + FilenameIntrinsic;    
-      file = new TFile(TotFilename);      
-      JetIntrinsic[i][j][0]->hPt =  (TH1D*) gDirectory->Get("histo");
-      JetIntrinsic[i][j][0]->hPt -> SetDirectory(0);
-      delete file;                         
-      
-
       for(int k=0; k<nAlphaBins; k++){
-	
-	TotFilename = RootPath + "response_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetResponseJetHemisphere[i][j][k]->hResponse =  (TH1D*) gDirectory->Get("histo");
-	JetResponseJetHemisphere[i][j][k]->hResponse -> SetDirectory(0);
-	delete file; 
-		
-	TotFilename = RootPath + "response_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetImbalanceJetHemisphere[i][j][k]->hResponse =  (TH1D*) gDirectory->Get("histo");
-	JetImbalanceJetHemisphere[i][j][k]->hResponse -> SetDirectory(0);
-	delete file;  
-		
-	TotFilename = RootPath + "response_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetResponsePhotonHemisphere[i][j][k]->hResponse =  (TH1D*) gDirectory->Get("histo");
-	JetResponsePhotonHemisphere[i][j][k]->hResponse -> SetDirectory(0);
-	delete file; 
-	  	
-	TotFilename = RootPath + "response_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";
-	file = new TFile(TotFilename);      
-	JetImbalancePhotonHemisphere[i][j][k]->hResponse =  (TH1D*) gDirectory->Get("histo");
-	JetImbalancePhotonHemisphere[i][j][k]->hResponse -> SetDirectory(0);
-	delete file;   
-		
-	TotFilename = RootPath + "response_intrinsic_in_" + (long)(i+1) +"_Pt_bin_"+ (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + FilenameIntrinsic;
-	file = new TFile(TotFilename);      
-	JetIntrinsic[i][j][k]->hResponse =  (TH1D*) gDirectory->Get("histo");
-	JetIntrinsic[i][j][k]->hResponse -> SetDirectory(0);
-	delete file;    
-	
-	TotFilename = RootPath + "hAlpha_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetResponseJetHemisphere[i][j][k]->hAlpha =  (TH1D*) gDirectory->Get("histo");
-	JetResponseJetHemisphere[i][j][k]->hAlpha -> SetDirectory(0);
-	delete file; 
-     
-	TotFilename = RootPath + "hAlpha_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetResponsePhotonHemisphere[i][j][k]->hAlpha =  (TH1D*) gDirectory->Get("histo");
-	JetResponsePhotonHemisphere[i][j][k]->hAlpha -> SetDirectory(0);
-	delete file; 
-	 
-	TotFilename = RootPath + "hAlpha_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root";    
-	file = new TFile(TotFilename);      
-	JetImbalanceJetHemisphere[i][j][k]->hAlpha =  (TH1D*) gDirectory->Get("histo");
-	JetImbalanceJetHemisphere[i][j][k]->hAlpha -> SetDirectory(0);
-	delete file; 
-	
-	TotFilename = RootPath + "hAlpha_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root"; 
-	file = new TFile(TotFilename);      
-	JetImbalancePhotonHemisphere[i][j][k]->hAlpha =  (TH1D*) gDirectory->Get("histo");
-	JetImbalancePhotonHemisphere[i][j][k]->hAlpha -> SetDirectory(0);
-	delete file;              
-      
-	TotFilename = RootPath + "hAlpha_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + FilenameIntrinsic;
-	file = new TFile(TotFilename);      
-	JetIntrinsic[i][j][k]->hAlpha =  (TH1D*) gDirectory->Get("histo");
-	JetIntrinsic[i][j][k]->hAlpha -> SetDirectory(0);
-	delete file; 
 
+	JetResponseJetHemisphere[i][j][k]->hResponse = readTH1(RootPath + "response_jet_in_"+ (long)(i+1) +"_Pt_bin_"+ (long)(j+1) +"_eta_bin_"+ (long)(k+1) +"_alpha_bin"+  DataType + ".root","histo","histo");
+	JetResponsePhotonHemisphere[i][j][k]->hResponse = readTH1(RootPath + "response_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetImbalanceJetHemisphere[i][j][k]->hResponse = readTH1(RootPath + "response_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetImbalancePhotonHemisphere[i][j][k]->hResponse = readTH1(RootPath + "response_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetIntrinsic[i][j][k]->hResponse = readTH1(RootPath + "response_intrinsic_in_" + (long)(i+1) +"_Pt_bin_"+ (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType +".root" , "histo","histo");
+	
+	
+	JetResponseJetHemisphere[i][j][k]->hAlpha = readTH1(RootPath + "hAlpha_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetResponsePhotonHemisphere[i][j][k]->hAlpha = readTH1(RootPath + "hAlpha_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetImbalanceJetHemisphere[i][j][k]->hAlpha = readTH1(RootPath + "hAlpha_imbalance_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetImbalancePhotonHemisphere[i][j][k]->hAlpha = readTH1(RootPath + "hAlpha_imbalance_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	JetIntrinsic[i][j][k]->hAlpha = readTH1(RootPath + "hAlpha_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
+	
 
 	// Scale response histograms to the number of entries in MC
 	if(JetResponseJetHemisphere[i][j][k]->hResponse->GetEntries() != 0 && JetResponsePhotonHemisphere[i][j][k]->hResponse->GetEntries() != 0 ){
@@ -514,8 +398,7 @@ void calcScale(){
 	  JetImbalancePhotonHemisphere[i][j][k]->hResponse->Scale((JetImbalancePhotonHemisphere[i][j][k]->hResponse->GetEntries())/(JetImbalancePhotonHemisphere[i][j][k]->hResponse->Integral()));
 	  JetImbalanceJetHemisphere[i][j][k]->hResponse->Scale((JetImbalanceJetHemisphere[i][j][k]->hResponse->GetEntries())/(JetImbalanceJetHemisphere[i][j][k]->hResponse->Integral()));
 	  JetIntrinsic[i][j][k]->hResponse->Scale((JetIntrinsic[i][j][k]->hResponse->GetEntries())/(JetIntrinsic[i][j][k]->hResponse->Integral())); 
-	}
-		
+	}		
       }
     }
   }
@@ -556,6 +439,7 @@ void calcScale(){
   for(int i=0; i<nPtBins; i++){
     for(int j=0; j<nEtaBins; j++){
       
+      
       JetResponseJetHemisphere[i][j][0]          -> calculatePt(); 
       JetImbalanceJetHemisphere[i][j][0]         -> calculatePt();
       JetResponsePhotonHemisphere[i][j][0]       -> calculatePt(); 
@@ -564,7 +448,7 @@ void calcScale(){
       
       for(int k=0; k<nAlphaBins; k++){
 
-	// Fit Gaussian Functions to Response Histogram  
+	// Fit Gaussian Functions to Response Histogram if number of entries is large enough 
 	if( JetResponseJetHemisphere[i][j][k]->hResponse->GetEntries()>100  && JetResponsePhotonHemisphere[i][j][k]->hResponse->GetEntries()>100){
 	  
 	  JetResponseJetHemisphere[i][j][k]       -> calculate(); 
