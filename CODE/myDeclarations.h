@@ -64,6 +64,7 @@ TLorentzVector sumVector;
 
 float PUWeight = 1;
 int count1stJetNotMatched = 0;
+int no2ndJetinEvent = 0;
 
 
 // ------ Book variables to be read from tree [needed in: readGammaJet.C] ------------------
@@ -132,6 +133,7 @@ int nobjGenPhoton;
 int nMax;
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // Cut variables for the cutflow
+int cut0=0;
 int cut1=0;
 int cut2=0;
 int cut3=0;
