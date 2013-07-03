@@ -11,6 +11,7 @@ bool applyCuts(){
   if( nobjJet > NJETS || nobjPhoton > NPHOTONS) {
     std::cerr << "\nERROR: 'nobjJet = " << nobjJet << " > NJETS = " << NJETS << "'" << std::endl;
     std::cerr << "\nERROR: 'nobjPhoton = " << nobjJet << " > NPHOTONS = " << NPHOTONS << "'" << std::endl;
+    cut0 += 1;
     return 0;
   }
 
@@ -167,11 +168,15 @@ bool applyCuts(){
   if(idx2ndJet != -1){
     
     if(corrJets.pt(idx2ndJet) > 10.) jetPt2nd = corrJets.pt(idx2ndJet);
-    else return 0;
+    else{
+      cut4 += 1;
+      return 0;
+    }
   }
   else{
 
     jetPt2nd = 0.;
+    no2ndJetinEvent += 1;
     //return 0;
   }
   
@@ -217,16 +222,30 @@ bool applyCuts(){
   
 
   // Calculate response    
-  response  = jetPt1stJet/photonPt[0]; 
-  float deltaphi=std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
+  response       = jetPt1stJet/photonPt[0]; 
+  float deltaphi = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)]-photonPhi[0]));
  
+  /*
   if(idx2ndJet != -1){
     photonVector.SetPtEtaPhiE(photonPt[0],photonEta[0],photonPhi[0],photonE[0]);
     jet2ndVector.SetPtEtaPhiE(jetPt[corrJets.idx(idx2ndJet)],jetEta[corrJets.idx(idx2ndJet)],jetPhi[corrJets.idx(idx2ndJet)],jetE[corrJets.idx(idx2ndJet)]); 
     sumVector = photonVector + jet2ndVector;
   }
-  alpha = jetPt2nd/photonPt[0] * 100.;
+  
+  
+  for(int i=0; i<nPtBins-1; i++){ 
+	      
+    if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
+      alpha = jetPt2nd/((ptBins[i]+ptBins[i+1])/2.) * 100.;  
+    }
+    else if(photonPt[0]>ptBins[nPtBins-1]) alpha = jetPt2nd/(500.) * 100.;
+  }
+  */
+
+  //alpha = jetPt2nd/((jetPt1stJet+photonPt[0])/2.) * 100.;
+  //alpha = jetPt2nd/jetPt1stJet * 100.;
   //alpha = jetPt2nd/(sumVector.Pt()) * 100.;
+  alpha = jetPt2nd/photonPt[0] * 100.;
  
   //------------------------------------------------------------------------------(5. CUT)------------------------
   // Take only tight Jets (5. CUT)
