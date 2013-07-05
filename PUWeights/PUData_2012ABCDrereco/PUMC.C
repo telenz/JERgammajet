@@ -60,8 +60,8 @@ void calcPUMCdist(int nBins){
   hPUMCDist ->GetYaxis()->SetTitleOffset(1.5); 
   canvas -> cd();
   hPUMCDist -> Draw(); 
-  canvas -> SaveAs(Form("weightsCMSSW5_3_5_MBXS69400_%iBins/PUMCdist.pdf",nBins));
-  TFile *f = new TFile(Form("weightsCMSSW5_3_5_MBXS69400_%iBins/PUMCdist.pdf",nBins),"RECREATE");
+  canvas -> SaveAs(Form("cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS73000/weights_%iBins/PUMCdist.pdf",nBins));
+  TFile *f = new TFile(Form("cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS73000/weights_%iBins/PUMCdist.pdf",nBins),"RECREATE");
   f -> WriteTObject(hPUMCDist);
   f ->Close();
   delete f;
@@ -80,7 +80,7 @@ void calcPUMCdist(int nBins){
     hPUWeight[i] = createTH1(hPUWeight[i],histoName,title,60,0,60,"# PU");
   }
   
-  TString PUVersion = "cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS69400/";
+  TString PUVersion = "cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS73000/";
   
   hPUDataDist[0] =  readTH1(PUVersion + "MyDataPileupHistogramHLT_Photon20_CaloIdVL_IsoL.root","pileup;1","pileup0", 0);
   hPUDataDist[1] =  readTH1(PUVersion + "MyDataPileupHistogramHLT_Photon30_CaloIdVL_IsoL.root","pileup;1","pileup1", 0);
@@ -106,7 +106,7 @@ void calcPUMCdist(int nBins){
     
   // ----- Plot the weights for all different pTGamma bins  
   for(int i=0; i<numTrigger; i++){
-    title.Form("weightsCMSSW5_3_5_MBXS69400_%iBins/PUWeights_%i",nBins,i);
+    title.Form("cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS73000/weights_%iBins/PUWeights_%i",nBins,i);
     plotTH1(hPUWeight[i],title);
   }
    
