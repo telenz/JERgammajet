@@ -122,7 +122,8 @@ int readGammaJet(int nEvents) {
   //if(!isMC && !testClosure) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/data/PhotonJetTuple2012ABCD_5_3_5_FT_53_V21/OnlyTightPhotons/ak5PFCHS_D-22Jan2013-v1.root"); 
 
   if(addQCD && isMC){
-    if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V20/OnlyTightPhotons/ak5PFCHS*.root"); 
+    //if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V20/OnlyTightPhotons/ak5PFCHS*.root"); 
+    if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V22/OnlyTightPhotons/ak5PFCHS*.root"); 
     else{
       cout<<"No input File available!"<<endl;
       return 0;
@@ -218,36 +219,43 @@ int readGammaJet(int nEvents) {
     chain->SetBranchAddress("HltPhoton160",&hltPhoton[7]);
   }
 
-  if(set == 1 && date == 2012)      PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_2_5/";
-  else if(set == 2 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3/";
-  else if(set == 3 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3_AB/";
-  else if(set == 4 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3_C/";
-  //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5/";
-  //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
-  //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
-  //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_MBXS69300_TEST/";
-  else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUWeights/PUData_2012ABCDrereco/cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS69400/weights_60Bins/";
-  else if(set == 5 && date == 2012 && addQCD)  PUVersion = "PUWeights/PUData_2012ABCD/weightsCMSSW_5_3_5_plusQCD/";
-  //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_WithWeights/";
-  //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsNVTX/";
-  else if(date == 2011) PUVersion = "PUData_2011/newVersion/";
-  else cout<<"No PU data histograms available !!! (look in CODE/readGammaJets.C)"<<endl;
+  if(isMC){
+    if(PUreweighting){
 
-  if(isMC) cout<<endl<<"PU Weighst taken from following folder:  "<<PUVersion<<endl<<endl;
+      if(set == 1 && date == 2012)      PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_2_5/";
+      else if(set == 2 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3/";
+      else if(set == 3 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3_AB/";
+      else if(set == 4 && date == 2012) PUVersion = "PUWeights/PUData_2012/weightsCMSSW5_3_3_C/";
+      //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5/";
+      //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
+      //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCrereco/weightsCMSSW_5_3_5/";
+      //else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_MBXS69300_TEST/";
+      else if(set == 5 && date == 2012 && !addQCD) PUVersion = "PUWeights/PUData_2012ABCDrereco/cmssw5_3_5_Tag04_02_02LumiCalc2FineBinning_MBXS69400/weights_60Bins/";
+      else if(set == 5 && date == 2012 && addQCD)  PUVersion = "PUWeights/PUData_2012ABCD/weightsCMSSW_5_3_5_plusQCD/";
+      //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsCMSSW5_3_5_WithWeights/";
+      //else if(set == 5 && date == 2012) PUVersion = "PUData_2012ABCD/weightsNVTX/";
+      else if(date == 2011) PUVersion = "PUData_2011/newVersion/";
+      else cout<<"No PU data histograms available !!! (look in CODE/readGammaJets.C)"<<endl;
+
+      cout<<endl<<"PU Weighst taken from following folder:  "<<PUVersion<<endl<<endl;
  
   
-  // Read PU Weight-distribution  (seperately for different Triggers)
-  hPUWeight[0] =  readTH1(PUVersion + "PUWeights_0.root","PUWeight0","PUWeight0");
-  hPUWeight[1] =  readTH1(PUVersion + "PUWeights_1.root","PUWeight1","PUWeight1");
-  hPUWeight[2] =  readTH1(PUVersion + "PUWeights_2.root","PUWeight2","PUWeight2");
-  hPUWeight[3] =  readTH1(PUVersion + "PUWeights_3.root","PUWeight3","PUWeight3");
-  hPUWeight[4] =  readTH1(PUVersion + "PUWeights_4.root","PUWeight4","PUWeight4");
+      // Read PU Weight-distribution  (seperately for different Triggers)
+      hPUWeight[0] =  readTH1(PUVersion + "PUWeights_0.root","PUWeight0","PUWeight0");
+      hPUWeight[1] =  readTH1(PUVersion + "PUWeights_1.root","PUWeight1","PUWeight1");
+      hPUWeight[2] =  readTH1(PUVersion + "PUWeights_2.root","PUWeight2","PUWeight2");
+      hPUWeight[3] =  readTH1(PUVersion + "PUWeights_3.root","PUWeight3","PUWeight3");
+      hPUWeight[4] =  readTH1(PUVersion + "PUWeights_4.root","PUWeight4","PUWeight4");
   
-  if(date==2012){
-    hPUWeight[5] =  readTH1(PUVersion + "PUWeights_5.root","PUWeight5","PUWeight5");
-    hPUWeight[6] =  readTH1(PUVersion + "PUWeights_6.root","PUWeight6","PUWeight6");
-    hPUWeight[7] =  readTH1(PUVersion + "PUWeights_7.root","PUWeight7","PUWeight7");
+      if(date==2012){
+	hPUWeight[5] =  readTH1(PUVersion + "PUWeights_5.root","PUWeight5","PUWeight5");
+	hPUWeight[6] =  readTH1(PUVersion + "PUWeights_6.root","PUWeight6","PUWeight6");
+	hPUWeight[7] =  readTH1(PUVersion + "PUWeights_7.root","PUWeight7","PUWeight7");
+      }
+    }
+    else cout<<endl<<"No PU reweighting applied!!!"<<endl<<endl;
   }
+
 
   // If tree contains less entries than nEvents use less events
   nMax = nEvents;
