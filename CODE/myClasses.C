@@ -29,9 +29,9 @@ CResponse::CResponse(int typeResponse){
   sigma = 0;
   
 
-  if(typeResponse==1)      hResponse  = createTH1(hResponse,"","Response",5000,0,2,"p_{T}^{recoJet}/p_{T}^{#gamma}");
-  else if(typeResponse==2) hResponse  = createTH1(hResponse,"","Intrinsic Response",5000,0,2,"p_{T}^{recoJet}/p_{T}^{genJet}");
-  else if(typeResponse==3) hResponse  = createTH1(hResponse,"","Imbalance Response",5000,0,2,"p_{T}^{genJet}/p_{T}^{#gamma}");
+  if(typeResponse==1)      hResponse  = createTH1(hResponse,"","Response",3000,0,3,"p_{T}^{recoJet}/p_{T}^{#gamma}");
+  else if(typeResponse==2) hResponse  = createTH1(hResponse,"","Intrinsic Response",3000,0,3,"p_{T}^{recoJet}/p_{T}^{genJet}");
+  else if(typeResponse==3) hResponse  = createTH1(hResponse,"","Imbalance Response",3000,0,3,"p_{T}^{genJet}/p_{T}^{#gamma}");
 
   hAlpha = createTH1(hAlpha,"","p_{T}^(Jet_{2})/p_{T}^{#gamma}",10000,0,alphaBins[nAlphaBins],"alpha");
   hPt = createTH1(hPt,"","p_{T}^{#gamma} - Distribution",10000,0,5000,"p^{#gamma}_{T}");
@@ -66,8 +66,9 @@ void CResponse::calculate(){
 
   float eps = 1.0;
   int l = 0;
-  TF1* f1 = new TF1("gauss","gaus",0,2); 
+  TF1* f1 = new TF1("gauss","gaus",0,3); 
   TFitResultPtr r;
+
 
   if(detJER == 1){
 
@@ -88,10 +89,10 @@ void CResponse::calculate(){
     //TMatrixDSym cov = r->GetCovarianceMatrix();
 
     sigma_array = (f1 -> GetParameter(2))/(f1 -> GetParameter(1));
-    // Error taken the correlation between the mean and sigma into account
-    //sigma_error = sqrt(TMath::Power(1./f1->GetParameter(1),2)*TMath::Power(f1->GetParError(2),2) + TMath::Power(f1->GetParameter(2)/TMath::Power(f1->GetParameter(1),2),2)*TMath::Power(f1->GetParError(1),2) - 2.0*f1->GetParameter(2)/TMath::Power(f1->GetParameter(1),3)*cov[1][2]);
-    sigma_error = sqrt(TMath::Power(1./f1->GetParameter(1),2)*TMath::Power(f1->GetParError(2),2) + TMath::Power(f1->GetParameter(2)/TMath::Power(f1->GetParameter(1),2),2)*TMath::Power(f1->GetParError(1),2));
+    sigma_error = sqrt(pow(1./f1->GetParameter(1),2)*pow(f1->GetParError(2),2) + pow(f1->GetParameter(2)/pow(f1->GetParameter(1),2),2)*pow(f1->GetParError(1),2));
 
+    //sigma_array = f1 -> GetParameter(2);
+    //sigma_error = f1 -> GetParError(2);
 
     mean_array  = f1 -> GetParameter(1);
     mean_error  = f1 -> GetParError(1);
@@ -116,7 +117,7 @@ void CResponse::calculate(){
       //gausSigma = 2.576;
     }
    
-
+    
     while(eps > 0.005 && l <3){
       
       sigma_array = sigmaAUX;
@@ -134,7 +135,7 @@ void CResponse::calculate(){
     //TMatrixDSym cov = r -> GetCovarianceMatrix();
     int lowBin  = 0;
     int highBin = 0;
-    
+
     for(int i = 0; i<hResponse->GetNbinsX(); i++){
       
       if(hResponse->Integral(hResponse->FindBin(meanAUX)-i, hResponse->FindBin(meanAUX)+i)/hResponse->Integral() >= rmsRange){
@@ -148,12 +149,11 @@ void CResponse::calculate(){
     hResponse -> GetXaxis() -> SetRange(lowBin,highBin);
 
     sigma_array = (hResponse->GetRMS(1))/(hResponse->GetMean(1));
-    
-    
-    //    sigma_error = sqrt(TMath::Power(1./hResponse->GetMean(1),2)*TMath::Power(hResponse->GetRMSError(1),2) + TMath::Power(hResponse->GetRMS(1)/TMath::Power(hResponse->GetMean(1),2),2)*TMath::Power(hResponse->GetMeanError(1),2) - 2.0*f1->GetParameter(2)/TMath::Power(f1->GetParameter(1),3)*cov[1][2]);
-    sigma_error = sqrt(TMath::Power(1./hResponse->GetMean(1),2)*TMath::Power(hResponse->GetRMSError(1),2) + TMath::Power(hResponse->GetRMS(1)/TMath::Power(hResponse->GetMean(1),2),2)*TMath::Power(hResponse->GetMeanError(1),2));
-    
-    
+    sigma_error = sqrt(pow(1./hResponse->GetMean(1),2)*pow(hResponse->GetRMSError(1),2) + pow(hResponse->GetRMS(1)/pow(hResponse->GetMean(1),2),2)*pow(hResponse->GetMeanError(1),2));
+
+    //sigma_array = hResponse->GetRMS(1);
+    //sigma_error = hResponse->GetRMSError(1);
+        
     mean_array = hResponse -> GetMean(1);
     mean_error = hResponse -> GetMeanError(1);
     
@@ -161,7 +161,7 @@ void CResponse::calculate(){
 
 };
 
-//----
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CScaleResAlpha::CScaleResAlpha(){
   
   pT = 0;
@@ -196,20 +196,20 @@ void CScaleResAlpha::calculate(int length, int fit){
  
   if(length>=4){
    
-    gJetScaleAlpha = new TGraphErrors(length, alpha , mean, alphaError, meanError);
+    gJetScaleAlpha      = new TGraphErrors(length, alpha , mean, alphaError, meanError);
     gJetResolutionAlpha = new TGraphErrors(length, alpha , sigma, alphaError, sigmaError);
     
     if(fit == 2){  //mc intrinsic
-      fScaleAlpha = new TF1("fScaleAlpha","[0]",0,alphaBins[nAlphaBins]);
+      fScaleAlpha    = new TF1("fScaleAlpha","[0]",0,alphaBins[nAlphaBins]);
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");
-      c = fScaleAlpha -> GetParameter(0);
+      c          = fScaleAlpha -> GetParameter(0);
       scale      = fScaleAlpha -> GetParameter(0);
       scaleError = fScaleAlpha -> GetParError(0);
       
-      fResolutionAlpha = new TF1("fResolutionAlpha","[0]",0,alphaBins[nAlphaBins]); 
+      fResolutionAlpha    = new TF1("fResolutionAlpha","[0]",0,alphaBins[nAlphaBins]); 
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
-      cprime      = fResolutionAlpha -> GetParameter(0);
-      cprimeError = fResolutionAlpha -> GetParError(0);
+      cprime          = fResolutionAlpha -> GetParameter(0);
+      cprimeError     = fResolutionAlpha -> GetParError(0);
       resolution      = fResolutionAlpha -> GetParameter(0);
       resolutionError = fResolutionAlpha -> GetParError(0);
 
@@ -219,7 +219,7 @@ void CScaleResAlpha::calculate(int length, int fit){
     }
     else if(fit == 3){   //mc imbalance
       
-      fScaleAlpha = new TF1("fScaleAlpha","1. - [0] - [1]*TMath::Power(x,2)",0,alphaBins[nAlphaBins]); 
+      fScaleAlpha = new TF1("fScaleAlpha","1. - [0] - [1]*pow(x,2)",0,alphaBins[nAlphaBins]); 
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");
       q = fScaleAlpha -> GetParameter(0);
       qError = fScaleAlpha -> GetParError(0);
@@ -228,6 +228,7 @@ void CScaleResAlpha::calculate(int length, int fit){
       scaleError = fScaleAlpha -> GetParError(0);
      
       fResolutionAlpha = new TF1("fResolutionAlpha","[0] + [1]*x",0,alphaBins[nAlphaBins]); 
+      //fResolutionAlpha = new TF1("fResolutionAlpha","sqrt(pow([0],2) + pow([1]*x,2))",0,alphaBins[nAlphaBins]); 
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
       qprime      = fResolutionAlpha -> GetParameter(0);
       qprimeError = fResolutionAlpha -> GetParError(0);
@@ -248,7 +249,7 @@ void CScaleResAlpha::calculate(int length, int fit){
 	    gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
 	  }
 	  else{
-	    cout<<"!!!!!!!!!!!!!Not compatible with zero including ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (Please check that bin)"<<endl;
+	    cout<<"!!!!!!!!!!!!!Not compatible with zero including ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (Please check that bin)"<<endl;
 	    
 	    qprime      = 0;
 	    qprimeError = 0;
@@ -271,14 +272,15 @@ void CScaleResAlpha::calculate(int length, int fit){
     }
     else if(fit == 4){ //data and MC
       
-      fScaleAlpha      = new TF1("fScaleAlpha","[0]*(1. - [1] - [2]*TMath::Power(x,2))",0,alphaBins[nAlphaBins]); 
+      fScaleAlpha      = new TF1("fScaleAlpha","[0]*(1. - [1] - [2]*pow(x,2))",0,alphaBins[nAlphaBins]); 
       fScaleAlpha -> FixParameter(1,q);
       gJetScaleAlpha -> Fit("fScaleAlpha","QR");    
       scale      = fScaleAlpha -> GetParameter(0);
       scaleError = fScaleAlpha -> GetParError(0);
 
       // Resolution       
-      fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(TMath::Power([0],2) +TMath::Power([1],2) +2*[1]*[2]*x + TMath::Power(([2]*x),2) )",0,alphaBins[nAlphaBins]); 
+      fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(pow([0],2) +pow([1],2) +2*[1]*[2]*x + pow(([2]*x),2) )",0,alphaBins[nAlphaBins]);
+      //fResolutionAlpha = new TF1("fResolutionAlpha","TMath::Sqrt(pow([0],2) +pow([1],2) + pow(([2]*x),2) )",0,alphaBins[nAlphaBins]);
       fResolutionAlpha    -> FixParameter(1,qprime);
       fResolutionAlpha    -> SetParameter(0,0.08);
       fResolutionAlpha    -> SetParameter(2,0.008);
@@ -317,7 +319,6 @@ void CScaleResAlpha::calculate(int length, int fit){
 
 	cout<<"--------------------------------------------------- Fit Paramter cprime < 0 -> Set bounds on it!!!!"<<endl;
 
-	//fResolutionAlpha -> SetParLimits(2,0,10000000);
 	fResolutionAlpha -> SetParLimits(0,0,10000000);
 	
 	if(isMC){
@@ -337,7 +338,7 @@ void CScaleResAlpha::calculate(int length, int fit){
       resolution      = fResolutionAlpha -> GetParameter(0);
       resolutionError = fResolutionAlpha -> GetParError(0);
       
-      cout<<"All = "<<endl;
+      cout<<"All  = "<<endl;
       cout<<"Chi2 = "<<fResolutionAlpha -> GetChisquare()<<endl;
       cout<<"ndof = "<<fResolutionAlpha -> GetNDF()<<endl;
   
@@ -396,7 +397,7 @@ void CScaleRes::calculate(int length){
 
   //====== Resolution =====================================================================================
   cout<<endl<<"---------------------------------------------------------------------------------------------------"<<endl;
-  fResolution = new TF1("fResolution","TMath::Sqrt(TMath::Sign(1.,[0])*TMath::Power([0]/x,2)+TMath::Power([1],2)*TMath::Power(x,[3]-1)+TMath::Power([2],2))", pT[0]-pTError[0], 600);
+  fResolution = new TF1("fResolution","TMath::Sqrt(TMath::Sign(1.,[0])*pow([0]/x,2)+pow([1],2)*pow(x,[3]-1)+pow([2],2))", pT[0]-pTError[0], 600);
 
   fResolution -> SetParName(0,"N");
   fResolution -> SetParName(1,"S");
@@ -406,6 +407,8 @@ void CScaleRes::calculate(int length){
   //Set some constraints on the formula (which would lead to unphysical results) and give starting values 
   fResolution -> SetParLimits(fResolution->GetParNumber("m"),-10000.,0.99999999);
   fResolution -> SetParLimits(fResolution->GetParNumber("C"),0.,100000.);
+  //fResolution -> FixParameter(fResolution->GetParNumber("N"),0.);
+  
    
   //From Matthias Thesis   
   fResolution->SetParameter("N", -1.45); 
