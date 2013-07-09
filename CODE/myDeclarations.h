@@ -16,7 +16,9 @@ const int nEtaBins   = 4;      // number of eta bins
 
 // Definition of all bin intervals
 const double alphaBins[nAlphaBins+1] = {0.,7.5,10.,12.5,15.,17.5,20.};
+//const double alphaBins[nAlphaBins+1] = {0.,10.,15.,20.,25.,30.,35.,40.};
 const double etaBins[nEtaBins+1]     = {0.0,0.5,1.1,1.7,2.3};
+//const double etaBins[nEtaBins+1]     = {0.0,1.3,2.3};
 const double ptBins[nPtBins+1]       = {22,36,60,88,105,148.5,165,176,200,250,300,400,1000000}; 
 
 const int numTrigger = 8;      // 8 for 2012 and 5 for 2011
@@ -28,7 +30,7 @@ const int  set     = 5;      // 1=AB; 2= ABC; 3=AB rereco; 4=C; 5=ABCD rereco
 
 const bool applyTriggeronMC = true;  //shall the triggers also applied on MC
 const bool PUreweighting    = true;  // shall MC be PU reweighted to the data distribution
-const bool addQCD  = false;          // add QCD sample
+const bool addQCD=false;          // add QCD sample
 const bool addWJet = false;          // add W+jet sample
 
 const bool testClosure = false;      // for ratio closure test
