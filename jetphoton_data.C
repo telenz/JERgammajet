@@ -242,7 +242,7 @@ void calcSample() {
   // CUTFLOW is written into a file
   cutflow.open(RootPath + "cutflow.txt");
 
-  cout<<"CUTFLOW:"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
+  cout<<"CUTFLOW (Data):"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
   cutflow<<"CUTFLOW:"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
   for(int i=0; i<numTrigger; i++){
     cout<<"cut12["<<i<<"] = "<<cut12[i]<<endl;
@@ -255,7 +255,7 @@ void calcSample() {
   cutflow<<"cut14 = "<<cut14<<endl<<"cut15 = "<<cut15<<endl;
   cout<<"cut14 = "<<cut14<<endl<<"cut15 = "<<cut15<<endl;
   cout<<"nocut = "<<nocut<<endl;
-  
+  cutflow<<"nocut = "<<nocut<<endl;
 
   cout<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;
   cutflow<<"number of all events = "<<cut1+cut2+cut3+cut4+cut5+cut6+cut7+cut8+cut9+cut10+cut11+cut12[0]+cut12[1]+cut12[2]+cut12[3]+cut12[4]+cut12[5]+cut12[6]+cut12[7]+cut13[0]+cut13[1]+cut13[2]+cut14+cut15+nocut<<endl<<endl;

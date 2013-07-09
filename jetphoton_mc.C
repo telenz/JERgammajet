@@ -154,7 +154,7 @@ void calcSample() {
     chain->GetEntry(n);
       
     // Calculating PUWeight for this event   
-    if(PUreweighting){
+    if(PUreweighting && !testClosure){
       for(int i=0; i<numTrigger-1; i++){
 	if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
 	
@@ -172,7 +172,6 @@ void calcSample() {
     }
     else PUWeight=1;
     
-
     //---------------------------------------------------------------------------------------------
     // Sort Jets and apply all cuts with following function
     bool testVar = applyCuts();
@@ -312,7 +311,7 @@ void calcSample() {
   // Special files to write strange events in extra .txt files
   cutflow.open(RootPath + "cutflow.txt");
 
-  cout<<"CUTFLOW:"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
+  cout<<"CUTFLOW (MC):"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
   cutflow<<"CUTFLOW:"<<endl<<"cut1 = "<<cut1<<endl<<"cut2 = "<<cut2<<endl<<"cut3 = "<<cut3<<endl<<"cut4 = "<<cut4<<endl<<"cut5 = "<<cut5<<endl<<"cut6 = "<<cut6<<endl<<"cut7 = "<<cut7<<endl<<"cut8 = "<<cut8<<endl<<"cut9 = "<<cut9<<endl<<"cut10 = "<<cut10<<endl<<"cut11 = "<<cut11<<endl;
   for(int i=0; i<numTrigger; i++){
     cout<<"cut12["<<i<<"] = "<<cut12[i]<<endl;
