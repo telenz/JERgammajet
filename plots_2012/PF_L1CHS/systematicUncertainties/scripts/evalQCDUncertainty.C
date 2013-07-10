@@ -30,6 +30,9 @@
 
 
 int evalQCDUncertainty(int eta){
+
+  cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Script for QCD uncertainty is executed! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
+  gErrorIgnoreLevel = 1001;
   
   TeresaPlottingStyle::init();
   
@@ -39,6 +42,8 @@ int evalQCDUncertainty(int eta){
   //TString pathName    = "root_files_WithoutTriggerWithPUWeightEq1/";
   TString pathName    = "root_files_WithoutTriggerWithPUWeightEq1_EtaBin1p3_softBinning_Neq0_otherAlphaBinning/";
   TString pathNameQCD = "root_files_QCDUncertainty/root_files_test5/";
+
+  cout<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQCD<<endl<<endl<<endl;
 
 
   TString etaString,tot_filename, AuxString;
@@ -69,7 +74,7 @@ int evalQCDUncertainty(int eta){
 
   correlation = sqrt(histo[0]->GetSumOfWeights()/histo[1]->GetSumOfWeights());
 
-  cout<<endl<<"correlation is = "<<correlation<<endl<<endl;
+  cout<<"correlation is = "<<correlation<<endl<<endl<<endl;
 
   cout<<"sqrt(histo[0]->GetSumOfWeights()) = "<<sqrt(histo[0]->GetSumOfWeights())<<endl;
   cout<<"sqrt(histo[0]->GetEntries())      = "<<sqrt(histo[0]->Integral())<<endl;
@@ -190,13 +195,13 @@ int evalQCDUncertainty(int eta){
 
   if(graph[0]->GetN() != graph[1]->GetN()) cout<<endl<<"The number of entries in the various graphs are not the same (diff = "<<abs(graph[1]->GetN()-graph[0]->GetN())<<")!!!!!!!!!!!!!!!!  (in "<<rootFile[1]<<") "<<endl<<endl;
 
-  cout<<endl<<"Entries in "<<rootFile[0]<<" = "<<graph[0]->GetN()<<endl;
-  cout<<"Lowest Pt Bin = "<<dataX[0]<<endl;
-  cout<<"Highest Pt Bin = "<<dataX[graph[0]->GetN()-1]<<endl<<endl;
+  //cout<<endl<<"Entries in "<<rootFile[0]<<" = "<<graph[0]->GetN()<<endl;
+  //cout<<"Lowest Pt Bin = "<<dataX[0]<<endl;
+  //cout<<"Highest Pt Bin = "<<dataX[graph[0]->GetN()-1]<<endl<<endl;
 
-  cout<<"Entries in "<<rootFile[1]<<" = "<<graph[1]->GetN()<<endl;
-  cout<<"Lowest Pt Bin (low) = "<<dataQCDX[0]<<endl;
-  cout<<"Highest Pt Bin = "<<dataQCDX[graph[1]->GetN()-1]<<endl<<endl;
+  //cout<<"Entries in "<<rootFile[1]<<" = "<<graph[1]->GetN()<<endl;
+  //cout<<"Lowest Pt Bin (low) = "<<dataQCDX[0]<<endl;
+  //cout<<"Highest Pt Bin = "<<dataQCDX[graph[1]->GetN()-1]<<endl<<endl;
 
 
   for(int i=0; i<nData; i++){
@@ -303,7 +308,7 @@ int evalQCDUncertainty(int eta){
   TF1 *fitLine = new TF1("fitLine","pol0",0,600);
   //TF1 *fitLine = new TF1("fitLine","expo",0,600);
   fitLine -> SetLineColor(8);
-  plotQCD -> Fit("fitLine","R");
+  plotQCD -> Fit("fitLine","QR");
 
   TString text = "#scale[0.9]{68% of points are included in Interval:} " + (TString) Form("#scale[0.9]{f = %4.3f}",sigma1Interval->GetParameter(0)) ;
   info1->DrawLatex(0.2,0.3,text);

@@ -30,6 +30,9 @@
 
 int evalFlavorUncertainty(TString definition){
 
+  cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Script for Flavor uncertainty is executed! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
+  gErrorIgnoreLevel = 1001;
+
   TeresaPlottingStyle::init();
 
   const int nEta = 4;
@@ -37,10 +40,7 @@ int evalFlavorUncertainty(TString definition){
   const TString method = "RMS99";
   const TString type   = "PFCHS";
 
-  //TString definition = "algo";
-  //TString definition = "phys";
-
-  TString pathName = "root_files_WithoutTriggerWithPUWeightEq1/";
+  TString pathName       = (TString) "root_files_WithoutTriggerWithPUWeightEq1/";
   TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "/";
   TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "/";
 
@@ -114,7 +114,7 @@ int evalFlavorUncertainty(TString definition){
     gluonWoUndefinedComp[i] = (TH1D*) gluon[i]->Clone(Form("gluon%i",i+3));
     gluonWoUndefinedComp[i] -> Divide(togetherWoUndefined[i]);
 
-    cout<<endl<<endl<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
+    cout<<endl<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
     cout<<"Quark Flavor Fraction for systematics  = "<<allQuarksComp[i]->GetBinContent(1)<<endl;
 
   }
@@ -126,7 +126,7 @@ int evalFlavorUncertainty(TString definition){
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  TString etaString = "Uncertainty on Flavor Composition";
+  TString etaString = "Uncertainty of Flavor Composition";
   
   TString tot_filename, AuxString, fitName;;
   TGraphErrors* graph[3]; 
@@ -155,7 +155,9 @@ int evalFlavorUncertainty(TString definition){
   const double correlationGluons = sqrt(histo[2]->Integral()/histo[0]->Integral());
 
   cout<<endl<<"Correlation between Quark and full Sample = "<<correlationQuarks<<endl;
-  cout<<      "Correlation between Gluon and full Sample = "<<correlationGluons<<endl<<endl;
+  cout<<      "Correlation between Gluon and full Sample = "<<correlationGluons<<endl<<endl<<endl;
+
+  cout<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQuarks<<endl<<pathNameGluons<<endl<<endl<<endl;
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   for(int eta = 1; eta<nEta+1; eta++){
@@ -217,6 +219,8 @@ int evalFlavorUncertainty(TString definition){
 
     tot_filename = (TString) "plotsFlavor/Resolution_for_" + (long) eta + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) ".pdf";
     c -> SaveAs(tot_filename);
+
+    delete c;
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // 2.) Calculate Relative uncertainty for a 10% different mixture
@@ -358,6 +362,9 @@ int evalFlavorUncertainty(TString definition){
     finalErrorsUpE[eta-1] = fitLineUp -> GetParError(0);
     finalErrorsLow[eta-1] = fitLineLow -> GetParameter(0);
     finalErrorsLowE[eta-1]= fitLineLow -> GetParError(0);
+
+    cout<<"finalErrorUp["<<eta-1<<"]  = "<<finalErrorsUp[eta-1]<<endl;
+    cout<<"finalErrorLow["<<eta-1<<"] = "<<finalErrorsLow[eta-1]<<endl<<endl;
 
     tot_filename = (TString) "plotsFlavor/Relative_Resolution_for_" + (long) eta + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) "_mixture.pdf";
   

@@ -30,6 +30,9 @@
 
 int evalPUUncertainty(){
 
+  cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Script for PU uncertainty is executed! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
+  gErrorIgnoreLevel = 1001;
+
   TeresaPlottingStyle::init();
 
   const int nEta = 4;
@@ -44,24 +47,28 @@ int evalPUUncertainty(){
   double finalErrors[nEta]  = {0};
   double finalErrorsE[nEta] = {0};
 
-  TString rootFile[3]; 
+  TString rootFile[3];
+  TString pathName[3];
  
   // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
   double correlationLow = 1.;
   double correlationUp  = 1.;
   
   cout<<endl<<"Correlation between downward variation and without variation = "<<correlationLow<<endl;
-  cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl;
+  cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl<<endl;
   // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
+  pathName[0]  = (TString) "root_files_WithoutTrigger/";
+  pathName[1]  = (TString) "root_files_PUUncertainty/downwardVariationWithoutTrigger/";
+  pathName[2]  = (TString) "root_files_PUUncertainty/upwardVariationWithoutTrigger/";
+
+  cout<<"root files from following folders:"<<endl<<pathName[0]<<endl<<pathName[1]<<endl<<pathName[2]<<endl<<endl<<endl;
 
 
   for(int eta = 1; eta<nEta+1; eta++){
- 
-    rootFile[0]  = (TString) "root_files_WithoutTrigger/Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = (TString) "root_files_PUUncertainty/downwardVariationWithoutTrigger/Resolution_for_"+(long) eta+(TString) "_eta_bin_"+type+(TString) "_mc_"+method+(TString) ".root";
-    rootFile[2]  = (TString) "root_files_PUUncertainty/upwardVariationWithoutTrigger/Resolution_for_"+(long) eta+(TString) "_eta_bin_"+type+(TString) "_mc_"+method+(TString) ".root";
-  
+
+    for(int i=0; i<3; i++) rootFile[i]  = pathName[i] + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+   
     TMultiGraph* mg = new TMultiGraph();
     etaString       = "PU Uncertainty";
     mg             -> SetTitle(etaString);
@@ -126,7 +133,6 @@ int evalPUUncertainty(){
   
     if(nData > graph[1]->GetN()) nData = nData - (nData - graph[1]->GetN()); 
     if(nData > graph[2]->GetN()) nData = nData - (nData - graph[2]->GetN());  
-    cout<<endl<<endl<<endl<<"nData = "<<nData<<endl;
 
     double *errorUpY  = new double[nData];
     double *errorLowY = new double[nData];
@@ -167,9 +173,9 @@ int evalPUUncertainty(){
       }
 
       if(countNData == 0 || countNData == nData -1){
-	cout<<"dataUpX["<<idxUp<<"] = "<<dataUpX[idxUp]<<endl;
-	cout<<"dataLowX["<<idxLow<<"] = "<<dataLowX[idxLow]<<endl;
-	cout<<"dataX["<<idx<<"] = "<<dataX[idx]<<endl;
+	//cout<<"dataUpX["<<idxUp<<"] = "<<dataUpX[idxUp]<<endl;
+	//cout<<"dataLowX["<<idxLow<<"] = "<<dataLowX[idxLow]<<endl;
+	//cout<<"dataX["<<idx<<"] = "<<dataX[idx]<<endl;
       }
 
       errorUpY[countNData]   = dataUpY[idxUp]/dataY[idx] - 1.;
@@ -216,23 +222,23 @@ int evalPUUncertainty(){
     // 0.5 are added to have the right rounding to an integer
     int interval68 = (int) (2.*nData*0.6827 + 0.5);
     int interval95 = (int) (2.*nData*0.9545 + 0.5);
-    cout<<endl<<"2.*nData*0.6827 = "<<2.*nData*0.6827<<endl;
-    cout<<"2.*nData*0.9545 = "<<2.*nData*0.9545<<endl;
-    cout<<"interval95 = "<<interval95<<endl;
-    cout<<"interval68 = "<<interval68<<endl<<endl<<endl;
+    //cout<<endl<<"2.*nData*0.6827 = "<<2.*nData*0.6827<<endl;
+    //cout<<"2.*nData*0.9545 = "<<2.*nData*0.9545<<endl;
+    //cout<<"interval95 = "<<interval95<<endl;
+    //cout<<"interval68 = "<<interval68<<endl<<endl<<endl;
   
   
 
     if(2*arraySort[interval68-1]<arraySort[interval95-1]){
       sigma1Interval->SetParameter(0,arraySort[interval95-1]/2.);
-      cout<<"arraySort["<<interval68-1<<"]    = "<<arraySort[interval68-1]<<endl;
-      cout<<"arraySort["<<interval95-1<<"]/2. = "<<arraySort[interval95-1]/2.<<endl;
-      cout<<"arraySort["<<2*nData-1<<"] = "<<arraySort[2*nData -1]<<endl;
-      cout<<"arraySort["<<2*nData-2<<"] = "<<arraySort[2*nData -2]<<endl;
+      //cout<<"arraySort["<<interval68-1<<"]    = "<<arraySort[interval68-1]<<endl;
+      //cout<<"arraySort["<<interval95-1<<"]/2. = "<<arraySort[interval95-1]/2.<<endl;
+      //cout<<"arraySort["<<2*nData-1<<"] = "<<arraySort[2*nData -1]<<endl;
+      //cout<<"arraySort["<<2*nData-2<<"] = "<<arraySort[2*nData -2]<<endl;
     }
     else sigma1Interval->SetParameter(0,arraySort[interval68-1]);
     sigma1Interval->SetParameter(0,arraySort[interval68-1]);
-    cout<<endl<<"sigma1Interval->GetParameter(0) = "<<sigma1Interval->GetParameter(0)<<endl<<endl<<endl;
+    cout<<"sigma1Interval->GetParameter(0) = "<<sigma1Interval->GetParameter(0)<<endl<<endl;
     TF1* sigma1Intervaldown = new TF1("sigma1Intervaldown","pol0",0,600);
     sigma1Intervaldown->SetParameter(0,-sigma1Interval->GetParameter(0));
     sigma1Intervaldown->SetLineColor(8);

@@ -37,6 +37,9 @@ TGraphErrors* readTGraphErrors(const TString &fileName, const TString &gName, co
 
 int postprocessingSysError(){
 
+  cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Postproccess all systematic uncertainties! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
+  gErrorIgnoreLevel = 1001;
+
   setTDRStyle(false);
 
   const TString method  = "RMS99";
@@ -53,7 +56,6 @@ int postprocessingSysError(){
   
 
   TString etaString, filename;   
-  char pdfFile[100];
 
   TString rootFiles, AuxString;  
   TString JetType = "PFCHS";
@@ -74,7 +76,7 @@ int postprocessingSysError(){
   
   for(int eta = 0; eta < nEta; eta++){
     
-    cout<< endl<<endl<<endl<<eta+1<<". eta Bin!!"<<endl;
+    //cout<< endl<<endl<<endl<<eta+1<<". eta Bin!!"<<endl;
 
     // Read the MC and data results 
     rootFiles = (TString) "root_files_FINAL_data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_" + Method + (TString) ".root";
@@ -90,7 +92,6 @@ int postprocessingSysError(){
 
 
     int nData    = JERData->GetN();
-    cout<<"nData = "<<nData<<endl;
 
     double *dataX  = JERData->GetX();
     double *dataY  = JERData->GetY();
@@ -136,7 +137,7 @@ int postprocessingSysError(){
       ratioQCDUpY[i]   = ratioY[i]*(1. + QCDuncertainty->Eval(ratioX[i]));
       ratioQCDDownY[i] = ratioY[i]*(1. - QCDuncertainty->Eval(ratioX[i]));
 
-      cout<<"QCDuncertainty->Eval(ratioX[i]) = "<<QCDuncertainty->Eval(ratioX[i])<<endl;
+      //cout<<"QCDuncertainty->Eval(ratioX[i]) = "<<QCDuncertainty->Eval(ratioX[i])<<endl;
         
     }
     
@@ -166,8 +167,6 @@ int postprocessingSysError(){
     TLegend *legend  = 0;
     legend = new TLegend(0.55,0.8,0.9,0.9);
     legend -> SetFillColor(0);
-    double fitPar      = f1 -> GetParameter(0);
-    double fitParStatE = f1 -> GetParError(0);
 
     legend -> SetHeader(Form(" %4.3f #pm %4.3f", f1 -> GetParameter(0), f1->GetParError(0)));
     TCanvas *c11 = new TCanvas("c11",AuxString,200,10,500,500);
@@ -186,6 +185,7 @@ int postprocessingSysError(){
   
     filename = (TString) "plots/Ratio_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_comparison_" + method + (TString) ".pdf";
     c11 -> SaveAs(filename);
+    delete c11;
     
     ratioEtaBinnedX[eta]  = (eta_bins[eta+1] + eta_bins[eta])/2.; 
     ratioEtaBinnedY[eta]  = f1 -> GetParameter(0);
@@ -229,7 +229,7 @@ int postprocessingSysError(){
     legend -> Draw("same");
     filename = (TString) "plots/plotsQCD_for_" + (long) (eta+1) + (TString) "_bin_"  + type + (TString) "_" + method + (TString) ".pdf";
     plotsQCD -> SaveAs(filename);
-
+    delete plotsQCD;
 
 
   }
@@ -243,7 +243,7 @@ int postprocessingSysError(){
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 1.) Calculate sys Error from QCD contamination
-  cout<<endl;
+  //cout<<endl;
     
   double deltaRatioUpQCD[nEta]      = {0.};
   double deltaRatioDownQCD[nEta]    = {0.};
@@ -255,10 +255,10 @@ int postprocessingSysError(){
       deltaRatioUpQCD[eta]     = abs(ratioEtaBinnedQCDUpY[eta]/ratioEtaBinnedY[eta]-1.); 
       deltaRatioDownQCD[eta]   = abs(ratioEtaBinnedQCDDownY[eta]/ratioEtaBinnedY[eta]-1.); 
       
-      cout<<"ratioEtaBinnedQCDDownY[eta]"<<ratioEtaBinnedQCDDownY[eta]<<endl;
-      cout<<"ratioEtaBinnedY[eta]"<<ratioEtaBinnedY[eta]<<endl;
-      cout<<"deltaRatioUpQCD["<<eta<<"] = "<<deltaRatioUpQCD[eta]<<endl;
-      cout<<"deltaRatioDownQCD["<<eta<<"] = "<<deltaRatioDownQCD[eta]<<endl;
+      //cout<<"ratioEtaBinnedQCDDownY[eta]"<<ratioEtaBinnedQCDDownY[eta]<<endl;
+      //cout<<"ratioEtaBinnedY[eta]"<<ratioEtaBinnedY[eta]<<endl;
+      //cout<<"deltaRatioUpQCD["<<eta<<"] = "<<deltaRatioUpQCD[eta]<<endl;
+      //cout<<"deltaRatioDownQCD["<<eta<<"] = "<<deltaRatioDownQCD[eta]<<endl;
     }
 
   } 
@@ -267,7 +267,7 @@ int postprocessingSysError(){
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 2.) Calculate sys Error from JEC uncertainty (percentage change of MC result)
-  cout<<endl;
+  //cout<<endl;
   rootFiles                     = (TString) "scripts/plotsJEC/FinalErrorsJEC_" + type + (TString) "_" + method + (TString) ".root";  
   TGraphErrors *JECuncertainty  = readTGraphErrors(rootFiles,"graph","Graph");
   double       *sysRelJEC       = JECuncertainty -> GetY();
@@ -286,15 +286,15 @@ int postprocessingSysError(){
       deltaRatioUpJEC[eta]   = abs(1./(1. - sysRelJEC[eta]) - 1.);
       deltaRatioDownJEC[eta] = abs(1./(1. + sysRelJEC[eta]) - 1.);
 
-      cout<<"deltaRatioUpJEC["<<eta<<"] = "<<deltaRatioUpJEC[eta]<<endl;
-      cout<<"deltaRatioDownJEC["<<eta<<"] = "<<deltaRatioDownJEC[eta]<<endl;     
+      //cout<<"deltaRatioUpJEC["<<eta<<"] = "<<deltaRatioUpJEC[eta]<<endl;
+      //cout<<"deltaRatioDownJEC["<<eta<<"] = "<<deltaRatioDownJEC[eta]<<endl;     
 
     }
   }
  
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 3.) Calculate sys Error from Flavor uncertainty (percentage change of MC result)
-  cout<<endl;
+  //cout<<endl;
   rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
   TGraphErrors *FlavoruncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
   double       *sysRelFlavorUp       = FlavoruncertaintyUp -> GetY();
@@ -316,15 +316,15 @@ int postprocessingSysError(){
       deltaRatioUpFlavor[eta]   = abs(1./(1. - sysRelFlavorLow[eta]) - 1.);
       deltaRatioDownFlavor[eta] = abs(1./(1. + sysRelFlavorUp[eta]) - 1.);
 
-      cout<<"deltaRatioUpFlavor["<<eta<<"] = "<<deltaRatioUpFlavor[eta]<<endl;
-      cout<<"deltaRatioDownFlavor["<<eta<<"] = "<<deltaRatioDownFlavor[eta]<<endl;
+      //cout<<"deltaRatioUpFlavor["<<eta<<"] = "<<deltaRatioUpFlavor[eta]<<endl;
+      //cout<<"deltaRatioDownFlavor["<<eta<<"] = "<<deltaRatioDownFlavor[eta]<<endl;
     }
 
   }
  
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 4.) Calculate sys Error from Flavor uncertainty (percentage change of MC result)
-  cout<<endl;
+  //cout<<endl;
   
   rootFiles                       = (TString) "scripts/plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root";
   TGraphErrors *PUuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
@@ -344,15 +344,15 @@ int postprocessingSysError(){
       deltaRatioUpPU[eta]   = abs(1./(1. - sysRelPU[eta]) - 1.);
       deltaRatioDownPU[eta] = abs(1./(1. + sysRelPU[eta]) - 1.);
 
-      cout<<"deltaRatioUpPU["<<eta<<"] = "<<deltaRatioUpPU[eta]<<endl;
-      cout<<"deltaRatioDownPU["<<eta<<"] = "<<deltaRatioDownPU[eta]<<endl;
+      //cout<<"deltaRatioUpPU["<<eta<<"] = "<<deltaRatioUpPU[eta]<<endl;
+      //cout<<"deltaRatioDownPU["<<eta<<"] = "<<deltaRatioDownPU[eta]<<endl;
     }
 
   } 
   
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 5.) Calculate sys Error from Out-of Cone showering simulation (percentage change of full ratio result)
-  cout<<endl;
+  //cout<<endl;
   
   rootFiles                        = (TString) "ratio/plotsMC/FinalErrorsMC_" + type + (TString) "_" + method + (TString) ".root";
   TGraphErrors *MCuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
@@ -370,15 +370,15 @@ int postprocessingSysError(){
       deltaRatioUpMC[eta]   = sysRelMC[eta];
       deltaRatioDownMC[eta] = sysRelMC[eta];
 
-      cout<<"deltaRatioUpMC["<<eta<<"] = "<<deltaRatioUpMC[eta]<<endl;
-      cout<<"deltaRatioDownMC["<<eta<<"] = "<<deltaRatioDownMC[eta]<<endl;
+      //cout<<"deltaRatioUpMC["<<eta<<"] = "<<deltaRatioUpMC[eta]<<endl;
+      //cout<<"deltaRatioDownMC["<<eta<<"] = "<<deltaRatioDownMC[eta]<<endl;
     }
 
   } 
   
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // Take all systematic Uncertainties together and plot
-  cout<<endl;
+  //cout<<endl;
 
   double *deltaTotalSysUp   = new double[nEta];
   double *deltaTotalSysDown = new double[nEta];
@@ -394,11 +394,11 @@ int postprocessingSysError(){
     DeltaTotalSysUp[eta]   = deltaTotalSysUp[eta] * ratioEtaBinnedY[eta];
     DeltaTotalSysDown[eta] = deltaTotalSysDown[eta] * ratioEtaBinnedY[eta];
 
-    cout<<endl<<"deltaTotalSysUp["<<eta<<"] = "<<deltaTotalSysUp[eta]<<endl;
-    cout<<"deltaTotalSysDown["<<eta<<"] = "<<deltaTotalSysDown[eta]<<endl;
+    cout<<endl<<"relative: deltaTotalSysUp["<<eta<<"]   = "<<deltaTotalSysUp[eta]<<endl;
+    cout<<"relative: deltaTotalSysDown["<<eta<<"] = "<<deltaTotalSysDown[eta]<<endl;
 
-    cout<<endl<<"DeltaTotalSysUp["<<eta<<"] = "<<DeltaTotalSysUp[eta]<<endl;
-    cout<<"DeltaTotalSysDown["<<eta<<"] = "<<DeltaTotalSysDown[eta]<<endl;
+    cout<<endl<<"absolute: DeltaTotalSysUp["<<eta<<"]   = "<<DeltaTotalSysUp[eta]<<endl;
+    cout<<"absolute: DeltaTotalSysDown["<<eta<<"] = "<<DeltaTotalSysDown[eta]<<endl;
 
 
   }
@@ -417,14 +417,16 @@ int postprocessingSysError(){
   ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
   ratioEtaBinnedSys -> GetXaxis() -> SetTitle("|#eta|");
 
-  if(PU  && flavor  && JEC  && MC && QCD)    etaString = "All sys. Uncertainties";
-  if(PU  && !flavor && !JEC && !MC && !QCD)   etaString = "Only PU uncert.";
-  if(!PU && flavor  && !JEC && !MC && !QCD)   etaString = "Only flavor uncert.";
-  if(!PU && !flavor && JEC  && !MC && !QCD)   etaString = "Only JEC uncert.";
-  if(!PU && !flavor && !JEC && MC && !QCD)    etaString = "Only Out-of-Cone sim. uncert.";
-  if(!PU && !flavor && !JEC && MC && !QCD)    etaString = "Only Out-of-Cone sim. uncert.";
-  if(!PU && !flavor && !JEC && !MC && QCD)    etaString = "Only QCD uncert.";
-  cout<<etaString<<endl;
+  if(PU  && flavor  && JEC  && MC && QCD)    etaString  = "All sys. Uncertainties";
+  else if(PU  && !flavor && !JEC && !MC && !QCD)  etaString = "Only PU uncert.";
+  else if(!PU && flavor  && !JEC && !MC && !QCD)  etaString = "Only flavor uncert.";
+  else if(!PU && !flavor && JEC  && !MC && !QCD)  etaString = "Only JEC uncert.";
+  else if(!PU && !flavor && !JEC && MC && !QCD)   etaString = "Only Out-of-Cone sim. uncert.";
+  else if(!PU && !flavor && !JEC && MC && !QCD)   etaString = "Only Out-of-Cone sim. uncert.";
+  else if(!PU && !flavor && !JEC && !MC && QCD)   etaString = "Only QCD uncert.";
+  else if(PU && flavor && JEC && !MC && QCD)      etaString = "All besides MC uncertainty.";
+  else etaString = "Strange set of systematic uncertainties.";
+  cout<<endl<<etaString<<endl<<endl;
   
   ratioEtaBinnedSys -> SetMarkerStyle(20);
   ratioEtaBinnedSys -> SetMarkerSize(1.4);
@@ -463,6 +465,7 @@ int postprocessingSysError(){
   cFinal -> Print(filename,"pdf");
   filename = (TString) "plots/FinalErrorPlot_" + type + (TString) "_" + method + (TString) ".pdf";
   cFinal -> SaveAs(filename,"pdf");
+  delete cFinal;
 
 
   filename = (TString) "plots/FinalRelativeErrorsUp_" + type + (TString) "_" + method + (TString) ".root"; 

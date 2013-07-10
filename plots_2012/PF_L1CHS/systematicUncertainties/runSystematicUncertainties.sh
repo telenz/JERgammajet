@@ -8,10 +8,10 @@ echo "Time needed: " $(date -d "1970-01-01 $thetime sec" +"%H:%M:%S") / $thetime
 # Evaluate all systematic Uncertainties
 # ----------------------------------------------------------------------------------------------------
 cd scripts/
-root -b -q evalJECUncertainty.C+"()"
-root -b -q evalFlavorUncertainty.C+"(\"phys\")"
-root -b -q evalPUUncertainty.C+"()"
-root -b -q evalQCDUncertainty.C+"(1)"
+root -b -l -q evalJECUncertainty.C+"()"
+root -b -l -q evalFlavorUncertainty.C+"(\"phys\")"
+root -b -l -q evalPUUncertainty.C+"()"
+root -b -l -q evalQCDUncertainty.C+"(1)"
 rm *.C~
 rm *.so
 rm *.d
@@ -22,7 +22,7 @@ cd ../
 
 # Postprocess the output
 # ----------------------------------------------------------------------------------------------------
-root -b -q postprocessingSysError.C+"()"
+root -b -l -q postprocessingSysError.C+"()"
 rm *.C~
 rm *.so
 rm *.d

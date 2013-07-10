@@ -1,7 +1,4 @@
-// $Id: FileOps.h,v 1.15 2012/04/12 12:55:18 mschrode Exp $
-
-#ifndef FileOps_h
-#define FileOps_h
+// $Id: evalJECUncertainty.C,v 1.1 2013/07/09 16:04:02 telenz Exp $
 
 #include <fstream>
 #include <iostream>
@@ -25,6 +22,7 @@
 #include "TString.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "TROOT.h"
 #include "../../../../CODE/myDeclarations.h"
 #include "../../../../scripts/plotStyle.h"
 #include "../../../../CODE/myFunctions.h"
@@ -32,6 +30,9 @@
 
 
 int evalJECUncertainty(){
+
+  cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Script for JEC uncertainty is executed! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
+  gErrorIgnoreLevel = 1001;
 
   TeresaPlottingStyle::init();
 
@@ -48,6 +49,7 @@ int evalJECUncertainty(){
   double finalErrorsE[nEta] = {0};
 
   TString rootFile[3]; 
+  TString pathName[3];
  
 
   /*  // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -80,16 +82,18 @@ int evalJECUncertainty(){
   double correlationUp  = 1.;
   
   cout<<endl<<"Correlation between downward variation and without variation = "<<correlationLow<<endl;
-  cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl;
+  cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl<<endl;
   // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
+  pathName[0]  = (TString) "root_files_WithoutTriggerWithPUWeightEq1/";
+  pathName[1]  = (TString) "root_files_JECUncertainty/downwardVariationwoTriggerPUWeighteq1/";
+  pathName[2]  = (TString) "root_files_JECUncertainty/upwardVariationwoTriggerPUWeighteq1/";
 
+  cout<<"root files from following folders:"<<endl<<pathName[0]<<endl<<pathName[1]<<endl<<pathName[2]<<endl<<endl<<endl;
 
   for(int eta = 1; eta<nEta+1; eta++){
  
-    rootFile[0]  = (TString) "root_files_WithoutTriggerWithPUWeightEq1/Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = (TString) "root_files_JECUncertainty/downwardVariationwoTriggerPUWeighteq1/Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[2]  = (TString) "root_files_JECUncertainty/upwardVariationwoTriggerPUWeighteq1/Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+    for(int i=0; i<3; i++) rootFile[i]  = pathName[i] + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
   
     TMultiGraph* mg = new TMultiGraph();
     etaString       = "Uncertainty on JEC";
@@ -156,7 +160,6 @@ int evalJECUncertainty(){
   
     if(nData > graph[1]->GetN()) nData = nData - (nData - graph[1]->GetN()); 
     if(nData > graph[2]->GetN()) nData = nData - (nData - graph[2]->GetN());  
-    cout<<endl<<endl<<endl<<"nData = "<<nData<<endl;
 
     double *errorUpY  = new double[nData];
     double *errorLowY = new double[nData];
@@ -197,9 +200,9 @@ int evalJECUncertainty(){
       }
 
       if(countNData == 0 || countNData == nData -1){
-	cout<<"dataUpX["<<idxUp<<"] = "<<dataUpX[idxUp]<<endl;
-	cout<<"dataLowX["<<idxLow<<"] = "<<dataLowX[idxLow]<<endl;
-	cout<<"dataX["<<idx<<"] = "<<dataX[idx]<<endl;
+	//cout<<"dataUpX["<<idxUp<<"] = "<<dataUpX[idxUp]<<endl;
+	//cout<<"dataLowX["<<idxLow<<"] = "<<dataLowX[idxLow]<<endl;
+	//cout<<"dataX["<<idx<<"] = "<<dataX[idx]<<endl;
       }
 
       errorUpY[countNData]   = dataUpY[idxUp]/dataY[idx] - 1.;
@@ -246,23 +249,23 @@ int evalJECUncertainty(){
     // 0.5 are added to have the right rounding to an integer
     int interval68 = (int) (2.*nData*0.6827 + 0.5);
     int interval95 = (int) (2.*nData*0.9545 + 0.5);
-    cout<<endl<<"2.*nData*0.6827 = "<<2.*nData*0.6827<<endl;
-    cout<<"2.*nData*0.9545 = "<<2.*nData*0.9545<<endl;
-    cout<<"interval95 = "<<interval95<<endl;
-    cout<<"interval68 = "<<interval68<<endl<<endl<<endl;
+    //cout<<endl<<"2.*nData*0.6827 = "<<2.*nData*0.6827<<endl;
+    //cout<<"2.*nData*0.9545 = "<<2.*nData*0.9545<<endl;
+    //cout<<"interval95 = "<<interval95<<endl;
+    //cout<<"interval68 = "<<interval68<<endl<<endl<<endl;
   
   
 
     if(2*arraySort[interval68-1]<arraySort[interval95-1]){
       sigma1Interval->SetParameter(0,arraySort[interval95-1]/2.);
-      cout<<"arraySort["<<interval68-1<<"]    = "<<arraySort[interval68-1]<<endl;
-      cout<<"arraySort["<<interval95-1<<"]/2. = "<<arraySort[interval95-1]/2.<<endl;
-      cout<<"arraySort["<<2*nData-1<<"] = "<<arraySort[2*nData -1]<<endl;
-      cout<<"arraySort["<<2*nData-2<<"] = "<<arraySort[2*nData -2]<<endl;
+      //cout<<"arraySort["<<interval68-1<<"]    = "<<arraySort[interval68-1]<<endl;
+      //cout<<"arraySort["<<interval95-1<<"]/2. = "<<arraySort[interval95-1]/2.<<endl;
+      //cout<<"arraySort["<<2*nData-1<<"] = "<<arraySort[2*nData -1]<<endl;
+      //cout<<"arraySort["<<2*nData-2<<"] = "<<arraySort[2*nData -2]<<endl;
     }
     else sigma1Interval->SetParameter(0,arraySort[interval68-1]);
     sigma1Interval->SetParameter(0,arraySort[interval68-1]);
-    cout<<endl<<"sigma1Interval->GetParameter(0) = "<<sigma1Interval->GetParameter(0)<<endl<<endl<<endl;
+    cout<<"sigma1Interval->GetParameter(0) = "<<sigma1Interval->GetParameter(0)<<endl<<endl;
     TF1* sigma1Intervaldown = new TF1("sigma1Intervaldown","pol0",0,600);
     sigma1Intervaldown->SetParameter(0,-sigma1Interval->GetParameter(0));
     sigma1Intervaldown->SetLineColor(8);
@@ -350,8 +353,6 @@ int evalJECUncertainty(){
   return 0;
 }
 
-
-#endif
 
 
 
