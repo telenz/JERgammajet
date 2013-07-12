@@ -133,7 +133,6 @@ int evalFlavorUncertainty(TString definition = "algo"){
   
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
   TString etaString = "Uncertainty of Flavor Composition";
   
   TString tot_filename, AuxString, fitName;;
@@ -141,33 +140,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
   double finalErrorsUp[nEta]   = {0};
   double finalErrorsUpE[nEta]  = {0};
   double finalErrorsLow[nEta]  = {0};
-  double finalErrorsLowE[nEta] = {0};
-
-
-  // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // Calculate Correlation with the help of the control plot hPhoton1Pt_PFCHS_mc.root
-  
+  double finalErrorsLowE[nEta] = {0};  
   TString rootFile[3];
-  /* 
-  rootFile[0]  =  pathName + (TString) "hPhoton1Pt_" + type + (TString) "_mc.root";
-  rootFile[1]  =  pathNameQuarks + "hPhoton1Pt_" + type + (TString) "_mc.root";
-  rootFile[2]  =  pathNameGluons + "hPhoton1Pt_" + type + (TString) "_mc.root"; 
 
-  TFile* file[3];
-  TH1D* histo[3];
-  
-  for(int i =0; i<3; i++){
-    file[i] = TFile::Open(rootFile[i]);
-    file[i]->GetObject("histo",histo[i]);    
-  }
-   
-  
-
-  cout<<endl<<"Correlation between Quark and full Sample = "<<correlationQuarks<<endl;
-  cout<<      "Correlation between Gluon and full Sample = "<<correlationGluons<<endl<<endl<<endl;
-
-  cout<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQuarks<<endl<<pathNameGluons<<endl<<endl<<endl;
-  */
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   for(int eta = 1; eta<nEta+1; eta++){
