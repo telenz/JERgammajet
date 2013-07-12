@@ -54,14 +54,14 @@ int evalFlavorUncertainty(TString definition = "algo"){
   TString fileName;  
   TFile *fileFlavor;  
 
-  double mixture[nEta]    ={0};
-  double mixtureUp[nEta]  ={0};
-  double mixtureLow[nEta] ={0};
+  double mixture[nEta]    ={0.};
+  double mixtureUp[nEta]  ={0.};
+  double mixtureLow[nEta] ={0.};
 
-  double correlationQuarks[nEta] = {0};
-  double correlationGluons[nEta] = {0};
+  double correlationQuarks[nEta] = {0.};
+  double correlationGluons[nEta] = {0.};
   
-  for(int i=0; i< nEta; i++){
+  for(int i=0; i<nEta; i++){
 
     // Read Files
     fileName =  pathName + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
@@ -90,7 +90,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     gluon[i] -> Rebin(20);
     gluon[i] -> SetDirectory(0); 
     delete fileFlavor;
-  
+
     fileName     =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
     fileFlavor         =  new TFile(fileName);
     lightQuark2D =  (TH2D*) gDirectory->Get("histo");
@@ -99,7 +99,6 @@ int evalFlavorUncertainty(TString definition = "algo"){
     lightQuark[i] -> Rebin(20);
     lightQuark[i] -> SetDirectory(0);
     
-     
     allQuarks[i] = (TH1D*) bottom[i]->Clone(Form("allQuarks%i",i));
     allQuarks[i] -> Add(charm[i]);
     allQuarks[i] -> Add(lightQuark[i]);
@@ -109,8 +108,8 @@ int evalFlavorUncertainty(TString definition = "algo"){
     togetherWoUndefined[i] -> Add(gluon[i]);
     togetherWoUndefined[i] -> Add(lightQuark[i]);
 
-    correlationQuarks[nEta] = sqrt(lightQuark[i]->Integral()/togetherWoUndefined[i]->Integral());
-    correlationGluons[nEta] = sqrt(gluon[i]->Integral()/togetherWoUndefined[i]->Integral());
+    correlationQuarks[i] = sqrt(lightQuark[i]->Integral()/togetherWoUndefined[i]->Integral());
+    correlationGluons[i] = sqrt(gluon[i]->Integral()/togetherWoUndefined[i]->Integral());
 
     togetherWoUndefined[i]-> Rebin(togetherWoUndefined[i]->GetNbinsX());
     allQuarks[i]          -> Rebin(allQuarks[i]->GetNbinsX());
@@ -124,10 +123,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
     cout<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
     cout<<"Quark Flavor Fraction for systematics  = "<<allQuarksComp[i]->GetBinContent(1)<<endl<<endl;
    
-    mixture[i]    = allQuarksComp[0]->GetBinContent(1);
-    mixtureUp[i]  = allQuarksComp[0]->GetBinContent(1) + 0.10;
-    mixtureLow[i] = allQuarksComp[0]->GetBinContent(1) - 0.10;   
-
+    mixture[i]    = allQuarksComp[i]->GetBinContent(1);
+    mixtureUp[i]  = allQuarksComp[i]->GetBinContent(1) + 0.10;
+    mixtureLow[i] = allQuarksComp[i]->GetBinContent(1) - 0.10;
   }
 
   
@@ -142,14 +140,13 @@ int evalFlavorUncertainty(TString definition = "algo"){
   double finalErrorsLow[nEta]  = {0};
   double finalErrorsLowE[nEta] = {0};  
   TString rootFile[3];
-
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  for(int eta = 1; eta<nEta+1; eta++){
+  for(int eta = 0; eta<nEta; eta++){
     
-    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";    
+    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";    
   
     TMultiGraph* mg = new TMultiGraph();
     etaString = "Uncertainty on Flavor Composition";
@@ -177,7 +174,6 @@ int evalFlavorUncertainty(TString definition = "algo"){
     graph[0] -> GetFunction("fResolution") -> SetLineColor(8);
     graph[1] -> GetFunction("fResolution") -> SetLineColor(9);
     graph[2] -> GetFunction("fResolution") -> SetLineColor(1);
-  
  
     TLegend *legend  = new TLegend(0.35,0.75,0.9,0.9);
     legend -> SetFillColor(0);
@@ -199,10 +195,10 @@ int evalFlavorUncertainty(TString definition = "algo"){
 
     TLatex*  info   = new TLatex();
     info-> SetNDC();
-    AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
+    AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta],etaBins[eta+1]);
     info->DrawLatex(0.6,0.7,AuxString);
 
-    tot_filename = (TString) "plotsFlavor/Resolution_for_" + (long) eta + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) ".pdf";
+    tot_filename = (TString) "plotsFlavor/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) ".pdf";
     c -> SaveAs(tot_filename);
 
     delete c;
@@ -241,8 +237,8 @@ int evalFlavorUncertainty(TString definition = "algo"){
     int idx        = 0;
     int countNData = 0;
 
+   
     while(countNData < nData){
-
 
       if(TMath::Abs(dataX[idx]/dataGluonsX[idxGluon] - 1.) > 0.05){
 	if(dataX[idx] > dataGluonsX[idxGluon]) idxGluon += 1;
@@ -341,15 +337,15 @@ int evalFlavorUncertainty(TString definition = "algo"){
     AuxString = Form("f = %4.3f #pm %4.3f",fitLineLow->GetParameter(0),fitLineLow->GetParError(0));
     info1->DrawLatex(0.2,0.25,AuxString);
 
-    finalErrorsUp[eta-1]  = fitLineUp -> GetParameter(0);
-    finalErrorsUpE[eta-1] = fitLineUp -> GetParError(0);
-    finalErrorsLow[eta-1] = fitLineLow -> GetParameter(0);
-    finalErrorsLowE[eta-1]= fitLineLow -> GetParError(0);
+    finalErrorsUp[eta]  = fitLineUp -> GetParameter(0);
+    finalErrorsUpE[eta] = fitLineUp -> GetParError(0);
+    finalErrorsLow[eta] = fitLineLow -> GetParameter(0);
+    finalErrorsLowE[eta]= fitLineLow -> GetParError(0);
 
-    cout<<"finalErrorUp["<<eta-1<<"]  = "<<finalErrorsUp[eta-1]<<endl;
-    cout<<"finalErrorLow["<<eta-1<<"] = "<<finalErrorsLow[eta-1]<<endl<<endl;
+    cout<<"finalErrorUp["<<eta<<"]  = "<<finalErrorsUp[eta]<<endl;
+    cout<<"finalErrorLow["<<eta<<"] = "<<finalErrorsLow[eta]<<endl<<endl;
 
-    tot_filename = (TString) "plotsFlavor/Relative_Resolution_for_" + (long) eta + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) "_mixture.pdf";
+    tot_filename = (TString) "plotsFlavor/Relative_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) "_mixture.pdf";
   
     c1 -> SaveAs(tot_filename);
 
