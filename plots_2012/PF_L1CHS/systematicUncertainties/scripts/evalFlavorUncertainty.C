@@ -28,7 +28,7 @@
 #include "../../../../CODE/myFunctions.C"
 
 
-int evalFlavorUncertainty(TString definition){
+int evalFlavorUncertainty(TString definition = "algo"){
 
   cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Script for Flavor uncertainty is executed! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
   gErrorIgnoreLevel = 1001;
@@ -40,62 +40,66 @@ int evalFlavorUncertainty(TString definition){
   const TString method = "RMS99";
   const TString type   = "PFCHS";
 
-  TString pathName       = (TString) "root_files_WithoutTriggerWithPUWeightEq1/";
-  TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "/";
-  TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "/";
+
+  TString pathName       = (TString) "root_files_FlavorUncertainty/together_" + definition+ "_new/";
+  TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "_new/";
+  TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "_new/";
 
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Evaluation of the flavor composition
   
   TH2D *charm2D, *bottom2D, *gluon2D, *lightQuark2D;
-  TH1D *charm[2], *bottom[2], *gluon[2], *lightQuark[2],  *allQuarks[2], *togetherWoUndefined[2], *allQuarksComp[2], *gluonWoUndefinedComp[2];
+  TH1D *charm[4], *bottom[4], *gluon[4], *lightQuark[4],  *allQuarks[4], *togetherWoUndefined[4], *allQuarksComp[4], *gluonWoUndefinedComp[4];
   TString fileName;  
   TFile *fileFlavor;  
-   
-  // Read Files
-  fileName =  pathName + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
-  fileFlavor     =  new TFile(fileName);
-  bottom2D =  (TH2D*) gDirectory->Get("histo");
-  bottom2D -> SetDirectory(0);
-  bottom[0]  = (TH1D*) bottom2D->ProjectionX("bottom0",0,bottom2D->GetYaxis()->FindBin(1.3));
-  bottom[1]  = (TH1D*) bottom2D->ProjectionX("bottom1",bottom2D->GetYaxis()->FindBin(1.3),-1);
-  for(int i= 0; i<2; i++) bottom[i] -> Rebin(20);
-  for(int i= 0; i<2; i++) bottom[i] -> SetDirectory(0);
-  delete fileFlavor;
 
-  fileName =  pathName + "hPhotonPtJetEtaFlavorCharm_" + definition + "_PFCHS_mc.root";
-  fileFlavor     =  new TFile(fileName);
-  charm2D  =  (TH2D*) gDirectory->Get("histo");
-  charm2D  -> SetDirectory(0);
-  charm[0] = charm2D->ProjectionX("charm0",0,charm2D->GetYaxis()->FindBin(1.3),"");  
-  charm[1] = charm2D->ProjectionX("charm1",charm2D->GetYaxis()->FindBin(1.3),-1,"");
-  for(int i= 0; i<2; i++) charm[i]  ->Rebin(20);
-  for(int i= 0; i<2; i++) charm[i]  -> SetDirectory(0);
-  delete fileFlavor;
+  double mixture[nEta]    ={0};
+  double mixtureUp[nEta]  ={0};
+  double mixtureLow[nEta] ={0};
 
-  fileName =  pathName + "hPhotonPtJetEtaFlavorGluon_" + definition + "_PFCHS_mc.root";
-  fileFlavor     =  new TFile(fileName);
-  gluon2D  =  (TH2D*) gDirectory->Get("histo");
-  gluon2D  -> SetDirectory(0);
-  gluon[0]    = gluon2D->ProjectionX("gluon0",0,gluon2D->GetYaxis()->FindBin(1.3),"");
-  gluon[1]    = gluon2D->ProjectionX("gluon1",gluon2D->GetYaxis()->FindBin(1.3),-1,"");
-  for(int i= 0; i<2; i++)  gluon[i]    -> Rebin(20);
-  for(int i= 0; i<2; i++)  gluon[i]      -> SetDirectory(0); 
-  delete fileFlavor;
+  double correlationQuarks[nEta] = {0};
+  double correlationGluons[nEta] = {0};
   
-  fileName     =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
-  fileFlavor         =  new TFile(fileName);
-  lightQuark2D =  (TH2D*) gDirectory->Get("histo");
-  lightQuark2D -> SetDirectory(0);
-  lightQuark[0] = lightQuark2D->ProjectionX("lightQuark0",0,lightQuark2D->GetYaxis()->FindBin(1.3),"");
-  lightQuark[1] = lightQuark2D->ProjectionX("lightQuark1",lightQuark2D->GetYaxis()->FindBin(1.3),-1,"");
-  for(int i= 0; i<2; i++)   lightQuark[i] -> Rebin(20);
-  for(int i= 0; i<2; i++)   lightQuark[i] -> SetDirectory(0);
+  for(int i=0; i< nEta; i++){
 
+    // Read Files
+    fileName =  pathName + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
+    fileFlavor     =  new TFile(fileName);
+    bottom2D =  (TH2D*) gDirectory->Get("histo");
+    bottom2D -> SetDirectory(0);
+    bottom[i]  = (TH1D*) bottom2D->ProjectionX("bottom0",bottom2D->GetYaxis()->FindBin(etaBins[i]),bottom2D->GetYaxis()->FindBin(etaBins[i+1]));
+    bottom[i] -> Rebin(20);
+    bottom[i] -> SetDirectory(0);
+    delete fileFlavor;
+
+    fileName =  pathName + "hPhotonPtJetEtaFlavorCharm_" + definition + "_PFCHS_mc.root";
+    fileFlavor     =  new TFile(fileName);
+    charm2D  =  (TH2D*) gDirectory->Get("histo");
+    charm2D  -> SetDirectory(0);
+    charm[i] = charm2D->ProjectionX("charm0",charm2D->GetYaxis()->FindBin(etaBins[i]),charm2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    charm[i]  -> Rebin(20);
+    charm[i]  -> SetDirectory(0);
+    delete fileFlavor;
+
+    fileName =  pathName + "hPhotonPtJetEtaFlavorGluon_" + definition + "_PFCHS_mc.root";
+    fileFlavor     =  new TFile(fileName);
+    gluon2D  =  (TH2D*) gDirectory->Get("histo");
+    gluon2D  -> SetDirectory(0);
+    gluon[i]    = gluon2D->ProjectionX("gluon0",gluon2D->GetYaxis()->FindBin(etaBins[i]),gluon2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    gluon[i] -> Rebin(20);
+    gluon[i] -> SetDirectory(0); 
+    delete fileFlavor;
+  
+    fileName     =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
+    fileFlavor         =  new TFile(fileName);
+    lightQuark2D =  (TH2D*) gDirectory->Get("histo");
+    lightQuark2D -> SetDirectory(0);
+    lightQuark[i] = lightQuark2D->ProjectionX("lightQuark0",lightQuark2D->GetYaxis()->FindBin(etaBins[i]),lightQuark2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    lightQuark[i] -> Rebin(20);
+    lightQuark[i] -> SetDirectory(0);
+    
      
-  for(int i= 0; i<1; i++){
-
     allQuarks[i] = (TH1D*) bottom[i]->Clone(Form("allQuarks%i",i));
     allQuarks[i] -> Add(charm[i]);
     allQuarks[i] -> Add(lightQuark[i]);
@@ -104,6 +108,9 @@ int evalFlavorUncertainty(TString definition){
     togetherWoUndefined[i] -> Add(charm[i]);
     togetherWoUndefined[i] -> Add(gluon[i]);
     togetherWoUndefined[i] -> Add(lightQuark[i]);
+
+    correlationQuarks[nEta] = sqrt(lightQuark[i]->Integral()/togetherWoUndefined[i]->Integral());
+    correlationGluons[nEta] = sqrt(gluon[i]->Integral()/togetherWoUndefined[i]->Integral());
 
     togetherWoUndefined[i]-> Rebin(togetherWoUndefined[i]->GetNbinsX());
     allQuarks[i]          -> Rebin(allQuarks[i]->GetNbinsX());
@@ -114,13 +121,14 @@ int evalFlavorUncertainty(TString definition){
     gluonWoUndefinedComp[i] = (TH1D*) gluon[i]->Clone(Form("gluon%i",i+3));
     gluonWoUndefinedComp[i] -> Divide(togetherWoUndefined[i]);
 
-    cout<<endl<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
-    cout<<"Quark Flavor Fraction for systematics  = "<<allQuarksComp[i]->GetBinContent(1)<<endl;
+    cout<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
+    cout<<"Quark Flavor Fraction for systematics  = "<<allQuarksComp[i]->GetBinContent(1)<<endl<<endl;
+   
+    mixture[i]    = allQuarksComp[0]->GetBinContent(1);
+    mixtureUp[i]  = allQuarksComp[0]->GetBinContent(1) + 0.10;
+    mixtureLow[i] = allQuarksComp[0]->GetBinContent(1) - 0.10;   
 
   }
-  double mixture    = allQuarksComp[0]->GetBinContent(1);
-  double mixtureUp  = allQuarksComp[0]->GetBinContent(1) + 0.10;
-  double mixtureLow = allQuarksComp[0]->GetBinContent(1) - 0.10;   
 
   
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -138,7 +146,9 @@ int evalFlavorUncertainty(TString definition){
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Calculate Correlation with the help of the control plot hPhoton1Pt_PFCHS_mc.root
-  TString rootFile[3]; 
+  
+  TString rootFile[3];
+  /* 
   rootFile[0]  =  pathName + (TString) "hPhoton1Pt_" + type + (TString) "_mc.root";
   rootFile[1]  =  pathNameQuarks + "hPhoton1Pt_" + type + (TString) "_mc.root";
   rootFile[2]  =  pathNameGluons + "hPhoton1Pt_" + type + (TString) "_mc.root"; 
@@ -151,13 +161,13 @@ int evalFlavorUncertainty(TString definition){
     file[i]->GetObject("histo",histo[i]);    
   }
    
-  const double correlationQuarks = sqrt(histo[1]->Integral()/histo[0]->Integral());
-  const double correlationGluons = sqrt(histo[2]->Integral()/histo[0]->Integral());
+  
 
   cout<<endl<<"Correlation between Quark and full Sample = "<<correlationQuarks<<endl;
   cout<<      "Correlation between Gluon and full Sample = "<<correlationGluons<<endl<<endl<<endl;
 
   cout<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQuarks<<endl<<pathNameGluons<<endl<<endl<<endl;
+  */
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   for(int eta = 1; eta<nEta+1; eta++){
@@ -269,16 +279,14 @@ int evalFlavorUncertainty(TString definition){
 	else idx += 1;
 	continue;
       }
-
-      dataY[idx] = (1.-mixture)*(dataGluonsY[idxGluon])+mixture*(dataQuarksY[idxQuark]);
-      //errorUpY[countNData]  = sqrt((1.-mixtureUp)*pow(dataGluonsY[idxGluon],2)+mixtureUp*pow(dataQuarksY[idxQuark],2))/(dataY[idx]) -1.;
-      errorUpY[countNData]  = ((1.-mixtureUp)*(dataGluonsY[idxGluon])+mixtureUp*(dataQuarksY[idxQuark]))/(dataY[idx]) -1.;
-      errorUpY[countNData]  = ((1.-mixtureUp)*(dataGluonsY[idxGluon])+mixtureUp*(dataQuarksY[idxQuark]))/dataY[idx] -1.;
-      errorLowY[countNData] = sqrt((1.-mixtureLow)*pow(dataGluonsY[idxGluon],2)+mixtureLow*pow(dataQuarksY[idxQuark],2))/(dataY[idx]) -1.;
-
-      errorUpEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureUp)*dataGluonsEY[idxGluon],2) + pow(mixtureUp*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureUp)*dataGluonsY[idxGluon]-mixtureUp*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureUp)*correlationGluons*dataGluonsEY[idxGluon] + mixtureUp*correlationQuarks*dataQuarksEY[idxQuark])*2.0 * abs(dataGluonsY[idxGluon]-dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
       
-      errorLowEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureLow)*dataGluonsEY[idxGluon],2) + pow(mixtureLow*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureLow)*dataGluonsY[idxGluon]-mixtureLow*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureLow)*correlationGluons*dataGluonsEY[idxGluon] + mixtureLow*correlationQuarks*dataQuarksEY[idxQuark])*2.0 * abs(dataGluonsY[idxGluon]-dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
+      dataY[idx]            = (1.-mixture[eta])*(dataGluonsY[idxGluon])+mixture[eta]*(dataQuarksY[idxQuark]);
+      errorUpY[countNData]  = ((1.-mixtureUp[eta])*(dataGluonsY[idxGluon])+mixtureUp[eta]*(dataQuarksY[idxQuark]))/(dataY[idx]) -1.;
+      errorLowY[countNData] = ((1.-mixtureLow[eta])*dataGluonsY[idxGluon]+mixtureLow[eta]*dataQuarksY[idxQuark])/(dataY[idx]) -1.;
+
+      errorUpEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureUp[eta])*dataGluonsEY[idxGluon],2) + pow(mixtureUp[eta]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureUp[eta])*dataGluonsY[idxGluon]-mixtureUp[eta]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureUp[eta])*correlationGluons[eta]*dataGluonsEY[idxGluon] + mixtureUp[eta]*correlationQuarks[eta]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureUp[eta])*dataGluonsY[idxGluon]-mixtureUp[eta]*dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
+            
+      errorLowEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureLow[eta])*dataGluonsEY[idxGluon],2) + pow(mixtureLow[eta]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureLow[eta])*dataGluonsY[idxGluon]-mixtureLow[eta]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureLow[eta])*correlationGluons[eta]*dataGluonsEY[idxGluon] + mixtureLow[eta]*correlationQuarks[eta]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureLow[eta])*dataGluonsY[idxGluon]-mixtureLow[eta]*dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
 
       dataX[countNData]  = dataX[idx];
       dataEX[countNData] = dataEX[idx];
@@ -318,8 +326,8 @@ int evalFlavorUncertainty(TString definition){
     legend1 -> SetFillColor(0);
     legend1 -> SetTextSize(0.033);
    
-    legend1 -> AddEntry(plotLow,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureLow, 1.-mixtureLow),"p");
-    legend1 -> AddEntry(plotUp,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureUp, 1.-mixtureUp),"p");
+    legend1 -> AddEntry(plotLow,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureLow[eta], 1.-mixtureLow[eta]),"p");
+    legend1 -> AddEntry(plotUp,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureUp[eta], 1.-mixtureUp[eta]),"p");
  
     mg = new TMultiGraph();
     mg->Add(plotLow);  
