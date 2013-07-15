@@ -12,6 +12,7 @@ root -b -l -q evalJECUncertainty.C+"()"
 root -b -l -q evalFlavorUncertainty.C+"(\"phys\")"
 root -b -l -q evalPUUncertainty.C+"()"
 root -b -l -q evalQCDUncertainty.C+"(1)"
+root -b -l -q evalMCUncertainty.C+"()"
 rm *.C~
 rm *.so
 rm *.d

@@ -52,7 +52,7 @@ int postprocessingSysError(){
   bool JEC    = true;
   bool flavor = true;
   bool PU     = true;
-  bool MC     = false;
+  bool MC     = true;
   
 
   TString etaString, filename;   
@@ -354,7 +354,7 @@ int postprocessingSysError(){
   // 5.) Calculate sys Error from Out-of Cone showering simulation (percentage change of full ratio result)
   //cout<<endl;
   
-  rootFiles                        = (TString) "ratio/plotsMC/FinalErrorsMC_" + type + (TString) "_" + method + (TString) ".root";
+  rootFiles                   = (TString) "scripts/plotsMC/FinalErrorsMC_" + type + (TString) "_" + method + (TString) ".root";  
   TGraphErrors *MCuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
   double       *sysRelMC      = MCuncertainty -> GetY();
   
@@ -394,7 +394,7 @@ int postprocessingSysError(){
     DeltaTotalSysUp[eta]   = deltaTotalSysUp[eta] * ratioEtaBinnedY[eta];
     DeltaTotalSysDown[eta] = deltaTotalSysDown[eta] * ratioEtaBinnedY[eta];
 
-    cout<<endl<<"relative: deltaTotalSysUp["<<eta<<"]   = "<<deltaTotalSysUp[eta]<<endl;
+    cout<<endl<<"relative: deltaTotalSysUp["<<eta<<"]   = "<<fixed<<setprecision(3)<<deltaTotalSysUp[eta]<<endl;
     cout<<"relative: deltaTotalSysDown["<<eta<<"] = "<<deltaTotalSysDown[eta]<<endl;
 
     cout<<endl<<"absolute: DeltaTotalSysUp["<<eta<<"]   = "<<DeltaTotalSysUp[eta]<<endl;
