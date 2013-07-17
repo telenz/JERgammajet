@@ -171,6 +171,7 @@ void calcSample() {
       }
     }
     else PUWeight=1;
+      
     
     //---------------------------------------------------------------------------------------------
     // Sort Jets and apply all cuts with following function
@@ -363,7 +364,6 @@ void calcScale(){
     }
   }
 
-  TFile *file;
   TString TotFilename;  
   for(int i=0;i<nPtBins;i++){
     for(int j=0; j<nEtaBins; j++){
