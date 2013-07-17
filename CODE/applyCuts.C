@@ -267,16 +267,17 @@ bool applyCuts(){
 
   //------------------------------------------------------------------------------(11. CUT)------------------------
   // Select events with back-to-back photon and jet   (11. CUT)
-  if( deltaphi < 2.95){
-    //if( deltaphi < 2.7){
+  if( deltaphi < deltaPhiCutValue){
     cut11 = cut11 +1;
-    //  cout<<"Discarded because of delta phi!"<<endl;
-    return 0;}
+    //cout<<"Discarded because of delta phi!"<<endl;
+    return 0;
+  }
   //--------------------------------------------------------------------------------------------------------------
 
   //------------------------------------------------------------------------------(12. CUT)-----------------------
   // Cuts on Trigger                                  (12. CUT)
-  if(!isMC || applyTriggeronMC){
+  if((!isMC && !QCDUncertaintyEvaluation) || applyTriggeronMC ){
+
     if((photonPt[0] >= ptBins[0] && photonPt[0] < ptBins[1]) && !hltPhoton[0]){
       cut12[0] += 1;
       return 0;}
@@ -305,21 +306,28 @@ bool applyCuts(){
     }
   }  
   //--------------------------------------------------------------------------------------------------------------
-
-   
+ 
   //------------------------------------------------------------------------------(13. CUT)------------------------
-  //For Flavor Unceratinty (13. CUT)
-  /*
-    if(isMC){
-    //if(abs(genJetID_phys[corrJets.idx(idx1stJet)]) <= 5 && abs(genJetID_phys[corrJets.idx(idx1stJet)]) > 0){
-    if(abs(genJetID_phys[corrJets.idx(idx1stJet)]) == 21){
+  // Only for Flavor Unceratinty (13. CUT)
+  bool flavorFullfilled = true;
+  if(isMC && flavorUncertaintyEvaluationPhys){
+    if(setFlavorSelection == 1){      if(abs(genJetID_phys[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
+    else if(setFlavorSelection == 2){ if(abs(genJetID_phys[corrJets.idx(idx1stJet)]) > 5 || abs(genJetID_phys[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
+    else if(setFlavorSelection == 3){ if(abs(genJetID_phys[corrJets.idx(idx1stJet)]) != 21) flavorFullfilled = false;}
+    if(!flavorFullfilled){
+      cut14 = cut14 +1;
+      return 0;
     }
-    else {
-    cut13 = cut13 +1;
-    return 0;
+  }
+  if(isMC && flavorUncertaintyEvaluationAlgo){
+    if(setFlavorSelection == 1){      if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
+    else if(setFlavorSelection == 2){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) > 5 || abs(genJetID_algo[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
+    else if(setFlavorSelection == 3){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) != 21) flavorFullfilled = false;}
+    if(!flavorFullfilled){
+      cut14 = cut14 +1;
+      return 0;
     }
-    }
-  */
+  }
   //--------------------------------------------------------------------------------------------------------------
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

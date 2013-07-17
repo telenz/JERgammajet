@@ -407,14 +407,15 @@ void CScaleRes::calculate(int length){
   //Set some constraints on the formula (which would lead to unphysical results) and give starting values 
   fResolution -> SetParLimits(fResolution->GetParNumber("m"),-10000.,0.99999999);
   fResolution -> SetParLimits(fResolution->GetParNumber("C"),0.,100000.);
-  //fResolution -> FixParameter(fResolution->GetParNumber("N"),0.);
-  
-   
+    
   //From Matthias Thesis   
   fResolution->SetParameter("N", -1.45); 
   fResolution->SetParameter("S", 1.034);   
   fResolution->SetParameter("m", -0.085); 
   fResolution->SetParameter("C", 0.05); 
+
+  //For QCD Uncertainty fix Parameter N to zero to make the fit more stable
+  //fResolution -> FixParameter(0,0.);
   
   gResolution->Fit("fResolution","QRB");
 

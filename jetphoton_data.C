@@ -294,7 +294,6 @@ void calcScale(){
   }
 
 
-  TFile *file;
   TString TotFilename;  
   for(int i=0;i<nPtBins;i++){
     for(int j=0; j<nEtaBins; j++){
@@ -308,7 +307,7 @@ void calcScale(){
 	JetResponsePhotonHemisphere[i][j][k]->hResponse = readTH1(RootPath + "response_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo","histo");
 	
 	
-	if(testClosure){
+	if(testClosure || QCDUncertaintyEvaluation){
 	  //Scale the histograms
 	  JetResponseJetHemisphere[i][j][k]->hResponse->Scale((JetResponseJetHemisphere[i][j][k]->hResponse->GetEntries())/(JetResponseJetHemisphere[i][j][k]->hResponse->Integral()));
 	  JetResponsePhotonHemisphere[i][j][k]->hResponse->Scale((JetResponsePhotonHemisphere[i][j][k]->hResponse->GetEntries())/(JetResponsePhotonHemisphere[i][j][k]->hResponse->Integral()));

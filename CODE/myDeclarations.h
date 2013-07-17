@@ -10,30 +10,35 @@
 #include "TLorentzVector.h"
 
 // Numbers of alpha, pTGamma and eta bins 
-const int nPtBins    = 12;     // numbers of Pt bins
-const int nAlphaBins = 6;      // numbers of alpha bins 
-const int nEtaBins   = 4;      // number of eta bins
+const int nPtBins=12;      // numbers of Pt bins
+const int nAlphaBins=6;    // numbers of alpha bins 
+const int nEtaBins=4;      // number of eta bins
 
 // Definition of all bin intervals
-const double alphaBins[nAlphaBins+1] = {0.,7.5,10.,12.5,15.,17.5,20.};
-//const double alphaBins[nAlphaBins+1] = {0.,10.,15.,20.,25.,30.,35.,40.};
-const double etaBins[nEtaBins+1]     = {0.0,0.5,1.1,1.7,2.3};
-//const double etaBins[nEtaBins+1]     = {0.0,1.3,2.3};
-const double ptBins[nPtBins+1]       = {22,36,60,88,105,148.5,165,176,200,250,300,400,1000000}; 
+const double ptBins[nPtBins+1]={22,36,60,88,105,148.5,165,176,200,250,300,400,1000000};
+const double alphaBins[nAlphaBins+1]={0.0,7.5,10.0,12.5,15.0,17.5,20.0};
+const double etaBins[nEtaBins+1]={0.0,0.5,1.1,1.7,2.3};
 
-const int numTrigger = 8;      // 8 for 2012 and 5 for 2011
 
-const int  detJER=3;         // = 1 (2sigma Gaus) = 2 (RMS 95%) = 3 (RMS 99%)
-const int  jetType = 2;      // 1 = PF_L1Fast , 2 = PF_CHS Jets , 3 = Calo_L1FastJ, 4 = ak7 PF_CHS Jetset 
-const int  date    = 2012;   // 2012 or 2011
-const int  set     = 5;      // 1=AB; 2= ABC; 3=AB rereco; 4=C; 5=ABCD rereco
+const int numTrigger = 8;   // 8 for 2012 and 5 for 2011
 
-const bool applyTriggeronMC = true;  //shall the triggers also applied on MC
-const bool PUreweighting    = true;  // shall MC be PU reweighted to the data distribution
-const bool addQCD=false;          // add QCD sample
-const bool addWJet = false;          // add W+jet sample
+const int detJER=3;         // = 1 (2sigma Gaus) = 2 (RMS 95%) = 3 (RMS 99%)
+const int jetType=2;        // 1 = PF_L1Fast , 2 = PF_CHS Jets , 3 = Calo_L1FastJ, 4 = ak7 PF_CHS Jetset 
+const int date   = 2012;    // 2012 or 2011
+const int set    = 5;       // 1=AB; 2= ABC; 3=AB rereco; 4=C; 5=ABCD rereco
 
-const bool testClosure = false;      // for ratio closure test
+const bool applyTriggeronMC=true;  // shall the triggers also applied on MC
+const bool PUreweighting=true;     // shall MC be PU reweighted to the data distribution
+const bool addQCD=false;           // add QCD sample
+const bool addWJet=false;          // add W+jet sample
+
+const bool testClosure=false;                         // for ratio closure test
+const bool QCDUncertaintyEvaluation=false;             // Set on true if QCD sample shall be added to the data procedure
+const bool flavorUncertaintyEvaluationPhys=false;     //Set on true if you want to evaluate flavor Uncertainty 
+const bool flavorUncertaintyEvaluationAlgo=false;     //Set on true if you want to evaluate flavor Uncertainty 
+const int setFlavorSelection=3;                       //1 = together, 2 = all quarks, 3 = gluons 
+
+const double deltaPhiCutValue=2.95;  // Cut value of deltaPhi
 
 // Declaration of the path where all files shall be saved in the end 
 TString PDFPath, RootPath, DataType, MethodType; 
