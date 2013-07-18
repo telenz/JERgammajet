@@ -61,6 +61,9 @@ int evalMCUncertainty(){
     TString rootFileMCak5PFCHS   = pathNameAk5 + (TString) "mc/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString)".root";
     TString rootFileDataak5PFCHS = pathNameAk5 + (TString) "data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_" + method + (TString)".root"; 
 
+    TString rootFileMCak7PFCHS   = pathNameAk7 + (TString) "mc/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString)".root";
+    TString rootFileDataak7PFCHS = pathNameAk7 + (TString) "data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_" + method + (TString)".root"; 
+
     TMultiGraph* mg = new TMultiGraph();
     mg -> SetTitle(etaString);
     
