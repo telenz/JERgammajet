@@ -2,13 +2,18 @@
 #define Teresa_PLOTTING_STYLE_H
 
 #include "TStyle.h"
+#include "TROOT.h"
 
 class TeresaPlottingStyle {
 public:
   static void init() {
 
-
+    //Legend 
+    
     gROOT  -> SetStyle("Plain");
+    
+    gStyle -> SetLegendFillColor(0);
+
     gStyle -> SetTitleFont(42,"xyz");
     gStyle -> SetLabelFont(42,"xyz");
 
@@ -19,8 +24,7 @@ public:
     gStyle -> SetPadBottomMargin(0.15);
     gStyle -> SetPadLeftMargin(0.15);
 
-    // Pad
-   
+    // Pad   
     gStyle -> SetTitleSize(0.05,"X"); 
     gStyle -> SetTitleSize(0.05,"Y"); 
     gStyle -> SetLabelSize(0.04,"X");
@@ -36,7 +40,6 @@ public:
 
     gStyle -> SetTextFont(132);
     gStyle -> SetTextSize(0.042);
-
     
     gROOT->ForceStyle(); 
     /*
