@@ -694,42 +694,8 @@ latexTable<<"\\\\\\hline"<<endl;
    
   leg->Draw("same");
   
-  //cFinal2->Print("plots/resultsComparisonFINAL.png","png");   
   cFinal2->Print("plots/resultsComparisonFINAL.pdf","pdf");
-  //cFinal2->Print("plots/resultsComparisonFINAL.eps","eps");
-  
-  //cFinal2->SaveAs("plots/resultsComparisonFINALs.png","png");   
-  //cFinal2->SaveAs("plots/resultsComparisonFINALs.pdf","pdf");
-  //cFinal2->SaveAs("plots/resultsComparisonFINALs.eps","eps");
 
-
-
-TCanvas *c1= new TCanvas();
-   c1->Divide(2,2);
-
-   TGraphAsymmErrors* g1= new TGraphAsymmErrors();
-
-   for (Int_t i=0; i<10; i++) {
-
-     g1->SetPoint(i,i+0.5,1.);
-     g1->SetPointError(i,0.25,0.25,i*1.1,i*1.1); 
-
-   }
-
-   c1->cd(1);
-   g1->SetFillColor(2);
-   g1->Draw("Ae2");
-
-   c1->cd(2);
-   g1->Draw("ae2");
-
-   c1->cd(3);
-   g1->Draw("ae3");
-
-   c1->cd(4);
-   g1->Draw("ae4"); 
-
-   c1->SaveAs("tt.pdf");
 
   return 0;
 
