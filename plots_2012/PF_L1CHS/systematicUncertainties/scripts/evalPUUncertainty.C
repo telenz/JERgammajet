@@ -58,9 +58,9 @@ int evalPUUncertainty(){
   cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl<<endl;
   // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
-  pathName[0]  = (TString) "root_files_WithoutTrigger/";
-  pathName[1]  = (TString) "root_files_PUUncertainty/downwardVariationWithoutTrigger/";
-  pathName[2]  = (TString) "root_files_PUUncertainty/upwardVariationWithoutTrigger/";
+  pathName[0]  = (TString) "root_files_PUUncertainty/centralValue/";
+  pathName[1]  = (TString) "root_files_PUUncertainty/downwardVariation/";
+  pathName[2]  = (TString) "root_files_PUUncertainty/upwardVariation/";
 
   cout<<"root files from following folders:"<<endl<<pathName[0]<<endl<<pathName[1]<<endl<<pathName[2]<<endl<<endl<<endl;
 

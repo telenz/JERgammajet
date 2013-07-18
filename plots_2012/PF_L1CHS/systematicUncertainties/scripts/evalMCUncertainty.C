@@ -51,16 +51,15 @@ int evalMCUncertainty(){
   TString pathNameAk7 = "root_files_MCUncertainty/ak7PFCHS_";
   TString pathNameAk5 = "../root_files_FINAL_";
 
+  //pathNameAk7 = "root_files_MCUncertainty/ak7PFCHS_";
+  //pathNameAk5 = "root_files_MCUncertainty/ak5PFCHS_";
+
   cout<<"root files from following folders:"<<endl<<pathNameAk5<<endl<<pathNameAk7<<endl<<endl<<endl;
 
   for(int eta=0; eta<nEtaBins;eta++){
 
     TString rootFileMCak5PFCHS   = pathNameAk5 + (TString) "mc/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString)".root";
-    TString rootFileDataak5PFCHS = pathNameAk5 + (TString) "data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_" + method + (TString)".root";
-
-    TString rootFileMCak7PFCHS   = pathNameAk7 + (TString) "mc/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString)".root";
-    TString rootFileDataak7PFCHS = pathNameAk7 + (TString) "data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_" + method + (TString)".root";
-  
+    TString rootFileDataak5PFCHS = pathNameAk5 + (TString) "data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_" + method + (TString)".root"; 
 
     TMultiGraph* mg = new TMultiGraph();
     mg -> SetTitle(etaString);
@@ -117,7 +116,7 @@ int evalMCUncertainty(){
     mg->Draw("AP");
     
     mg -> GetYaxis() -> SetTitle("JER");
-    mg -> SetMinimum(0.004);
+    mg -> SetMinimum(0.02);
     mg -> SetMaximum(0.12);   
     mg -> GetXaxis() -> SetLimits(0,600);
     mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]"); 
@@ -214,10 +213,10 @@ int evalMCUncertainty(){
     Ratioak5 -> GetYaxis() -> SetTitle("Ratio of JER (Data/MC)");
     Ratioak7 -> GetXaxis() -> SetTitle("Photon pT");
     Ratioak7 -> GetYaxis() -> SetTitle("Ratio of JER (Data/MC)");
-    Ratioak5 -> SetMinimum(0.5);
-    Ratioak5 -> SetMaximum(1.7);
-    Ratioak7 -> SetMinimum(0.5);
-    Ratioak7 -> SetMaximum(1.7);
+    Ratioak5 -> SetMinimum(0.8);
+    Ratioak5 -> SetMaximum(1.4);
+    Ratioak7 -> SetMinimum(0.8);
+    Ratioak7 -> SetMaximum(1.4);
 
     TF1* f1ak5 = new TF1("nameak5","pol0",0,600);   
     Ratioak5 -> Fit("nameak5","Q");
@@ -239,6 +238,7 @@ int evalMCUncertainty(){
 
     legend  = 0;
     legend = new TLegend(0.3,0.8,0.9,0.9);
+    legend -> SetFillColor(0);
     char legname[100]; 
     TString ak5Entry = (TString) "ak5 PFCHS: " + Form("%4.3f #pm %4.3f", f1ak5 -> GetParameter(0), f1ak5->GetParError(0));
     TString ak7Entry = (TString) "ak7 PFCHS: " + Form("%4.3f #pm %4.3f", f1ak7 -> GetParameter(0), f1ak7->GetParError(0));
