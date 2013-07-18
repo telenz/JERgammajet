@@ -39,9 +39,10 @@ int evalQCDUncertainty(int eta){
   const TString method = "RMS99";
   const TString type   = "PFCHS";
   
-  //TString pathName    = "root_files_WithoutTriggerWithPUWeightEq1/";
-  TString pathName    = "root_files_WithoutTriggerWithPUWeightEq1_EtaBin1p3_softBinning_Neq0_otherAlphaBinning/";
-  TString pathNameQCD = "root_files_QCDUncertainty/root_files_test5/";
+  const double etaBinsQCD[3] = {0.0,1.3,2.7};
+
+  TString pathName    = "root_files_QCDUncertainty/mcWoQCD/";
+  TString pathNameQCD = "root_files_QCDUncertainty/dataWithQCD/";
 
   cout<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQCD<<endl<<endl<<endl;
 
@@ -53,11 +54,11 @@ int evalQCDUncertainty(int eta){
   // Calculate Correlation with the help of the control plot hPhoton1Pt_PFCHS_mc.root
   TString rootFile[2]; 
   rootFile[0]  = pathName + (TString) "hPhoton1Pt_PFCHS_mc.root";
-  rootFile[1]  = pathNameQCD + (TString) "hPhoton1Pt_PFCHS_mc.root"; 
+  rootFile[1]  = pathNameQCD + (TString) "hPhoton1Pt_PFCHS_data.root"; 
 
   TFile* file[2];
   TH1D* histo[2];
-
+  TH1D* onlyGamma;
   TH1D* ratio;
   
   for(int i =0; i<2; i++){
@@ -66,6 +67,45 @@ int evalQCDUncertainty(int eta){
     histo[i] ->Rebin(20);   
   }
 
+  file[0] = TFile::Open(rootFile[0]);
+  file[0]->GetObject("histo",onlyGamma); 
+  onlyGamma ->Rebin(20);
+
+  //histo[1]->Add(histo[0],-1);
+
+  onlyGamma->Add(histo[1],1);
+
+
+  TCanvas *stackPlot = new TCanvas("stackPlot","stackPlot",500,500,500,500);
+
+  TLegend *l = new TLegend(0.5,0.8,0.9,0.9);
+
+
+ 
+ 
+
+  stackPlot->SetLogy();
+  onlyGamma->GetXaxis()->SetRangeUser(0.,800.);
+  histo[1]->GetXaxis()->SetRangeUser(0.,800.);
+  onlyGamma->SetMaximum(pow(10.,8));
+  onlyGamma->SetMinimum(0.1);
+  histo[1]->SetMaximum(pow(10.,8));
+  histo[1]->SetMinimum(0.1);
+  onlyGamma->SetFillColor(2);
+  histo[1]->SetFillColor(5);
+  onlyGamma->GetXaxis()->SetTitle("p_{T}^{#gamma} [GeV]");
+  onlyGamma->Draw("hist");
+  histo[1]->Draw("samehist");
+
+ l -> SetFillColor(0);
+  l -> SetTextSize(0.042);
+  l -> AddEntry(onlyGamma,"#gamma + jet MC","f");
+  l -> AddEntry(histo[1],"QCD","f");
+
+  l->Draw("SAME");
+
+  stackPlot->SaveAs("plotsQCD/stackGammaJetQCD.pdf");
+  
   file[1] = TFile::Open(rootFile[1]);
   file[1]->GetObject("histo",ratio); 
   ratio->Rebin(20);  
@@ -76,10 +116,14 @@ int evalQCDUncertainty(int eta){
 
   cout<<"correlation is = "<<correlation<<endl<<endl<<endl;
 
-  cout<<"sqrt(histo[0]->GetSumOfWeights()) = "<<sqrt(histo[0]->GetSumOfWeights())<<endl;
-  cout<<"sqrt(histo[0]->GetEntries())      = "<<sqrt(histo[0]->Integral())<<endl;
-  cout<<"sqrt(histo[1]->GetSumOfWeights()) = "<<sqrt(histo[1]->GetSumOfWeights())<<endl;
-  cout<<"sqrt(histo[1]->GetEntries())      = "<<sqrt(histo[1]->Integral())<<endl<<endl;
+  cout<<"wo QCD  : histo[0]->GetSumOfWeights() = "<<histo[0]->GetSumOfWeights()<<endl;
+  cout<<"wo QCD  : histo[0]->Integral()        = "<<histo[0]->Integral()<<endl;
+  cout<<"wo QCD  : histo[0]->GetEntries()      = "<<histo[0]->GetEntries()<<endl;
+  cout<<"with QCD: histo[1]->GetSumOfWeights() = "<<histo[1]->GetSumOfWeights()<<endl;
+  cout<<"with QCD: histo[1]->Integral()        = "<<histo[1]->Integral()<<endl;
+  cout<<"with QCD: histo[1]->GetEntries()      = "<<histo[1]->GetEntries()<<endl;
+  cout<<"only QCD:         Integral            = "<<histo[1]->Integral()-histo[0]->Integral()<<endl;
+  cout<<"only QCD:         Entries             = "<<histo[1]->GetEntries()-histo[0]->GetEntries()<<endl<<endl;
 
   ratio -> Add(histo[0],-1);
   ratio -> Divide(histo[1]);
@@ -89,26 +133,15 @@ int evalQCDUncertainty(int eta){
 
   plotRatio->cd();
   ratio->SetMinimum(0.0);
-  ratio->GetXaxis()->SetRangeUser(0.,800.);
+  ratio->GetXaxis()->SetRangeUser(40.,800.);
   ratio -> SetTitle("#int(QCD)/#int(QCD +(#gamma+jet))");
   ratio->Draw();
   tot_filename = (TString) "plotsQCD/qcdContamination.pdf";
   plotRatio -> SaveAs(tot_filename);
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
-  rootFile[0]  = (TString) "woSysUncer_woTriggerWithPixelSeed/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  rootFile[0]  = (TString) "root_files_WithoutTriggerWithPUWeighteq1/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  rootFile[0]  = (TString) "root_files_WithoutTriggerWithPUWeighteq1_withBetterFit/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  //rootFile[0]  = (TString) "root_files_WithoutTriggerWithPUWeighteq1_rougherBinning/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  rootFile[0]  = (TString) "root_files_onlyGammaJet_test5/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
   rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-
-  //rootFile[0]  = (TString) "root_files_WithoutQCD_RejectPtHat/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  rootFile[1]  = (TString) "QCDcontamination/root_files_woTriggerWithPUWeighteq1/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString) ".root";
-  rootFile[1]  = (TString) "QCDcontamination/root_files_woTriggerWithPUWeighteq1_rougherBinning/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString)".root";
-  rootFile[1]  = (TString) "QCDcontamination/root_files/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString)".root";
-  rootFile[1]  = (TString) "QCDcontamination/root_files_withQCD_test5/Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString)".root";
-  rootFile[1]  = pathNameQCD + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_mc_" +method + (TString)".root";
+  rootFile[1]  = pathNameQCD + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_PFCHS_data_" +method + (TString)".root";
 
   etaString = "Uncertainty on QCD contamination";
   
@@ -117,8 +150,6 @@ int evalQCDUncertainty(int eta){
 
   TCanvas *c = new TCanvas("c",etaString,200,10,800,800);
   c -> cd();
-  c -> SetBottomMargin(0.14);
-  c -> SetLeftMargin(0.14);
 
   TString fitName;
 
@@ -155,8 +186,8 @@ int evalQCDUncertainty(int eta){
   mg -> GetYaxis() -> SetTitle("JER");
   mg -> GetYaxis() -> SetTitleOffset(1.3); 
   mg -> GetYaxis() -> SetTitleSize(0.05);
-  mg -> SetMinimum(0.004);
-  mg -> SetMaximum(0.20);   
+  mg -> SetMinimum(0.02);
+  mg -> SetMaximum(0.18);   
   mg -> GetXaxis() -> SetLimits(0,600);
 
   mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
@@ -167,7 +198,7 @@ int evalQCDUncertainty(int eta){
   info->SetTextFont(132);
   info-> SetNDC();
   info->SetTextSize(0.045);
-  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
+  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBinsQCD[eta-1],etaBinsQCD[eta]);
   info->DrawLatex(0.6,0.7,AuxString);
 
   
@@ -297,7 +328,7 @@ int evalQCDUncertainty(int eta){
   info1->SetTextFont(132);
   info1-> SetNDC();
   info1->SetTextSize(0.045);
-  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
+  AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBinsQCD[eta-1],etaBinsQCD[eta]);
   info1->DrawLatex(0.6,0.7,AuxString);
 
   TF1 *line = new TF1("line","pol0",0,600);
@@ -369,134 +400,6 @@ int evalQCDUncertainty(int eta){
   tot_filename = (TString) "plotsQCD/FinalErrorsQCD_" + type + (TString) "_" + method + (TString) ".pdf";
   c4->SaveAs(tot_filename);
 
-  /*
-  double* PointsY = graph[0]->GetY();
-  double* highPointsY = graph[0]->GetY();
-  double* lowPointsY = graph[0]->GetY();
-  double* PointsX = graph[0]->GetY();
-  double* PointsEX = graph[0]->GetEY();
-  for(int i=0; i<graph[0]->GetN();i++){
-    highPoints[i] = highPointsY[i]*diff->Eval(PointsX[i]);
-    lowPoints[i]  = lowPointsY[i]*diff->Eval(PointsX[i]);
-    highPoints = abs(highPoints[i]/PointsY[i]- 1.);
-    lowPoints = abs(lowPoints[i]/PointsY[i] - 1.);
-    
-    errorUpEY[i]  = TMath::Sqrt(TMath::Power(1./dataY[i],2)*TMath::Power(dataUpEY[i],2) + TMath::Power(dataUpY[i]/TMath::Power(dataY[i],2),2)*TMath::Power(dataEY[i],2) -correlationUp*2.0 * dataUpY[i]/TMath::Power(dataY[i],3)*dataUpEY[i]*dataEY[i]);
-  }
-
-  TF1* highFit = new TF1("highFit","pol0",0,600);
-  TF1* lowFit  = new TF1("lowFit","pol0",0,600);
-
-  TGraphErrors* highRatio = new TGraphErrors(graph[0]->GetN(),PointsX,highPoints,PointsEX,); 
-  */
-
-
-
-  //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  /*
-  // 2.) Relative uncertainty to ratio -> ratio*(1 +- Delta)
- 
-  double *errorRatioQCDY = new double[graph[0]->GetN()];
-  double *errorRatioQCDEY= new double[graph[0]->GetN()];
-
-  for(int i=0; i<nData; i++){
- 
-    errorRatioQCDY[i]  = TMath::Abs(1. - 1./(1. - errorQCDY[i]));
-    errorRatioQCDEY[i] = TMath::Abs(TMath::Power(1./(1.-errorQCDY[i]),2) * errorQCDEY[i]);
-    dataX[i] = dataX[i];
-    dataEX[i] = dataEX[i];
-  }
-
-  TGraphErrors *plotRatioQCD = new TGraphErrors(nData,dataX,errorRatioQCDY,dataEX,errorRatioQCDEY);
-  
-  TCanvas *c3 = new TCanvas("c3","c3",200,10,800,800);
-  c3 -> SetLeftMargin(0.17);
-  c3 -> cd();
-
-  plotRatioLow -> SetMarkerStyle(24);  
-  plotRatioLow -> SetMarkerColor(9);  
-  plotRatioLow -> SetLineColor(9); 
-
-  delete legend;
-  legend  = new TLegend(0.5,0.8,0.9,0.9);
-  legend -> SetFillColor(0);
-  legend -> SetTextSize(0.033);
-  legend -> AddEntry(plotRatioLow,"- #Delta JEC","p");
-  legend -> AddEntry(plotRatioUp,"+ #Delta JEC","p");
-
-  delete mg;
-  mg = new TMultiGraph();
-  mg->Add(plotRatioLow);  
-  mg->Add(plotRatioUp);
-
-  if(eta == 1) etaString = Form("Relative JEC Uncertainty for |#eta| < %4.1f",etaBins[eta]);
-  else         etaString = Form("Relative JEC Uncertainty for %4.1f < |#eta| < %4.1f",etaBins[eta],etaBins[eta+1]);
-  mg -> SetTitle(etaString);  
-  
-  mg->Draw("AP");
-    
-  mg -> GetYaxis() -> SetTitle("ratio_{#pm #Delta JEC} /ratio ");
-  mg -> GetYaxis() -> SetTitleOffset(2.0); 
-  mg -> SetMinimum(-0.05);
-  mg -> SetMaximum(0.05); 
-  mg -> GetXaxis() -> SetLimits(0,600);  
-  
-  mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma}");
-  mg -> GetXaxis() -> SetTitleOffset(1.2); 
-  
-  legend->Draw("same");
-
-  tot_filename = (TString) "plots/Relative_Resolution_for_" + (long) eta + (TString) "_eta_bin_JECUncertainty_RatioUncertainty.pdf";
-  c3 -> SaveAs(tot_filename);
- 
-  //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //3.) Symmetrize Errors and fit a horizontal to it
-
-  double *errorSymY  = new double[nData];
-  double *errorSymEY = new double[nData];
-
-  for(int i=0; i<nData; i++){
-    errorSymY[i] = (errorUpY[i] + errorLowY[i])/2.;
-    errorSymEY[i] = 1./2.*TMath::Sqrt(TMath::Power(errorUpEY[i],2) + TMath::Power(errorLowEY[i],2));
-  }
-
-  TF1* line = new TF1("line","pol0",0,600);
-
-  TGraphErrors* symError = new TGraphErrors(nData,dataX,errorSymY,dataEX,errorSymEY);
-  symError->Fit("line","RQ");
- 
-  TCanvas *c2 = new TCanvas("c2","c2",200,10,800,800);
-  c2 -> SetLeftMargin(0.17);
-  c2 -> cd();
-
-  if(eta == 1) etaString = Form("Relative JEC Uncertainty for |#eta| < %4.1f (symmetrized errors)",etaBins[eta]);
-  else         etaString = Form("Relative JEC Uncertainty for %4.1f < |#eta| < %4.1f (symmetrized errors)",etaBins[eta],etaBins[eta+1]);
-  symError -> SetTitle(etaString);  
-    
-  symError -> SetMarkerStyle(20);
-  symError -> GetYaxis() -> SetTitle("JER_{#pm #Delta JEC} /JER ");
-  symError -> GetYaxis() -> SetTitleOffset(2.0); 
-  symError -> SetMinimum(-0.05);
-  symError -> SetMaximum(0.05);   
-  symError -> GetXaxis() -> SetTitle("p_{T}^{#gamma}");
-  symError -> GetXaxis() -> SetTitleOffset(1.2); 
-  symError -> GetXaxis() -> SetLimits(0,600);
-
-  symError -> Draw("AP");
-
-
-  TLatex*  info   = new TLatex();
-  info->SetTextFont(132);
-  info-> SetNDC();
-  info->SetTextSize(0.040);
-  AuxString = Form("#font[22]{f =  %4.3f #pm %4.3f}",line ->GetParameter(0), line->GetParError(0));
-  info->DrawLatex(0.6,0.84,AuxString);
-  AuxString = Form("#splitline{#chi^{2} = %4.2f}{dof = %i}",line ->GetChisquare(), line->GetNDF());
-  info->DrawLatex(0.6,0.74,AuxString);
- 
-  tot_filename = (TString) "plots/Symmetrized_Relative_Resolution_for_" + (long) eta + (TString) "_eta_bin_JECUncertainty.pdf";
-  c2 -> SaveAs(tot_filename);
-  */
   return 0;
 
 }
