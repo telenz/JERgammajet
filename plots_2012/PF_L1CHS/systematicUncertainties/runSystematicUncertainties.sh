@@ -9,7 +9,7 @@ echo "Time needed: " $(date -d "1970-01-01 $thetime sec" +"%H:%M:%S") / $thetime
 # ----------------------------------------------------------------------------------------------------
 cd scripts/
 root -b -l -q evalJECUncertainty.C+"()"
-root -b -l -q evalFlavorUncertainty.C+"(\"phys\")"
+root -b -l -q evalFlavorUncertainty.C+"(\"algo\")"
 root -b -l -q evalPUUncertainty.C+"()"
 root -b -l -q evalQCDUncertainty.C+"(1)"
 root -b -l -q evalMCUncertainty.C+"()"
