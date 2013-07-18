@@ -1,0 +1,28 @@
+CUTFLOW:
+cut1 = 0
+cut2 = 0
+cut3 = 0
+cut4 = 0
+cut5 = 66146
+cut6 = 460
+cut7 = 287849
+cut8 = 909374
+cut9 = 62934
+cut10 = 1329843
+cut11 = 117130
+cut12[0] = 0
+cut12[1] = 112
+cut12[2] = 2954
+cut12[3] = 4526
+cut12[4] = 17707
+cut12[5] = 25
+cut12[6] = 26
+cut12[7] = 31030
+cut13[0] = 0
+cut13[1] = 0
+cut13[2] = 0
+cut14 = 0
+cut15 = 0
+nocut = 2039030
+number of all events = 4869146
+
