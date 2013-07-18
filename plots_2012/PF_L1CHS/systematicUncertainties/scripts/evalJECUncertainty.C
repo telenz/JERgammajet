@@ -1,4 +1,4 @@
-// $Id: evalJECUncertainty.C,v 1.1 2013/07/09 16:04:02 telenz Exp $
+// $Id: evalJECUncertainty.C,v 1.2 2013/07/10 08:54:28 telenz Exp $
 
 #include <fstream>
 #include <iostream>
@@ -85,9 +85,9 @@ int evalJECUncertainty(){
   cout<<      "Correlation between upward variation and without variation   = "<<correlationUp<<endl<<endl<<endl;
   // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
  
-  pathName[0]  = (TString) "root_files_WithoutTriggerWithPUWeightEq1/";
-  pathName[1]  = (TString) "root_files_JECUncertainty/downwardVariationwoTriggerPUWeighteq1/";
-  pathName[2]  = (TString) "root_files_JECUncertainty/upwardVariationwoTriggerPUWeighteq1/";
+  pathName[0]  = (TString) "root_files_JECUncertainty/centralValue/";
+  pathName[1]  = (TString) "root_files_JECUncertainty/downwardVariation/";
+  pathName[2]  = (TString) "root_files_JECUncertainty/upwardVariation/";
 
   cout<<"root files from following folders:"<<endl<<pathName[0]<<endl<<pathName[1]<<endl<<pathName[2]<<endl<<endl<<endl;
 
