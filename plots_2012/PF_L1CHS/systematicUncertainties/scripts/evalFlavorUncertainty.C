@@ -41,9 +41,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
   const TString type   = "PFCHS";
 
 
-  TString pathName       = (TString) "root_files_FlavorUncertainty/together_" + definition+ "_new/";
-  TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "_new/";
-  TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "_new/";
+  TString pathName       = (TString) "root_files_FlavorUncertainty/together_" + definition+ "/";
+  TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "/";
+  TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "/";
 
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     mg->Draw("AP");
     
     mg -> GetYaxis() -> SetTitle("JER");
-    mg -> SetMinimum(0.004);
+    mg -> SetMinimum(0.04);
     mg -> SetMaximum(0.12);   
     mg -> GetXaxis() -> SetLimits(0,600);
     mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]"); 
@@ -293,9 +293,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
     plotLow -> SetLineColor(9);
  
     
-    TLegend* legend1  = new TLegend(0.35,0.75,0.9,0.9);
+    TLegend* legend1  = new TLegend(0.30,0.75,0.9,0.9);
     legend1 -> SetFillColor(0);
-    legend1 -> SetTextSize(0.033);
+    legend1 -> SetTextSize(0.042);
    
     legend1 -> AddEntry(plotLow,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureLow[eta], 1.-mixtureLow[eta]),"p");
     legend1 -> AddEntry(plotUp,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureUp[eta], 1.-mixtureUp[eta]),"p");
@@ -322,7 +322,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     TLatex* info1   = new TLatex();
     info1->SetTextFont(132);
     info1-> SetNDC();
-    info1->SetTextSize(0.040);
+    info1->SetTextSize(0.042);
     info1->DrawLatex(0.6,0.7,AuxString);
   
     AuxString = Form("Chi2/ndof = %4.1f/%i",fitLineUp->GetChisquare(),fitLineUp->GetNDF());
