@@ -39,7 +39,7 @@ int plotFlavorComposition(){
   //TString definition = "algo";
   TString definition = "phys";
   
-  TString pwdName = "../plots_2012/PF_L1CHS/mc/root_files_FINAL/";
+  TString pwdName = "../plots_2012/PF_L1CHS/mc/root_files/";
 
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);

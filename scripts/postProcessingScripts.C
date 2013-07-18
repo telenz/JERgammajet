@@ -65,12 +65,12 @@ int MCClosure(){
 
     canvas[j] ->cd();
   
-    fileName = "../plots_2012/PF_L1CHS/mc/root_files_FINAL" + (TString) "/Resolution_for_" + (long) (j+1) + "_eta_bin_PFCHS_mc_" + method + ".root";    
+    fileName = "../plots_2012/PF_L1CHS/mc/root_files" + (TString) "/Resolution_for_" + (long) (j+1) + "_eta_bin_PFCHS_mc_" + method + ".root";    
     file =  TFile::Open(fileName);
     file -> GetObject("Graph",full);
     delete file;
 
-    fileName = "../plots_2012/PF_L1CHS/mc/root_files_FINAL" + (TString) "/Resolution_for_" + (long) (j+1) + "_eta_bin_intrinsic_PFCHS_mc_" + method + ".root"; 
+    fileName = "../plots_2012/PF_L1CHS/mc/root_files" + (TString) "/Resolution_for_" + (long) (j+1) + "_eta_bin_intrinsic_PFCHS_mc_" + method + ".root"; 
     file = TFile::Open(fileName);
     file->GetObject("Graph",intr);
     delete file;
@@ -187,11 +187,11 @@ int plotJetResponseAlpha(){
     for(int i=0;i<nPtBins;i++){       
 
 
-      sourceResponseAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files_FINAL/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_PFCHS_mc_RMS99.root",j+1,i+1);
-      sourceIntrinsicAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files_FINAL/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_intrinsic_PFCHS_mc_RMS99.root",j+1,i+1);
-      sourceImbalanceAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files_FINAL/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_imbalance_PFCHS_mc_RMS99.root",j+1,i+1);
-      sourceTotalAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files_FINAL/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_total_PFCHS_mc_RMS99.root",j+1,i+1);
-      sourceData.Form("../plots_2012/PF_L1CHS/data/root_files_FINAL/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_PFCHS_data_RMS99.root",j+1,i+1);
+      sourceResponseAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_PFCHS_mc_RMS99.root",j+1,i+1);
+      sourceIntrinsicAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_intrinsic_PFCHS_mc_RMS99.root",j+1,i+1);
+      sourceImbalanceAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_imbalance_PFCHS_mc_RMS99.root",j+1,i+1);
+      sourceTotalAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_total_PFCHS_mc_RMS99.root",j+1,i+1);
+      sourceData.Form("../plots_2012/PF_L1CHS/data/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_PFCHS_data_RMS99.root",j+1,i+1);
       pdfFile.Form("plots/JER_for_%i_eta_bin_%i_pTGamma_bin_all_contributions_PFCHS_RMS99_mc.pdf",j+1,i+1);
       title = "Jet Energy Resolution";
  
