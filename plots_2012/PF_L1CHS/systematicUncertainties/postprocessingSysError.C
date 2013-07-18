@@ -17,6 +17,7 @@
 #include "TMath.h"
 #include "TMultiGraph.h"
 #include "TStyle.h"
+#include "TROOT.h"
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 #include "TH1.h"
@@ -25,6 +26,7 @@
 #include "TString.h"
 #include "TLegend.h"
 #include "TLatex.h"
+#include "TColor.h"
 #include "../../../CODE/myDeclarations.h"
 #include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
 
@@ -384,6 +386,8 @@ int postprocessingSysError(){
   double *deltaTotalSysDown = new double[nEta];
   double *DeltaTotalSysUp   = new double[nEta];
   double *DeltaTotalSysDown = new double[nEta];
+  double *DeltaTotalDown = new double[nEta];
+  double *DeltaTotalUp = new double[nEta];
   for(int eta = 0; eta<nEta; eta++){
 
     // Add all systematic Uncertainties in quadrature (delta is relative Uncertainty)
@@ -393,6 +397,10 @@ int postprocessingSysError(){
     // Calculation of the absolute Uncertainty with Delta = ratio * delta
     DeltaTotalSysUp[eta]   = deltaTotalSysUp[eta] * ratioEtaBinnedY[eta];
     DeltaTotalSysDown[eta] = deltaTotalSysDown[eta] * ratioEtaBinnedY[eta];
+
+    // Calculate Systematic plus staistical Uncertainty
+    DeltaTotalUp[eta] = sqrt(pow(DeltaTotalSysUp[eta],2) + pow(ratioEtaBinnedEY[eta],2));
+    DeltaTotalDown[eta] = sqrt(pow(DeltaTotalSysDown[eta],2) + pow(ratioEtaBinnedEY[eta],2));
 
     cout<<endl<<"relative: deltaTotalSysUp["<<eta<<"]   = "<<fixed<<setprecision(3)<<deltaTotalSysUp[eta]<<endl;
     cout<<"relative: deltaTotalSysDown["<<eta<<"] = "<<deltaTotalSysDown[eta]<<endl;
@@ -408,8 +416,10 @@ int postprocessingSysError(){
   TGraph* ratioRelativeErrorsUp   = new TGraph(nEta,ratioEtaBinnedX,deltaTotalSysUp);
   TGraph* ratioRelativeErrorsDown = new TGraph(nEta,ratioEtaBinnedX,deltaTotalSysDown);
 
+  double ex[nEta] ={0.};
 
   TGraphErrors* ratioEtaBinnedStat = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ratioEtaBinnedEX,ratioEtaBinnedEY);
+  TGraphAsymmErrors* ratioEtaBinnedStatPlusSys = new TGraphAsymmErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ex,ex,DeltaTotalDown,DeltaTotalUp);
   
   TCanvas *cFinal = new TCanvas("cFinal","cFinal",200,10,500,500);
   cFinal -> cd();  
@@ -584,6 +594,143 @@ latexTable<<"\\\\\\hline"<<endl;
 
 
  latexTable.close();
+
+
+
+
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // Comparison to 2011 Data 
+  cout<<endl; 
+  
+  TCanvas *cFinal2 = new TCanvas("cFinal2","cFinal2",200,10,1000,1000);
+  cFinal2 -> cd();  
+
+
+  TH1F *Res_2011Final = new TH1F("Data_MC_ratio_2011","", 4, etaBins);
+  Res_2011Final->SetBinContent(1, 1.052);
+  Res_2011Final->SetBinContent(2, 1.057);
+  Res_2011Final->SetBinContent(3, 1.096);
+  Res_2011Final->SetBinContent(4, 1.134);
+  TGraphAsymmErrors *Res_2011 = new TGraphAsymmErrors(Res_2011Final);
+  Res_2011->SetPointError(0, 0., 0., 0.063, 0.062);
+  Res_2011->SetPointError(1, 0., 0., 0.057, 0.056);
+  Res_2011->SetPointError(2, 0., 0., 0.065, 0.064);
+  Res_2011->SetPointError(3, 0., 0., 0.094, 0.092);
+
+  ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetTitle("|#eta|");
+  ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetRangeUser(0., 2.3);
+  //ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetNdivisions(505, "X");
+  ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
+  ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetRangeUser(0.8, 1.5);
+
+  Res_2011 -> GetXaxis() -> SetTitle("|#eta|");
+  Res_2011 -> GetXaxis() -> SetLimits(0., 2.3);
+  Res_2011 -> GetXaxis() -> SetNdivisions(505, "X");
+  Res_2011 -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
+  Res_2011 -> GetYaxis() -> SetRangeUser(0.8, 1.5);
+
+  //  Color_t color = ();
+
+  ratioEtaBinnedStatPlusSys -> SetMarkerStyle(20); 
+  ratioEtaBinnedStatPlusSys -> SetMarkerSize(2.0);
+  ratioEtaBinnedStatPlusSys -> SetLineColor(kPink-8);
+  ratioEtaBinnedStatPlusSys -> SetMarkerColor(kPink-8);
+  ratioEtaBinnedStatPlusSys -> SetFillColor(kPink-8);
+  cout<<gStyle->GetHatchesSpacing()<<endl;
+  cout<<gStyle->GetHatchesLineWidth()<<endl;
+  gStyle->SetHatchesSpacing(2.);
+  //gStyle->SetHatchesLineWidth(2);
+  gROOT->ForceStyle();
+  ratioEtaBinnedStatPlusSys -> SetFillStyle(3244);
+  //ratioEtaBinnedStatPlusSys -> SetFillStyle(1001);
+  //ratioEtaBinnedStatPlusSys -> SetFillStyle(4050);
+
+  Res_2011->SetMarkerStyle(24);
+  Res_2011->SetMarkerSize(2.0);
+  Res_2011->SetLineColor(1);
+  Res_2011->SetFillColor(kGray);
+  //Res_2011->SetFillStyle(3001);
+  Res_2011->SetFillStyle(1001);
+  Res_2011->SetLineColor(kGray);
+
+  cFinal2->Update();
+
+  Res_2011->DrawClone("Ae3p");
+  ratioEtaBinnedStatPlusSys -> Draw("3epsame");
+  Res_2011->DrawClone("pXsame");
+  Res_2011->SetMarkerSize(1.9);
+  Res_2011->DrawClone("pXsame");
+  Res_2011->SetMarkerSize(1.7);
+  Res_2011->Draw("pXsame");
+  ratioEtaBinnedStatPlusSys -> Draw("pXsame");
+  
+  
+  
+
+  //ratioEtaBinnedStatPlusSys -> Draw("e3psame");
+
+  Res_2011->SetPointError(0, 0., 0., 0., 0.);
+  Res_2011->SetPointError(1, 0., 0., 0., 0.);
+  Res_2011->SetPointError(2, 0., 0., 0., 0.);
+  Res_2011->SetPointError(3, 0., 0., 0., 0.);
+  Res_2011->SetPointError(4, 0., 0., 0., 0.);
+
+  //Res_2011->Draw("psame");
+
+  cmsPrel();
+
+  TLegend *leg = new TLegend(0.20, 0.70, 0.40, 0.90);
+  leg->SetBorderSize(0);
+  // leg->SetBorderMode(0);
+  leg->SetFillColor(0);
+  leg->SetFillStyle(0);
+  leg->SetTextFont(42);
+  leg->SetTextSize(0.040);
+  
+  leg->AddEntry(Res_2011,"2011 (total error)", "pl");
+  leg->AddEntry(ratioEtaBinnedStatPlusSys,"2012 (total error)", "pl");
+ 
+   
+  leg->Draw("same");
+  
+  //cFinal2->Print("plots/resultsComparisonFINAL.png","png");   
+  cFinal2->Print("plots/resultsComparisonFINAL.pdf","pdf");
+  //cFinal2->Print("plots/resultsComparisonFINAL.eps","eps");
+  
+  //cFinal2->SaveAs("plots/resultsComparisonFINALs.png","png");   
+  //cFinal2->SaveAs("plots/resultsComparisonFINALs.pdf","pdf");
+  //cFinal2->SaveAs("plots/resultsComparisonFINALs.eps","eps");
+
+
+
+TCanvas *c1= new TCanvas();
+   c1->Divide(2,2);
+
+   TGraphAsymmErrors* g1= new TGraphAsymmErrors();
+
+   for (Int_t i=0; i<10; i++) {
+
+     g1->SetPoint(i,i+0.5,1.);
+     g1->SetPointError(i,0.25,0.25,i*1.1,i*1.1); 
+
+   }
+
+   c1->cd(1);
+   g1->SetFillColor(2);
+   g1->Draw("Ae2");
+
+   c1->cd(2);
+   g1->Draw("ae2");
+
+   c1->cd(3);
+   g1->Draw("ae3");
+
+   c1->cd(4);
+   g1->Draw("ae4"); 
+
+   c1->SaveAs("tt.pdf");
+
   return 0;
 
 }
