@@ -76,7 +76,7 @@ void CResponse::calculate(){
       
       sigma_array = sigmaAUX;
     
-      r = hResponse -> Fit("gauss","QL","",meanAUX-2.0*sigma_array,meanAUX+2.0*sigma_array);  
+      r = hResponse -> Fit("gauss","QWL","",meanAUX-2.0*sigma_array,meanAUX+2.0*sigma_array);  
       
       sigmaAUX = f1 -> GetParameter(2);
       meanAUX  = f1 -> GetParameter(1);
@@ -122,7 +122,7 @@ void CResponse::calculate(){
       
       sigma_array = sigmaAUX;
     
-      r = hResponse -> Fit("gauss","QL","",meanAUX-2.0*sigma_array,meanAUX+2.0*sigma_array);  
+      r = hResponse -> Fit("gauss","QWL","",meanAUX-2.0*sigma_array,meanAUX+2.0*sigma_array);  
       
       sigmaAUX = f1 -> GetParameter(2);
       meanAUX  = f1 -> GetParameter(1);
@@ -238,27 +238,27 @@ void CScaleResAlpha::calculate(int length, int fit){
 	cout<<"qprime is negative !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
 	cout<<"qprime      = "<<qprime<<endl;
 	cout<<"qprimeError = "<<qprimeError<<endl<<endl;;
-	  if(qprime + qprimeError > 0){
-	    cout<<"But with Error compatible to Zero! - qprime Set to zero"<<endl;
-	    qprime      = 0;
-	    qprimeError = 0;
-	    mprime      = fResolutionAlpha -> GetParameter(1);
-	    fResolutionAlpha -> FixParameter(0,0);
-	    fResolutionAlpha -> SetParameter(1,mprime);
+	if(qprime + qprimeError > 0){
+	  cout<<"But with Error compatible to Zero! - qprime Set to zero"<<endl;
+	  qprime      = 0;
+	  qprimeError = 0;
+	  mprime      = fResolutionAlpha -> GetParameter(1);
+	  fResolutionAlpha -> FixParameter(0,0);
+	  fResolutionAlpha -> SetParameter(1,mprime);
 
-	    gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
-	  }
-	  else{
-	    cout<<"!!!!!!!!!!!!!Not compatible with zero including ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (Please check that bin)"<<endl;
+	  gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
+	}
+	else{
+	  cout<<"!!!!!!!!!!!!!Not compatible with zero including ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (Please check that bin)"<<endl;
 	    
-	    qprime      = 0;
-	    qprimeError = 0;
-	    mprime      = fResolutionAlpha -> GetParameter(1);
-	    fResolutionAlpha -> FixParameter(0,0);
-	    fResolutionAlpha -> SetParameter(1,mprime);
+	  qprime      = 0;
+	  qprimeError = 0;
+	  mprime      = fResolutionAlpha -> GetParameter(1);
+	  fResolutionAlpha -> FixParameter(0,0);
+	  fResolutionAlpha -> SetParameter(1,mprime);
 	    
-	    gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
-	  }
+	  gJetResolutionAlpha -> Fit("fResolutionAlpha","QR");
+	}
       }
 
       mprime          = fResolutionAlpha -> GetParameter(1);
@@ -286,31 +286,31 @@ void CScaleResAlpha::calculate(int length, int fit){
       fResolutionAlpha    -> SetParameter(2,0.008);
       gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");
 
-      
+
       if(fResolutionAlpha -> GetParameter(2) < 0){	
 
-	  cout<<"----------------------------------------------------Fit Paramter mprime < 0 -> Set bounds on it !!!!"<<endl;
-	  cout<<"mprime      = "<<fResolutionAlpha -> GetParameter(2)<<endl;
-	  cout<<"mprimeError = "<<fResolutionAlpha -> GetParError(2)<<endl;
+	cout<<"----------------------------------------------------Fit Paramter mprime < 0 -> Set bounds on it !!!!"<<endl;
+	cout<<"mprime      = "<<fResolutionAlpha -> GetParameter(2)<<endl;
+	cout<<"mprimeError = "<<fResolutionAlpha -> GetParError(2)<<endl;
 
-	  fResolutionAlpha -> SetParLimits(2,0.0,10000000);
-	  fResolutionAlpha -> SetParameter(2,0.005);
+	fResolutionAlpha -> SetParLimits(2,0.0,10000000);
+	fResolutionAlpha -> SetParameter(2,0.005);
 
-	  if(isMC){
-	    fResolutionAlpha -> SetParameter(0,cprime);
-	  }
-	  else if(!isMC){
-	    fResolutionAlpha -> SetParameter(0,0.05);
-	  }
-	  gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");	
+	if(isMC){
+	  fResolutionAlpha -> SetParameter(0,cprime);
+	}
+	else if(!isMC){
+	  fResolutionAlpha -> SetParameter(0,0.05);
+	}
+	gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");	
 
-	  cout<<"mprime after setting bound:"<<endl;
-	  cout<<"mprime      = "<<fResolutionAlpha -> GetParameter(2)<<endl;
-	  cout<<"mprimeError = "<<fResolutionAlpha -> GetParError(2)<<endl;
+	cout<<"mprime after setting bound:"<<endl;
+	cout<<"mprime      = "<<fResolutionAlpha -> GetParameter(2)<<endl;
+	cout<<"mprimeError = "<<fResolutionAlpha -> GetParError(2)<<endl;
 
-	  fResolutionAlpha -> FixParameter(2,fResolutionAlpha -> GetParameter(2));
-	  cout<<"mprime is now fixed to that value to avoid strange errors of cmprime!"<<endl;
-	  gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");	
+	fResolutionAlpha -> FixParameter(2,fResolutionAlpha -> GetParameter(2));
+	cout<<"mprime is now fixed to that value to avoid strange errors of cmprime!"<<endl;
+	gJetResolutionAlpha -> Fit("fResolutionAlpha","QRB");	
 	  
 	
       }
@@ -319,7 +319,8 @@ void CScaleResAlpha::calculate(int length, int fit){
 
 	cout<<"--------------------------------------------------- Fit Paramter cprime < 0 -> Set bounds on it!!!!"<<endl;
 
-	fResolutionAlpha -> SetParLimits(0,0,10000000);
+	fResolutionAlpha -> SetParLimits(0,0.,10000000);
+	fResolutionAlpha -> SetParLimits(2,0.,10000000);
 	
 	if(isMC){
 	  fResolutionAlpha -> SetParameter(0,cprime);
@@ -358,8 +359,8 @@ void CScaleResAlpha::calculate(int length, int fit){
 };
 
 CScaleResAlpha::~CScaleResAlpha(){
-    delete gJetScaleAlpha;
-    delete gJetResolutionAlpha;  
+  delete gJetScaleAlpha;
+  delete gJetResolutionAlpha;  
 };
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
