@@ -108,7 +108,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     togetherWoUndefined[i] -> Add(gluon[i]);
     togetherWoUndefined[i] -> Add(lightQuark[i]);
 
-    correlationQuarks[i] = sqrt(lightQuark[i]->Integral()/togetherWoUndefined[i]->Integral());
+    correlationQuarks[i] = sqrt(allQuarks[i]->Integral()/togetherWoUndefined[i]->Integral());
     correlationGluons[i] = sqrt(gluon[i]->Integral()/togetherWoUndefined[i]->Integral());
 
     togetherWoUndefined[i]-> Rebin(togetherWoUndefined[i]->GetNbinsX());
@@ -176,8 +176,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     graph[2] -> GetFunction("fResolution") -> SetLineColor(1);
  
     TLegend *legend  = new TLegend(0.35,0.75,0.9,0.9);
-    legend -> SetFillColor(0);
-    legend -> SetTextSize(0.042);
+    legend -> SetTextSize(0.033);
     legend -> AddEntry(graph[0],"Full sample","l");
     legend -> AddEntry(graph[1],"Quarks","l");
     legend -> AddEntry(graph[2],"Gluons","l");
@@ -294,8 +293,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
  
     
     TLegend* legend1  = new TLegend(0.30,0.75,0.9,0.9);
-    legend1 -> SetFillColor(0);
-    legend1 -> SetTextSize(0.042);
+    legend1 -> SetTextSize(0.033);
    
     legend1 -> AddEntry(plotLow,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureLow[eta], 1.-mixtureLow[eta]),"p");
     legend1 -> AddEntry(plotUp,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureUp[eta], 1.-mixtureUp[eta]),"p");
@@ -322,16 +320,15 @@ int evalFlavorUncertainty(TString definition = "algo"){
     TLatex* info1   = new TLatex();
     info1->SetTextFont(132);
     info1-> SetNDC();
-    info1->SetTextSize(0.042);
     info1->DrawLatex(0.6,0.7,AuxString);
   
-    AuxString = Form("Chi2/ndof = %4.1f/%i",fitLineUp->GetChisquare(),fitLineUp->GetNDF());
+    AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineUp->GetChisquare(),fitLineUp->GetNDF());
     info1->DrawLatex(0.6,0.2,AuxString);
 
     AuxString = Form("f = %4.3f #pm %4.3f",fitLineUp->GetParameter(0),fitLineUp->GetParError(0));
     info1->DrawLatex(0.6,0.25,AuxString);
 
-    AuxString = Form("Chi2/ndof = %4.1f/%i",fitLineLow->GetChisquare(),fitLineLow->GetNDF());
+    AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineLow->GetChisquare(),fitLineLow->GetNDF());
     info1->DrawLatex(0.2,0.2,AuxString);
 
     AuxString = Form("f = %4.3f #pm %4.3f",fitLineLow->GetParameter(0),fitLineLow->GetParError(0));
