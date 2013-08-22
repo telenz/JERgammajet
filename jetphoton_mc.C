@@ -212,6 +212,7 @@ void calcSample() {
 		  JetResponseJetHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
 		  JetResponseJetHemisphere[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);	
 		  JetResponseJetHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
+		  JetResponseJetHemisphere[i][j][k] -> hPtLeadingPhoton -> Fill(photonPt[0],weight*PUWeight);
 		 
 
 		  if(gen1stJetidx >= 0){
@@ -226,6 +227,7 @@ void calcSample() {
 		  JetResponsePhotonHemisphere[i][j][0] -> hPt            -> Fill(photonPt[0],weight*PUWeight);
 		  JetResponsePhotonHemisphere[i][j][k] -> hAlpha         -> Fill(alpha,weight*PUWeight);
 		  JetResponsePhotonHemisphere[i][j][k] -> hPtLeadingJet  -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
+		  JetResponsePhotonHemisphere[i][j][k] -> hPtLeadingPhoton -> Fill(photonPt[0],weight*PUWeight);
 
 		  if(gen1stJetidx >= 0){
 		    JetResponsePhotonHemisphere[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
@@ -241,6 +243,7 @@ void calcSample() {
 		  JetIntrinsic[i][j][k] -> hAlpha            -> Fill(alpha,weight*PUWeight);
 		  JetIntrinsic[i][j][k] -> hPtLeadingJet     -> Fill(jetPt[corrJets.idx(idx1stJet)],weight*PUWeight);
 		  JetIntrinsic[i][j][k] -> hgenPtLeadingJet  -> Fill(genJetPt[gen1stJetidx],weight*PUWeight);  
+		  JetIntrinsic[i][j][k] -> hPtLeadingPhoton  -> Fill(photonPt[0],weight*PUWeight); 
 		}
 	
 		hNPU -> Fill(PUMCNumTruth, weight*PUWeight);
@@ -296,6 +299,12 @@ void calcSample() {
 	saveObject(JetResponseJetHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");   
 	saveObject(JetResponsePhotonHemisphere[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
 	saveObject(JetIntrinsic[i][j][k]->hgenPtLeadingJet, RootPath + "hgenPtLeadingJet_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+
+	// Leading Photon Pt
+	saveObject(JetResponseJetHemisphere[i][j][k]->hPtLeadingPhoton, RootPath + "hPtLeadingPhoton_jet_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");   
+	saveObject(JetResponsePhotonHemisphere[i][j][k]->hPtLeadingPhoton, RootPath + "hPtLeadingPhoton_photon_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+	saveObject(JetIntrinsic[i][j][k]->hPtLeadingPhoton, RootPath + "hPtLeadingPhoton_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo"); 
+	saveObject(JetIntrinsic[i][j][k]->hPtLeadingPhoton, RootPath + "hPtLeadingPhoton_intrinsic_in_" + (long)(i+1) + "_Pt_bin_" + (long)(j+1) + "_eta_bin_" + (long)(k+1) + "_alpha_bin" +  DataType + ".root", "histo");
 
       }
     }
