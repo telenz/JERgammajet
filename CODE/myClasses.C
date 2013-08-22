@@ -35,8 +35,9 @@ CResponse::CResponse(int typeResponse){
 
   hAlpha = createTH1(hAlpha,"","p_{T}^(Jet_{2})/p_{T}^{#gamma}",10000,0,alphaBins[nAlphaBins],"alpha");
   hPt = createTH1(hPt,"","p_{T}^{#gamma} - Distribution",10000,0,5000,"p^{#gamma}_{T}");
-  hPtLeadingJet    = createTH1(hPt,"","p_{T}^{1st jet} - Distribution",10000,0,5000,"p^{1st jet}_{T}");
-  hgenPtLeadingJet = createTH1(hPt,"","p_{T}^{1st gen. jet} - Distribution",10000,0,5000,"p^{1st gen. jet}_{T}");
+  hPtLeadingJet    = createTH1(hPtLeadingJet,"","p_{T}^{1st jet} - Distribution",10000,0,5000,"p^{1st jet}_{T}");
+  hgenPtLeadingJet = createTH1(hgenPtLeadingJet,"","p_{T}^{1st gen. jet} - Distribution",10000,0,5000,"p^{1st gen. jet}_{T}");
+  hPtLeadingPhoton = createTH1(hPtLeadingPhoton,"","p_{T}^{#gamma} - Distribution",10000,0,5000,"p^{#gamma}_{T}");
   
 };
  

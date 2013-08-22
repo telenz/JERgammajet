@@ -13,7 +13,7 @@ class CResponse{
 
 public:
   
-  TH1D *hResponse, *hAlpha, *hPt, *hPtLeadingJet, *hgenPtLeadingJet;
+  TH1D *hResponse, *hAlpha, *hPt, *hPtLeadingJet, *hgenPtLeadingJet, *hPtLeadingPhoton;
   double sigma_array, sigmaAUX, sigma_error, mean_array, mean_error, alpha_array, alpha_error;
   double pT_array, pT_error, RMS_array, RMS_error, chi2, chi2_ndof, meanAUX, meanAUX2;
   int ndof;
