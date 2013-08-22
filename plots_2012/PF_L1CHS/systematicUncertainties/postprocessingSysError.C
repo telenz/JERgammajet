@@ -299,9 +299,6 @@ int postprocessingSysError(){
     
     for(int eta = 0; eta<nEta; eta++){
 
-      deltaRatioUpJEC[eta]   = abs(1./(1. - sysRelJEC[eta]) - 1.);
-      deltaRatioDownJEC[eta] = abs(1./(1. + sysRelJEC[eta]) - 1.);
-
       deltaRatioUpJEC[eta]   = sysRelJEC[eta];
       deltaRatioDownJEC[eta] = sysRelJEC[eta];
 
