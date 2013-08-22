@@ -13,7 +13,7 @@ int readGammaJet(int nEvents) {
 
   // Determine from which root file to read;
   if(date == 2012){
-    if(isMC || testClosure){
+    if(isMC || testClosure || QCDUncertaintyEvaluation){
       if(set == 1){
 	DataFilename = "/scratch/hh/lustre/cms/user/telenz/mc/PhotonJetTuple2012/allTogether/OnlyTightPhotons/";
 	if(jetType==1)      DataFilename += "ak5FastPF_*.root";  
@@ -34,7 +34,7 @@ int readGammaJet(int nEvents) {
       }
       else if(set == 5){
 	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/mc/pythia_flat_535_START53_V20_WithHasPixelSeed/MCPhoton2012/OnlyTightPhotons/";
-	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/mc/pythia_flat_535_START53_V22/MCPhoton2012/OnlyTightPhotons/";  	
+	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/mc/pythia_flat_535_START53_V22/MCPhoton2012/OnlyTightPhotons/";
 	if(jetType==1)      DataFilename += "ak5FastPF*.root";
 	else if(jetType==2) DataFilename += "ak5PFCHS*.root"; 
 	else if(jetType==4) DataFilename += "ak7PFCHS*.root";    
@@ -118,10 +118,7 @@ int readGammaJet(int nEvents) {
   cout<<"filename = "<<DataFilename<<endl; 
   chain->Add(DataFilename); 
 
-  // Add Run D for data
-  //if(!isMC && !testClosure) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/data/PhotonJetTuple2012ABCD_5_3_5_FT_53_V21/OnlyTightPhotons/ak5PFCHS_D-22Jan2013-v1.root"); 
-
-  if(addQCD && isMC){
+  if(QCDUncertaintyEvaluation && !isMC){
     //if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V20/OnlyTightPhotons/ak5PFCHS*.root"); 
     if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V22/OnlyTightPhotons/ak5PFCHS*.root"); 
     else{
@@ -183,7 +180,7 @@ int readGammaJet(int nEvents) {
   chain->SetBranchAddress("JetFHPD",jetFHPD);
   chain->SetBranchAddress("JetEMF",jetEMF);
   
-  if(isMC || testClosure)      chain->SetBranchAddress("NewWeight",&weight);
+  if(isMC || testClosure || QCDUncertaintyEvaluation)      chain->SetBranchAddress("NewWeight",&weight);
   else if(!isMC || date == 2011) chain->SetBranchAddress("Weight",&weight);
 
   chain->SetBranchAddress("Rho",&rho);
