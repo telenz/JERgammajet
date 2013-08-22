@@ -50,11 +50,11 @@ int postprocessingSysError(){
   const int nEta =4;
   double eta_bins[5] = {0., 0.5, 1.1, 1.7, 2.3};
   // For looking at different systematic uncertainties independently
-  bool QCD    = true;
-  bool JEC    = true;
-  bool flavor = true;
-  bool PU     = true;
-  bool MC     = true;
+  const bool QCD    = true;
+  const bool JEC    = true;
+  const bool flavor = true;
+  const bool PU     = true;
+  const bool MC     = true;
   
 
   TString etaString, filename;   
@@ -71,10 +71,13 @@ int postprocessingSysError(){
   double *ratioEtaBinnedQCDUpY   = new double[nEta];
   double *ratioEtaBinnedQCDDownY = new double[nEta];
 
-  rootFiles   = (TString) "scripts/plotsQCD/FinalErrorsQCD_" + type + (TString) "_" + method + (TString) ".root";
-  TFile *_file = TFile::Open(rootFiles);
   TF1 *QCDuncertainty;
-  _file->GetObject("function",QCDuncertainty);
+
+  if(QCD){
+    rootFiles   = (TString) "scripts/plotsQCD/FinalErrorsQCD_" + type + (TString) "_" + method + (TString) ".root";
+    TFile *_file = TFile::Open(rootFiles);    
+    _file->GetObject("function",QCDuncertainty);
+  }
   
   for(int eta = 0; eta < nEta; eta++){
     
@@ -110,12 +113,13 @@ int postprocessingSysError(){
     double *ratioEX = new double[nData];
     double *ratioEY = new double[nData];
 
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Initialize some stuff for QCD uncertainty
     double *ratioQCDUpY    = new double[nData];
     double *ratioQCDDownY  = new double[nData];    
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
  
     int idx = 0;
     for(int i=0; i<nData; i++){
@@ -135,20 +139,22 @@ int postprocessingSysError(){
       ratioY[i]  = dataY[i]/mcY[i];
       ratioEX[i] = 1./2.*TMath::Sqrt(TMath::Power(dataEX[i],2)+TMath::Power(mcEX[i],2));
       ratioEY[i] = TMath::Sqrt(TMath::Power((1./mcY[i]),2)*TMath::Power(dataEY[i],2)+TMath::Power((dataY[i]/(TMath::Power(mcY[i],2))),2)*TMath::Power(mcEY[i],2));
-      // For QCD
-      ratioQCDUpY[i]   = ratioY[i]*(1. + QCDuncertainty->Eval(ratioX[i]));
-      ratioQCDDownY[i] = ratioY[i]*(1. - QCDuncertainty->Eval(ratioX[i]));
-
-      //cout<<"QCDuncertainty->Eval(ratioX[i]) = "<<QCDuncertainty->Eval(ratioX[i])<<endl;
-        
+      if(QCD){
+	// For QCD
+	ratioQCDUpY[i]   = ratioY[i]*(1. + QCDuncertainty->Eval(ratioX[i]));
+	ratioQCDDownY[i] = ratioY[i]*(1. - QCDuncertainty->Eval(ratioX[i]));
+	//cout<<"QCDuncertainty->Eval(ratioX[i]) = "<<QCDuncertainty->Eval(ratioX[i])<<endl;
+      }
     }
     
     TGraphErrors *Ratio = new TGraphErrors(nData,ratioX,ratioY,ratioEX,ratioEY);
 
+
     // For QCD
     TGraphErrors *QCDUp   = new TGraphErrors(nData,ratioX,ratioQCDUpY,ratioEX,ratioEY);
     TGraphErrors *QCDDown = new TGraphErrors(nData,ratioX,ratioQCDDownY,ratioEX,ratioEY);
- 
+    
+
     if(eta+1 == 1 ) AuxString = Form("Ratio between Data and MC for |#eta| < %4.1f",etaBins[eta+1]);
     else            AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBins[eta+1],etaBins[eta+2]);
  
@@ -160,12 +166,16 @@ int postprocessingSysError(){
     Ratio -> GetXaxis() -> SetLimits(0,600);
     TF1* f1 = new TF1("name","pol0",0,600);   
     Ratio -> Fit("name","QR");
-    // For QCD
+    
+
     TF1* fitQCDUp  = new TF1("fitQCDUp","pol0",0,600); 
     TF1* fitQCDDown = new TF1("fitQCDDown","pol0",0,600); 
-    QCDUp   -> Fit("fitQCDUp","QR");
-    QCDDown -> Fit("fitQCDDown","QR");
-
+    if(QCD){
+      // For QCD
+      QCDUp   -> Fit("fitQCDUp","QR");
+      QCDDown -> Fit("fitQCDDown","QR");
+    }
+    
     TLegend *legend  = 0;
     legend = new TLegend(0.55,0.8,0.9,0.9);
     legend -> SetFillColor(0);
@@ -193,45 +203,48 @@ int postprocessingSysError(){
     ratioEtaBinnedY[eta]  = f1 -> GetParameter(0);
     ratioEtaBinnedEX[eta] = 0;
     ratioEtaBinnedEY[eta] = f1->GetParError(0);
-    ratioEtaBinnedQCDUpY[eta]  = fitQCDUp   -> GetParameter(0);
-    ratioEtaBinnedQCDDownY[eta]= fitQCDDown -> GetParameter(0);
+
+    if(QCD){
+      ratioEtaBinnedQCDUpY[eta]  = fitQCDUp   -> GetParameter(0);
+      ratioEtaBinnedQCDDownY[eta]= fitQCDDown -> GetParameter(0);
 
 
 
-    // Some additional stuff for QCD uncertainty
-    TCanvas *plotsQCD = new TCanvas("plotsQCD","plotsQCD",200,10,500,500);
-    plotsQCD -> cd();
+      // Some additional stuff for QCD uncertainty
+      TCanvas *plotsQCD = new TCanvas("plotsQCD","plotsQCD",200,10,500,500);
+      plotsQCD -> cd();
 
-    Ratio -> SetMarkerColor(1);
-    Ratio -> SetLineColor(1);
-    Ratio -> SetMarkerStyle(20);
-    Ratio -> GetFunction("name")->SetLineColor(1);
-    QCDUp -> SetMarkerColor(3);
-    QCDDown -> SetMarkerColor(3);
-    QCDUp  -> SetLineColor(3);
-    QCDDown  -> SetLineColor(3);
-    QCDUp -> SetMarkerStyle(20);
-    QCDDown -> SetMarkerStyle(20);
-    QCDUp -> SetMarkerSize(0.8);
-    QCDDown -> SetMarkerSize(0.8);
-    QCDUp   -> GetFunction("fitQCDUp")->SetLineColor(3);
-    QCDDown -> GetFunction("fitQCDDown")->SetLineColor(3);
-    Ratio -> Draw("AP");
-    QCDUp -> Draw("sameP");
-    QCDDown -> Draw("sameP");
+      Ratio -> SetMarkerColor(1);
+      Ratio -> SetLineColor(1);
+      Ratio -> SetMarkerStyle(20);
+      Ratio -> GetFunction("name")->SetLineColor(1);
+      QCDUp -> SetMarkerColor(3);
+      QCDDown -> SetMarkerColor(3);
+      QCDUp  -> SetLineColor(3);
+      QCDDown  -> SetLineColor(3);
+      QCDUp -> SetMarkerStyle(20);
+      QCDDown -> SetMarkerStyle(20);
+      QCDUp -> SetMarkerSize(0.8);
+      QCDDown -> SetMarkerSize(0.8);
+      QCDUp   -> GetFunction("fitQCDUp")->SetLineColor(3);
+      QCDDown -> GetFunction("fitQCDDown")->SetLineColor(3);
+      Ratio -> Draw("AP");
+      QCDUp -> Draw("sameP");
+      QCDDown -> Draw("sameP");
 
-    delete legend;
-    legend = new TLegend(0.4,0.8,0.9,0.9);
-    legend -> SetFillColor(0);
-    legend -> SetTextSize(0.033);
-    legend -> AddEntry(Ratio,"Central Value","l");
-    legend -> AddEntry(QCDUp,Form("Upward variation: + %4.3f",abs(ratioEtaBinnedQCDUpY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
-    legend -> AddEntry(QCDDown,Form("Downward variation: - %4.3f",abs(ratioEtaBinnedQCDDownY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
+      delete legend;
+      legend = new TLegend(0.4,0.8,0.9,0.9);
+      legend -> SetFillColor(0);
+      legend -> SetTextSize(0.033);
+      legend -> AddEntry(Ratio,"Central Value","l");
+      legend -> AddEntry(QCDUp,Form("Upward variation: + %4.3f",abs(ratioEtaBinnedQCDUpY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
+      legend -> AddEntry(QCDDown,Form("Downward variation: - %4.3f",abs(ratioEtaBinnedQCDDownY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
    
-    legend -> Draw("same");
-    filename = (TString) "plots/plotsQCD_for_" + (long) (eta+1) + (TString) "_bin_"  + type + (TString) "_" + method + (TString) ".pdf";
-    plotsQCD -> SaveAs(filename);
-    delete plotsQCD;
+      legend -> Draw("same");
+      filename = (TString) "plots/plotsQCD_for_" + (long) (eta+1) + (TString) "_bin_"  + type + (TString) "_" + method + (TString) ".pdf";
+      plotsQCD -> SaveAs(filename);
+      delete plotsQCD;
+    }
 
 
   }
@@ -270,23 +283,27 @@ int postprocessingSysError(){
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 2.) Calculate sys Error from JEC uncertainty (percentage change of MC result)
   //cout<<endl;
-  rootFiles                     = (TString) "scripts/plotsJEC/FinalErrorsJEC_" + type + (TString) "_" + method + (TString) ".root";  
-  TGraphErrors *JECuncertainty  = readTGraphErrors(rootFiles,"graph","Graph");
-  double       *sysRelJEC       = JECuncertainty -> GetY();
-  
-  // Multiply on mc (as symmetric Error)
-  // ratioUp = 1/(1 - delta) * ratio
-  // ratioUp = 1/(1 + delta) * ratio
 
   double deltaRatioUpJEC[nEta]      = {0.};
   double deltaRatioDownJEC[nEta]    = {0.};
- 
+    
   if(JEC){
+
+    rootFiles                     = (TString) "scripts/plotsJEC/FinalErrorsJEC_" + type + (TString) "_" + method + (TString) ".root";  
+    TGraphErrors *JECuncertainty  = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelJEC       = JECuncertainty -> GetY();
+  
+    // Multiply on mc (as symmetric Error)
+    // ratioUp = 1/(1 - delta) * ratio
+    // ratioUp = 1/(1 + delta) * ratio
     
     for(int eta = 0; eta<nEta; eta++){
 
       deltaRatioUpJEC[eta]   = abs(1./(1. - sysRelJEC[eta]) - 1.);
       deltaRatioDownJEC[eta] = abs(1./(1. + sysRelJEC[eta]) - 1.);
+
+      deltaRatioUpJEC[eta]   = sysRelJEC[eta];
+      deltaRatioDownJEC[eta] = sysRelJEC[eta];
 
       //cout<<"deltaRatioUpJEC["<<eta<<"] = "<<deltaRatioUpJEC[eta]<<endl;
       //cout<<"deltaRatioDownJEC["<<eta<<"] = "<<deltaRatioDownJEC[eta]<<endl;     
@@ -327,22 +344,22 @@ int postprocessingSysError(){
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 4.) Calculate sys Error from Flavor uncertainty (percentage change of MC result)
   //cout<<endl;
-  
-  rootFiles                       = (TString) "scripts/plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root";
-  TGraphErrors *PUuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
-  double       *sysRelPU      = PUuncertainty -> GetY();
-  
-  // Multiply on mc (as symmetric Error)
-  // ratioUp = 1/(1 - delta) * ratio
-  // ratioUp = 1/(1 + delta) * ratio
 
   double deltaRatioUpPU[nEta]      = {0.};
   double deltaRatioDownPU[nEta]    = {0.};
-
+  
   if(PU){
-    
-    for(int eta = 0; eta<nEta; eta++){
 
+    rootFiles                       = (TString) "scripts/plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root";
+    TGraphErrors *PUuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelPU      = PUuncertainty -> GetY();
+  
+    // Multiply on mc (as symmetric Error)
+    // ratioUp = 1/(1 - delta) * ratio
+    // ratioUp = 1/(1 + delta) * ratio
+        
+    for(int eta = 0; eta<nEta; eta++){
+    
       deltaRatioUpPU[eta]   = abs(1./(1. - sysRelPU[eta]) - 1.);
       deltaRatioDownPU[eta] = abs(1./(1. + sysRelPU[eta]) - 1.);
 
@@ -356,17 +373,18 @@ int postprocessingSysError(){
   // 5.) Calculate sys Error from Out-of Cone showering simulation (percentage change of full ratio result)
   //cout<<endl;
   
-  rootFiles                   = (TString) "scripts/plotsMC/FinalErrorsMC_" + type + (TString) "_" + method + (TString) ".root";  
-  TGraphErrors *MCuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
-  double       *sysRelMC      = MCuncertainty -> GetY();
-  
-  // Percentage change is only in one direction, to take this into account keep deltaRatioDownMC = 0
-
   double deltaRatioUpMC[nEta]      = {0.};
   double deltaRatioDownMC[nEta]    = {0.};
+  
 
   if(MC){
-    
+
+    rootFiles                   = (TString) "scripts/plotsMC/FinalErrorsMC_" + type + (TString) "_" + method + (TString) ".root";  
+    TGraphErrors *MCuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelMC      = MCuncertainty -> GetY();
+  
+    // Percentage change is only in one direction, to take this into account keep deltaRatioDownMC = 0
+
     for(int eta = 0; eta<nEta; eta++){
 
       deltaRatioUpMC[eta]   = sysRelMC[eta];
@@ -637,8 +655,6 @@ latexTable<<"\\\\\\hline"<<endl;
   ratioEtaBinnedStatPlusSys -> SetLineColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetMarkerColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetFillColor(kPink-8);
-  cout<<gStyle->GetHatchesSpacing()<<endl;
-  cout<<gStyle->GetHatchesLineWidth()<<endl;
   gStyle->SetHatchesSpacing(2.);
   //gStyle->SetHatchesLineWidth(2);
   gROOT->ForceStyle();
