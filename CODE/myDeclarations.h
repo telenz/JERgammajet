@@ -36,7 +36,7 @@ const bool testClosure=false;                         // for ratio closure test
 const bool QCDUncertaintyEvaluation=false;             // Set on true if QCD sample shall be added to the data procedure
 const bool flavorUncertaintyEvaluationPhys=false;     //Set on true if you want to evaluate flavor Uncertainty 
 const bool flavorUncertaintyEvaluationAlgo=false;     //Set on true if you want to evaluate flavor Uncertainty 
-const int setFlavorSelection=3;                       //1 = together, 2 = all quarks, 3 = gluons 
+const int setFlavorSelection=5;                       //1 = together, 2 = all quarks, 3 = gluons, 4 = uds, 5 = cb 
 
 const double deltaPhiCutValue=2.95;  // Cut value of deltaPhi
 
