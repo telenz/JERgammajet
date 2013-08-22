@@ -41,6 +41,11 @@ public:
     gStyle -> SetTextFont(132);
     gStyle -> SetTextSize(0.042);
     
+
+    //gStyle->SetStatStyle(0);
+    //gStyle->SetTitleStyle(0); 
+    gStyle -> SetFillColor(0);
+
     gROOT->ForceStyle(); 
     /*
     // Zero horizontal error bars
