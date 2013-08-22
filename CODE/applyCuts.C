@@ -323,6 +323,8 @@ bool applyCuts(){
     if(setFlavorSelection == 1){      if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
     else if(setFlavorSelection == 2){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) > 5 || abs(genJetID_algo[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
     else if(setFlavorSelection == 3){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) != 21) flavorFullfilled = false;}
+    else if(setFlavorSelection == 4){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) > 3 || abs(genJetID_algo[corrJets.idx(idx1stJet)]) == 0) flavorFullfilled = false;}
+    else if(setFlavorSelection == 5){ if(abs(genJetID_algo[corrJets.idx(idx1stJet)]) > 5 || abs(genJetID_algo[corrJets.idx(idx1stJet)]) < 4)  flavorFullfilled = false;}
     if(!flavorFullfilled){
       cut14 = cut14 +1;
       return 0;
