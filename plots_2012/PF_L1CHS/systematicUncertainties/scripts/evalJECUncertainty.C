@@ -125,8 +125,7 @@ int evalJECUncertainty(){
   
  
     TLegend *legend  = new TLegend(0.5,0.8,0.9,0.9);
-    legend -> SetFillColor(0);
-    legend -> SetTextSize(0.042);
+    legend -> SetTextSize(0.033);
     legend -> AddEntry(graph[0],"Central Value","l");
     legend -> AddEntry(graph[1],"- #Delta JEC","l");
     legend -> AddEntry(graph[2],"+ #Delta JEC","l");
@@ -284,8 +283,7 @@ int evalJECUncertainty(){
     plotLow -> SetLineColor(9); 
  
     TLegend *legend1  = new TLegend(0.5,0.8,0.9,0.9);
-    legend1 -> SetFillColor(0);
-    legend1 -> SetTextSize(0.042);
+    legend1 -> SetTextSize(0.033);
     legend1 -> AddEntry(plotLow,"- #Delta JEC","p");
     legend1 -> AddEntry(plotUp,"+ #Delta JEC","p");
 
