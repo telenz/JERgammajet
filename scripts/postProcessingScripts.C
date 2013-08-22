@@ -219,8 +219,8 @@ int plotJetResponseAlpha(){
       Add -> SetTitle("");
             
       
-      //legend -> AddEntry(Add,"#gamma + Jet (pseudo data)","l");
-      //Add -> Draw("AP");
+      legend -> AddEntry(Add,"#gamma + Jet (pseudo data)","l");
+      Add -> Draw("AP");
 
       
       Add -> SetMinimum(0.0);
@@ -240,7 +240,7 @@ int plotJetResponseAlpha(){
       Add -> GetYaxis() -> SetTitle("Resolution"); 
       Add -> SetTitle("");
       legend -> AddEntry(Add,"Intrinsic","l");
-      Add -> Draw("AP");
+      Add -> Draw("Psame");
 
       Add = GetTGraphErrors(sourceImbalanceAlpha,"Graph");  
       fScaleAlpha = Add->GetFunction("fResolutionAlpha");
@@ -259,8 +259,8 @@ int plotJetResponseAlpha(){
 	Add -> SetMarkerColor(8);
 	Add -> SetLineColor(8);
 	fScaleAlpha -> SetLineColor(8);
-	//legend -> AddEntry(Add,"Data","l");
-	//Add -> Draw("Psame");
+	legend -> AddEntry(Add,"Data","l");
+	Add -> Draw("Psame");
       }
       
       total = GetTF1(sourceTotalAlpha,"totalResolution");
