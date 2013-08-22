@@ -127,7 +127,7 @@ int evalPUUncertainty(){
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // 2.) Relative uncertainty to MC -> MC*(1 +- Delta)
-    double *dataY, *dataLowY, *dataUpY, *dataX, *dataLowX, *dataUpX, *dataEY, *dataLowEY, *dataUpEY, *dataEX, *dataLowEX, *dataUpEX ;
+    double *dataY, *dataLowY, *dataUpY, *dataX, *dataLowX, *dataUpX, *dataEY, *dataLowEY, *dataUpEY, *dataEX;
 
     int nData = graph[0]->GetN();
   
@@ -149,8 +149,6 @@ int evalPUUncertainty(){
     dataLowEY = graph[1] -> GetEY();
     dataUpEY  = graph[2] -> GetEY();
     dataEX    = graph[0] -> GetEX();
-    dataLowEX = graph[1] -> GetEX();
-    dataUpEX  = graph[2] -> GetEX();
 
 
     int idxLow     = 0;
