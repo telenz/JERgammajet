@@ -280,7 +280,7 @@ int plotResponse(){
   histoTogether1 -> Scale(histoTogether1->GetEntries()/histoTogether1->Integral());
   histoTogether1 -> Rebin(50);
 
-  histoTogether1 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{#gamma}");
+  histoTogether1 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{#gamma}");
   histoTogether1 -> GetYaxis()->SetTitle("# Events");
   histoTogether1 -> SetTitle("Measured Response");
   histoTogether1 -> SetMinimum(1.);
@@ -513,7 +513,8 @@ int plotAllResponseHistograms_MC(){
   const int alphaB = 6;
   const int ptB = 12;
 
-  TH1D *histoPhoton1, *histoJet1;   
+  TH1D *histoJet1;
+  //TH1D *histoPhoton1;   
   TCanvas *canvas1[ptB][etaB][alphaB][2];
   TFile *file;
   TString fileName;
@@ -613,7 +614,7 @@ int plotPhotonPtDependence_MC(){
   TeresaPlottingStyle::init();
 
 
-  TH1D *histoAlpha, *histoPhotonPt, *histoJetPt, *histogenJetPt[nAlphaBins],*histogenJetPtJet[nAlphaBins];   
+  TH1D *histoAlpha, *histoPhotonPt[nAlphaBins], *histogenJetPt[nAlphaBins];   
   TCanvas *canvas1[nPtBins][nEtaBins];
   TFile *file;
   TString fileName;
@@ -636,100 +637,84 @@ int plotPhotonPtDependence_MC(){
       xE = new double[6];
       yE = new double[6];
 
-      file = 0;
-      fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hPt_photon_in_%i_Pt_bin_%i_eta_bin_PFCHS_mc.root",i+1,j+1);
-      file = TFile::Open(fileName);
-      if(file == 0){
-	cout<<"no File"<<endl;
-	continue;
-      }
-      file          -> GetObject("histo",histoPhotonPt);
-      histoPhotonPt -> SetDirectory(0); 
 
-      file = 0;
-      fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hPt_jet_in_%i_Pt_bin_%i_eta_bin_PFCHS_mc.root",i+1,j+1);
-      file = TFile::Open(fileName);
-      if(file == 0){
-	cout<<"no File"<<endl;
-	continue;
-      }
-      file       -> GetObject("histo",histoJetPt);
-      histoJetPt -> SetDirectory(0); 
-      delete file; 
-
-      //histoPhotonPt -> Add(histoJetPt);
-      double weightPhoton = 1./pow(histoPhotonPt->GetMeanError(),2);
-      double weightJet    = 1./pow(histoJetPt->GetMeanError(),2);
-
-      y[0]  = (histoPhotonPt -> GetMean()*weightPhoton +histoJetPt->GetMean()*weightPhoton)/(weightPhoton+weightPhoton);
-      y[0]  = (histoPhotonPt -> GetMean() +histoJetPt->GetMean())/2.;
-      yE[0] = histoPhotonPt -> GetMeanError();
-
-      cout<<"Photon Pt = "<<y[0]<<" +/- "<<yE[0]<<endl;
+      bool first     = true;
+      double norm    = 0;
+      double normErr = 0;
 
       for(int k=0; k<nAlphaBins; k++){
-		
+
+	file = 0;	
 	fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hAlpha_photon_in_%i_Pt_bin_%i_eta_bin_%i_alpha_bin_PFCHS_mc.root",i+1,j+1,k+1);
 	file = TFile::Open(fileName);
+
+	
 	if(file == 0){
 	  cout<<"no File"<<endl;
 	  continue;
 	}
+	
 	file        -> GetObject("histo",histoAlpha);
-	histoAlpha    -> SetDirectory(0); 
+	histoAlpha  -> SetDirectory(0); 
+	
 	delete file; 
 	x[k]  = histoAlpha->GetMean();
 	xE[k] = histoAlpha->GetMeanError();
-	
-	
+		
 	file = 0;
-	fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hgenPtLeadingJet_intrinsic_in_%i_Pt_bin_%i_eta_bin_%i_alpha_bin_PFCHS_mc.root",i+1,j+1,k+1);
+	//fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hPtLeadingPhoton_intrinsic_in_%i_Pt_bin_%i_eta_bin_%i_alpha_bin_PFCHS_mc.root",i+1,j+1,k+1);
+	fileName = Form("../plots_2012/PF_L1CHS/mc/root_files/hPtLeadingJet_intrinsic_in_%i_Pt_bin_%i_eta_bin_%i_alpha_bin_PFCHS_mc.root",i+1,j+1,k+1);
 	file = TFile::Open(fileName);
+	
 	if(file == 0){
 	  cout<<"no File"<<endl;
 	  continue;
 	}
-	file          -> GetObject("histo",histogenJetPt[k]);
-	histogenJetPt[k] -> SetDirectory(0); 
+	 
+	file             -> GetObject("histo",histoPhotonPt[k]);
+	histoPhotonPt[k] -> SetDirectory(0); 
+	
+	
+
+	if(first && histoPhotonPt[k]->GetMean() != 0){
+	  norm    = histoPhotonPt[k]->GetMean();
+	  normErr = histoPhotonPt[k]->GetMeanError();
+          first = false;	  
+	}
+
+	y[k]  = (histoPhotonPt[k]->GetMean())/norm;
+	yE[k] = sqrt(pow(1./norm*histoPhotonPt[k]->GetMeanError(),2)+pow(histoPhotonPt[k]->GetMean()/pow(norm,2)*normErr,2));
 	
       }
 
-      
-      for(int k=1;k<nAlphaBins; k++)      histogenJetPt[0] -> Add(histogenJetPt[k]);
-
-      cout<<i+1<<".Pt Bin:  meanPt = "<<histogenJetPt[0]->GetMean()<<endl;
-      cout<<"relative error = "<<abs(y[0]/histogenJetPt[0]->GetMean()-1.)*100.<<endl<<endl;
-
-	dependence[i][j] = new TGraphErrors(6,x,y,xE,yE);
-	//dependence[i][j] -> SetMinimum(ptBins[i]);
-	//	if(i<11) dependence[i][j] -> SetMaximum(ptBins[i+1]);
-	//else dependence[i][j] -> SetMaximum(500.);
-	dependence[i][j] -> SetMinimum(ptBins[i]);
-	if(i<11) dependence[i][j] -> SetMaximum(ptBins[i+1]);
-	else dependence[i][j] -> SetMaximum(500.);
-
-	canvas1[i][j] = new TCanvas(Form("canvas0%i%i",i,j),"canvas",0,0,500,500);
-	canvas1[i][j] -> cd();
-
-	dependence[i][j]->Draw("AP");
+     
+      dependence[i][j] = new TGraphErrors(6,x,y,xE,yE);
 	
-	// Draw info boxes
-	info   = new TLatex();
-	info -> SetTextFont(132);
-	info -> SetNDC();
-	info -> SetTextSize(0.041);
-	
-	if(i<11) info->DrawLatex(0.62,0.85, Form("%4.0f GeV< p_{T}^{#gamma} < %4.0f GeV",ptBins[i],ptBins[i+1]));
-	else     info->DrawLatex(0.62,0.85, Form("%4.0f GeV< p_{T}^{#gamma} ",ptBins[i]));
-	info->DrawLatex(0.62,0.80, Form(" %4.1f < #eta^{1st jet} < %4.1f",etaBins[j],etaBins[j+1]));
-	
-	fileName = Form("plots/PhotonDependence_intrinsic_in_%i_Pt_bin_%i_eta_bin_bin_PFCHS_mc.pdf",i,j);
-	//canvas1[i][j]->SaveAs(fileName);
+      dependence[i][j] -> SetMinimum(0.8);
+      dependence[i][j] -> SetMaximum(1.1);
 
-	delete x;
-	delete y;
-	delete xE;
-	delete yE;
+      canvas1[i][j] = new TCanvas(Form("canvas0%i%i",i,j),"canvas",0,0,500,500);
+      canvas1[i][j] -> cd();
+
+      dependence[i][j]->Draw("AP");
+	
+      // Draw info boxes
+      info   = new TLatex();
+      info -> SetTextFont(132);
+      info -> SetNDC();
+      info -> SetTextSize(0.041);
+	
+      if(i<11) info->DrawLatex(0.62,0.85, Form("%4.0f GeV< p_{T}^{#gamma} < %4.0f GeV",ptBins[i],ptBins[i+1]));
+      else     info->DrawLatex(0.62,0.85, Form("%4.0f GeV< p_{T}^{#gamma} ",ptBins[i]));
+      info->DrawLatex(0.50,0.80, Form(" %4.1f < #eta^{1st jet} < %4.1f",etaBins[j],etaBins[j+1]));
+	
+      fileName = Form("plots/PhotonDependence_intrinsic_in_%i_Pt_bin_%i_eta_bin_bin_PFCHS_mc.pdf",i,j);
+      //canvas1[i][j]->SaveAs(fileName);
+
+      delete x;
+      delete y;
+      delete xE;
+      delete yE;
       
     }
   }
@@ -757,7 +742,7 @@ int plotClosure(){
   gStyle->SetOptStat("");
 
   TGraphErrors *imb, *intr, *full;
-  TCanvas* canvas1, *canvas2, *canvas3, *canvas4, *canvas5;
+  TCanvas* canvas1;
   TFile *file;
   TString fileName;
   TLatex*  info;
@@ -787,14 +772,11 @@ int plotClosure(){
   file        -> GetObject("Graph",full);
   delete file; 
 
-
-  double *imbX  = imb->GetX();
-  double *imbEX = imb->GetEX();
+  
   double *imbY  = imb->GetY();
   double *imbEY = imb->GetEY();
 
-  double *intrX  = intr->GetX();
-  double *intrEX = intr->GetEX();
+  
   double *intrY  = intr->GetY();
   double *intrEY = intr->GetEY();
 
