@@ -19,6 +19,8 @@ if [ -d plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data]
 fi
 cp -r plots_2012/PF_L1CHS/data/root_files plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data
 
+cd scriptsForSystematicUncertainties/
+
 source runFlavorMacro.sh
 source runPUMacro.sh
 source runJECMacro.sh
