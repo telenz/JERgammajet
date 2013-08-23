@@ -67,6 +67,7 @@ float jetPt1stJet = 0;
 
 TLorentzVector photonVector;
 TLorentzVector jet2ndVector;
+TLorentzVector jet1stVector;
 TLorentzVector sumVector;
 
 float PUWeight = 1;
