@@ -311,12 +311,6 @@ int postprocessingSysError(){
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // 3.) Calculate sys Error from Flavor uncertainty (percentage change of MC result)
   //cout<<endl;
-  rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
-  TGraphErrors *FlavoruncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
-  double       *sysRelFlavorUp       = FlavoruncertaintyUp -> GetY();
-  rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorLow_" + type + (TString) "_" + method + (TString) ".root"; 
-  TGraphErrors *FlavoruncertaintyLow = readTGraphErrors(rootFiles,"graph","Graph");
-  double       *sysRelFlavorLow      = FlavoruncertaintyLow -> GetY();
   
   // Multiply on mc (as symmetric Error)
   // ratioUp  = 1/(1 - delta) * ratio
@@ -326,6 +320,15 @@ int postprocessingSysError(){
   double deltaRatioDownFlavor[nEta]    = {0.};
 
   if(flavor){
+
+    rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *FlavoruncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelFlavorUp       = FlavoruncertaintyUp -> GetY();
+
+    rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorLow_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *FlavoruncertaintyLow = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelFlavorLow      = FlavoruncertaintyLow -> GetY();
+  
     
     for(int eta = 0; eta<nEta; eta++){
 
@@ -339,7 +342,7 @@ int postprocessingSysError(){
   }
  
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  // 4.) Calculate sys Error from Flavor uncertainty (percentage change of MC result)
+  // 4.) Calculate sys Error from PU uncertainty (percentage change of MC result)
   //cout<<endl;
 
   double deltaRatioUpPU[nEta]      = {0.};
