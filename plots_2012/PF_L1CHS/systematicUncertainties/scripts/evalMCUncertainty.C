@@ -212,9 +212,9 @@ int evalMCUncertainty(){
     Ratioak7 -> SetTitle(ratioName); 
     Ratioak5 -> GetXaxis()->SetLimits(0,600);
     Ratioak7 -> GetXaxis()->SetLimits(0,600); 
-    Ratioak5 -> GetXaxis() -> SetTitle("Photon pT");
+    Ratioak5 -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
     Ratioak5 -> GetYaxis() -> SetTitle("Ratio of JER (Data/MC)");
-    Ratioak7 -> GetXaxis() -> SetTitle("Photon pT");
+    Ratioak7 -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
     Ratioak7 -> GetYaxis() -> SetTitle("Ratio of JER (Data/MC)");
     Ratioak5 -> SetMinimum(0.8);
     Ratioak5 -> SetMaximum(1.4);
@@ -267,7 +267,7 @@ int evalMCUncertainty(){
     double ak5      = f1ak5 -> GetParameter(0);
     double ak5Error = f1ak5 -> GetParError(0);
 
-    AuxString = Form("rel. Difference = %4.3f", abs(ak7/ak5-1.));
+    AuxString = Form("#delta^{Out-of-cone} = %4.3f", abs(ak7/ak5-1.));
     info1->DrawLatex(0.4,0.3,AuxString);
 
     TString pdfFile = (TString) "plotsMC/Ratio_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_" + method + (TString) "_ak5_ak7_comparison.pdf";

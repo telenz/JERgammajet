@@ -345,16 +345,16 @@ int evalFlavorUncertainty(TString definition = "algo"){
     info1->DrawLatex(0.6,0.7,AuxString);
   
     AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineUp->GetChisquare(),fitLineUp->GetNDF());
-    info1->DrawLatex(0.6,0.2,AuxString);
+    info1->DrawLatex(0.55,0.2,AuxString);
 
-    AuxString = Form("f = %4.3f #pm %4.3f",fitLineUp->GetParameter(0),fitLineUp->GetParError(0));
-    info1->DrawLatex(0.6,0.25,AuxString);
+    AuxString = Form("#delta^{Flavor}_{Up} = %4.3f #pm %4.3f",fitLineUp->GetParameter(0),fitLineUp->GetParError(0));
+    info1->DrawLatex(0.55,0.25,AuxString);
 
     AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineLow->GetChisquare(),fitLineLow->GetNDF());
-    info1->DrawLatex(0.2,0.2,AuxString);
+    info1->DrawLatex(0.18,0.2,AuxString);
 
-    AuxString = Form("f = %4.3f #pm %4.3f",fitLineLow->GetParameter(0),fitLineLow->GetParError(0));
-    info1->DrawLatex(0.2,0.25,AuxString);
+ AuxString = Form("#delta^{Flavor}_{Down} = %4.3f #pm %4.3f",fitLineLow->GetParameter(0),fitLineLow->GetParError(0));
+    info1->DrawLatex(0.18,0.25,AuxString);
 
     finalErrorsUp[eta]  = fitLineUp -> GetParameter(0);
     finalErrorsUpE[eta] = fitLineUp -> GetParError(0);

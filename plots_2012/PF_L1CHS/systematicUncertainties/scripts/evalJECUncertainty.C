@@ -312,8 +312,10 @@ int evalJECUncertainty(){
     info1-> SetNDC();
 
     info1->DrawLatex(0.6,0.7,AuxString);
-    TString text = "#scale[0.9]{68% of points are included in Interval:} " + (TString) Form("#scale[0.9]{f = %4.3f}",sigma1Interval->GetParameter(0)) ;
+    TString text = "#scale[0.9]{68% of points are included in Interval:} " ;
     info1->DrawLatex(0.2,0.3,text);
+    text = (TString) Form("#scale[0.9]{#delta^{JEC} = #pm %4.3f}",sigma1Interval->GetParameter(0)) ;
+    info1->DrawLatex(0.7,0.25,text);
 
     finalErrors[eta-1] = sigma1Interval->GetParameter(0);
     finalErrorsE[eta-1] = sigma1Interval->GetParError(0);
