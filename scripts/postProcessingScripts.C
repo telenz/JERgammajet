@@ -333,7 +333,8 @@ int plotResponse(){
 
   histoTogether1 -> Add(histoPhoton1);
   histoTogether1 -> Scale(histoTogether1->GetEntries()/histoTogether1->Integral());
-  histoTogether1 -> Rebin(50);
+  histoTogether1 -> Rebin(40);
+  histoTogether1 -> GetXaxis() -> SetRangeUser(0.,2.);
 
   histoTogether1 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{#gamma}");
   histoTogether1 -> GetYaxis()->SetTitle("# Events");
@@ -369,13 +370,15 @@ int plotResponse(){
 
   histoJet1 -> Scale(histoTogether1->GetEntries()/scaleFactor);
 
-  histoJet1 -> Rebin(50);
+  histoJet1 -> Rebin(40);
+  histoJet1 -> GetXaxis() -> SetRangeUser(0.,2.);
   histoJet1 -> SetMarkerColor(8);
   histoJet1 -> SetLineColor(8);
   histoJet1 -> Draw("same");
 
   histoPhoton1 -> Scale(histoTogether1->GetEntries()/scaleFactor);
-  histoPhoton1 -> Rebin(50);
+  histoPhoton1 -> Rebin(40);
+  histoPhoton1 -> GetXaxis() -> SetRangeUser(0.,2.);
   histoPhoton1 -> SetMarkerColor(2);
   histoPhoton1 -> SetLineColor(2);
 
@@ -420,7 +423,8 @@ int plotResponse(){
 
   histoTogether2 -> Add(histoPhoton2);
   histoTogether2 -> Scale(histoTogether2->GetEntries()/histoTogether2->Integral());
-  histoTogether2 -> Rebin(50);
+  histoTogether2 -> Rebin(40);
+  histoTogether2 -> GetXaxis() -> SetRangeUser(0.,2.);
 
   histoTogether2 -> GetXaxis()->SetTitle("p_{T}^{gen. jet}/p_{T}^{#gamma}");
   histoTogether2 -> GetYaxis()->SetTitle("# Events");
@@ -455,13 +459,15 @@ int plotResponse(){
 
   histoJet2 -> Scale(histoTogether2->GetEntries()/scaleFactor);
 
-  histoJet2 -> Rebin(50);
+  histoJet2 -> Rebin(40);
+  histoJet2 -> GetXaxis() -> SetRangeUser(0.,2.);
   histoJet2 -> SetMarkerColor(8);
   histoJet2 -> SetLineColor(8);
   histoJet2 -> Draw("same");
 
   histoPhoton2 -> Scale(histoTogether2->GetEntries()/scaleFactor);
-  histoPhoton2 -> Rebin(50);
+  histoPhoton2 -> Rebin(40);
+  histoPhoton2 -> GetXaxis() -> SetRangeUser(0.,2.);
   histoPhoton2 -> SetMarkerColor(2);
   histoPhoton2 -> SetLineColor(2);
   histoPhoton2 -> Draw("same");
@@ -495,7 +501,8 @@ int plotResponse(){
   histoJet3 = GetTH1D(fileName,"histo");
 
   histoJet3 ->Scale(histoJet3->GetEntries()/histoJet3->Integral());
-  histoJet3 -> Rebin(50);
+  histoJet3 -> Rebin(40);
+  histoJet3 -> GetXaxis() -> SetRangeUser(0.,2.);
 
   histoJet3 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{gen. jet}");
   histoJet3 -> GetYaxis()->SetTitle("# Events");
