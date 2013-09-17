@@ -171,10 +171,17 @@ int MCClosure(){
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 int plotJetResponseAlpha(){
 
+
   gDirectory->Delete(); 
   gROOT->GetListOfCanvases()->Delete();
   
   TeresaPlottingStyle::init();
+
+
+  bool addAll = true;
+  bool addMC  = true;
+
+
 
   TString sourceResponseAlpha, sourceIntrinsicAlpha, sourceImbalanceAlpha, sourceTotalAlpha, sourceData, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
     
@@ -192,7 +199,10 @@ int plotJetResponseAlpha(){
       sourceImbalanceAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_imbalance_PFCHS_mc_RMS99.root",j+1,i+1);
       sourceTotalAlpha.Form("../plots_2012/PF_L1CHS/mc/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_total_PFCHS_mc_RMS99.root",j+1,i+1);
       sourceData.Form("../plots_2012/PF_L1CHS/data/root_files/jet_energy_resolution_for_%i_eta_bin_%i_pTGamma_bin_PFCHS_data_RMS99.root",j+1,i+1);
-      pdfFile.Form("plots/JER_for_%i_eta_bin_%i_pTGamma_bin_all_contributions_PFCHS_RMS99_mc.pdf",j+1,i+1);
+      
+      if(addAll)     pdfFile.Form("plots/JER_for_%i_eta_bin_%i_pTGamma_bin_all_contributions_PFCHS_RMS99_mc.pdf",j+1,i+1);
+      else if(addMC) pdfFile.Form("plots/JER_for_%i_eta_bin_%i_pTGamma_bin_wo_data_PFCHS_RMS99_mc.pdf",j+1,i+1);
+      else           pdfFile.Form("plots/JER_for_%i_eta_bin_%i_pTGamma_bin_wo_data_mc_PFCHS_RMS99_mc.pdf",j+1,i+1);
       title = "Jet Energy Resolution";
  
      
@@ -200,36 +210,19 @@ int plotJetResponseAlpha(){
       TCanvas *c = new TCanvas(EtaPtRegion,title,200,10,450,450);
       c -> cd();
       
-      legend  = new TLegend(0.45,0.7,0.9,0.9);
+      legend  = new TLegend(0.45,0.65,0.9,0.9);
       legend -> SetFillColor(0);
       legend -> SetTextFont(132);
       legend -> SetTextSize(0.042);
   
-      Add = GetTGraphErrors(sourceResponseAlpha,"Graph");  
-      if(Add == 0) continue;
-      
-      
-      fScaleAlpha = Add->GetFunction("fResolutionAlpha");
-      Add -> SetMarkerColor(1);
-      Add -> SetLineColor(1);
-      fScaleAlpha -> SetLineColor(1);
-      Add -> GetXaxis() -> SetTitle("#alpha [%]");   
-      Add -> GetXaxis() -> SetTitle("p_{T}^{2nd jet}/p_{T}^{#gamma} #upoint 100");    
-      Add -> GetYaxis() -> SetTitle("Resolution"); 
-      Add -> SetTitle("");
-            
-      
-      legend -> AddEntry(Add,"#gamma + Jet (pseudo data)","l");
-      Add -> Draw("AP");
-
-      
-      Add -> SetMinimum(0.0);
-      Add -> SetMaximum(0.4);   
-      Add -> GetXaxis()->SetLimits(0,20);
       
   
       // Intrinsic
       Add = GetTGraphErrors(sourceIntrinsicAlpha,"Graph");  
+      if(Add == 0) continue;
+      Add -> SetMinimum(0.0);
+      Add -> SetMaximum(0.4);   
+      Add -> GetXaxis()->SetLimits(0,20);
       fScaleAlpha = Add->GetFunction("fResolutionAlpha");
   
       Add -> SetMarkerColor(46);
@@ -240,7 +233,7 @@ int plotJetResponseAlpha(){
       Add -> GetYaxis() -> SetTitle("Resolution"); 
       Add -> SetTitle("");
       legend -> AddEntry(Add,"Intrinsic","l");
-      Add -> Draw("Psame");
+      Add -> Draw("AP");
 
       Add = GetTGraphErrors(sourceImbalanceAlpha,"Graph");  
       fScaleAlpha = Add->GetFunction("fResolutionAlpha");
@@ -252,6 +245,29 @@ int plotJetResponseAlpha(){
       Add -> Draw("Psame");
 
 
+      total = GetTF1(sourceTotalAlpha,"totalResolution");
+      total -> SetLineColor(14);
+      total -> SetLineWidth(3);
+      legend -> AddEntry(total,"Total","l");
+      total -> Draw("same");
+
+
+      // MC pseudo data
+      Add = GetTGraphErrors(sourceResponseAlpha,"Graph");  
+      fScaleAlpha = Add->GetFunction("fResolutionAlpha");
+      Add -> SetMarkerColor(1);
+      Add -> SetLineColor(1);
+      fScaleAlpha -> SetLineColor(1);
+      Add -> GetXaxis() -> SetTitle("#alpha [%]");   
+      Add -> GetXaxis() -> SetTitle("p_{T}^{2nd jet}/p_{T}^{#gamma} #upoint 100");    
+      Add -> GetYaxis() -> SetTitle("Resolution"); 
+      Add -> SetTitle("");           
+      if(addMC){
+	legend -> AddEntry(Add,"#gamma + Jet (pseudo data)","l");
+	Add    -> Draw("Psame");
+	total  -> Draw("same");
+      }
+
       // Data
       Add = GetTGraphErrors(sourceData,"Graph");  
       if(Add != 0){
@@ -259,15 +275,11 @@ int plotJetResponseAlpha(){
 	Add -> SetMarkerColor(8);
 	Add -> SetLineColor(8);
 	fScaleAlpha -> SetLineColor(8);
-	legend -> AddEntry(Add,"Data","l");
-	Add -> Draw("Psame");
+	if(addAll){
+	  legend -> AddEntry(Add,"Data","l");
+	  Add -> Draw("Psame");
+	}
       }
-      
-      total = GetTF1(sourceTotalAlpha,"totalResolution");
-      total -> SetLineColor(14);
-      total -> SetLineWidth(3);
-      legend -> AddEntry(total,"Total","l");
-      total -> Draw("same");
 
       // Draw info boxes
       if (i==nPtBins-1) ptRegion.Form(" %4.1f GeV < p_{T}^{#gamma} \n",ptBins[i]);
@@ -281,9 +293,9 @@ int plotJetResponseAlpha(){
       info   = new TLatex();
   
       info -> SetNDC();    
-      info->DrawLatex(0.18,0.63,  ptRegion);
-      info->DrawLatex(0.18,0.56,  etaRegion);
-      info->DrawLatex(0.50,0.56, "Anti-k_{T} 0.5 PFCHSJets");
+      info->DrawLatex(0.18,0.60,  ptRegion);
+      info->DrawLatex(0.18,0.53,  etaRegion);
+      info->DrawLatex(0.50,0.53, "Anti-k_{T} 0.5 PFCHSJets");
       
       
       legend -> Draw("same");
@@ -536,39 +548,68 @@ int plotResolutionOfPhotonPt(){
 
   TeresaPlottingStyle::init();
 
-  TString sourceResponse, sourceIntrinsic, sourceImbalance, sourceTotal, sourceData, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
+  TString sourceData, sourceIntrinsic, sourceMC, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
     
   TLatex*  info;
-  TGraphErrors* Add;
-  TF1 *fScaleAlpha;
+  TGraphErrors* intrinsicJER, *dataJER, *mcJER;
+  TCanvas *c[nEtaBins];
   for(int j=0; j<nEtaBins; j++){
 
-    sourceIntrinsic.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.root",j+1);
+    sourceIntrinsic.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_intrinsic_PFCHS_mc_RMS99.root",j+1);
+    sourceMC.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.root",j+1);
+    sourceData.Form("../plots_2012/PF_L1CHS/data/root_files/Resolution_for_%i_eta_bin_PFCHS_data_RMS99.root",j+1);
     pdfFile.Form("plots/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.pdf",j+1);
 
 
-    TCanvas *c = new TCanvas(EtaPtRegion,title,200,10,450,450);
-    c -> cd();
+    c[j] = new TCanvas(EtaPtRegion,title,200,10,450,450);
+    c[j] -> cd();
+    TLegend *legend = new TLegend(0.4,0.75,0.9,0.9);      
+
+    intrinsicJER = GetTGraphErrors(sourceIntrinsic,"Graph");  
+    dataJER      = GetTGraphErrors(sourceData,"Graph");  
+    mcJER        = GetTGraphErrors(sourceMC,"Graph");  
+    if(intrinsicJER  == 0) continue;
       
-    Add = GetTGraphErrors(sourceIntrinsic,"Graph");  
-    if(Add == 0) continue;
-      
-    fScaleAlpha = Add->GetFunction("fResolution");
-    Add -> SetMarkerColor(46);
-    Add -> SetLineColor(46);
-    fScaleAlpha -> SetLineColor(46);
-    Add -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
-    Add -> GetYaxis() -> SetTitle("Resolution"); 
-    Add -> SetTitle("");
-            
-            
-    Add -> SetMinimum(0.0);
-    Add -> SetMaximum(0.14);   
-    Add -> GetXaxis()->SetLimits(0,600);
-      
-    Add -> Draw("AP");
+    intrinsicJER -> GetFunction("fResolution")-> SetLineColor(46);
+    intrinsicJER -> SetMarkerColor(46);
+    intrinsicJER -> SetLineColor(46);
+    mcJER -> GetFunction("fResolution")-> SetLineColor(1);
+    mcJER -> SetMarkerColor(1);
+    mcJER -> SetLineColor(1);
+    dataJER -> GetFunction("fResolution")-> SetLineColor(8);
+    dataJER -> SetMarkerColor(8);
+    dataJER -> SetLineColor(8);
 
 
+    intrinsicJER -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
+    mcJER        -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
+    dataJER      -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
+    intrinsicJER -> GetYaxis() -> SetTitle("Resolution"); 
+    mcJER        -> GetYaxis() -> SetTitle("Resolution"); 
+    dataJER      -> GetYaxis() -> SetTitle("Resolution"); 
+    intrinsicJER -> SetTitle("");
+    mcJER        -> SetTitle("");
+    dataJER      -> SetTitle("");
+                        
+    intrinsicJER -> SetMinimum(0.00);
+    intrinsicJER -> SetMaximum(0.15);   
+    intrinsicJER -> GetXaxis() -> SetRangeUser(0,600);
+    mcJER -> SetMinimum(0.00);
+    mcJER -> SetMaximum(0.15);   
+    mcJER -> GetXaxis() -> SetRangeUser(0,600);
+      
+    //intrinsicJER -> Draw("AP");
+    mcJER        -> Draw("AP");
+    dataJER      -> Draw("Psame");
+
+
+
+    //legend -> SetTextSize(0.033);
+    legend -> SetFillColor(0);
+    legend -> SetLineWidth(2);
+    legend -> AddEntry(dataJER, "Data");
+    legend -> AddEntry(mcJER, "Simulation");
+    legend -> Draw("same");
 
     // Draw info boxes
       
@@ -578,10 +619,10 @@ int plotResolutionOfPhotonPt(){
     info   = new TLatex();
   
     info -> SetNDC();    
-    info->DrawLatex(0.53,0.75,  etaRegion);
+    info->DrawLatex(0.53,0.65,  etaRegion);
     info->DrawLatex(0.40,0.25, "Anti-k_{T} 0.5 PFCHSJets");
       
-    c -> SaveAs(pdfFile);
+    c[j] -> SaveAs(pdfFile);
   }
 
   return 0;
