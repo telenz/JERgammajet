@@ -530,6 +530,63 @@ int plotResponse(){
   return 0;
 
 }
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int plotResolutionOfPhotonPt(){
+
+  TeresaPlottingStyle::init();
+
+  TString sourceResponse, sourceIntrinsic, sourceImbalance, sourceTotal, sourceData, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
+    
+  TLatex*  info;
+  TGraphErrors* Add;
+  TF1 *fScaleAlpha;
+  for(int j=0; j<nEtaBins; j++){
+
+    sourceIntrinsic.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.root",j+1);
+    pdfFile.Form("plots/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.pdf",j+1);
+
+
+    TCanvas *c = new TCanvas(EtaPtRegion,title,200,10,450,450);
+    c -> cd();
+      
+    Add = GetTGraphErrors(sourceIntrinsic,"Graph");  
+    if(Add == 0) continue;
+      
+    fScaleAlpha = Add->GetFunction("fResolution");
+    Add -> SetMarkerColor(46);
+    Add -> SetLineColor(46);
+    fScaleAlpha -> SetLineColor(46);
+    Add -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
+    Add -> GetYaxis() -> SetTitle("Resolution"); 
+    Add -> SetTitle("");
+            
+            
+    Add -> SetMinimum(0.0);
+    Add -> SetMaximum(0.14);   
+    Add -> GetXaxis()->SetLimits(0,600);
+      
+    Add -> Draw("AP");
+
+
+
+    // Draw info boxes
+      
+    if(j == 0) etaRegion.Form("|#eta^{1st jet}| < %4.1f", etaBins[j+1]);
+    else       etaRegion.Form("%4.1f < |#eta^{1st jet}| < %4.1f",etaBins[j], etaBins[j+1]);
+      
+    info   = new TLatex();
+  
+    info -> SetNDC();    
+    info->DrawLatex(0.53,0.75,  etaRegion);
+    info->DrawLatex(0.40,0.25, "Anti-k_{T} 0.5 PFCHSJets");
+      
+    c -> SaveAs(pdfFile);
+  }
+
+  return 0;
+}
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Ratio Closure
 
