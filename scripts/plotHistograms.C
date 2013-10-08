@@ -464,7 +464,7 @@ int plotResponse(){
   histoJet3 ->Scale(histoJet3->GetEntries()/histoJet3->Integral());
   histoJet3 -> Rebin(50);
 
-  histoJet3 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{gen. jet}");
+  histoJet3 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{gen. jet}");
   histoJet3 -> GetYaxis()->SetTitle("# Events");
   histoJet3 -> SetTitle("Intrinsic");
   histoJet3 -> SetMinimum(1.);
@@ -554,7 +554,7 @@ int plotAllResponseHistograms_MC(){
 	canvas1[i][j][k][0] -> cd();
 	histoJet1 -> Scale(histoJet1->GetEntries()/histoJet1->Integral());
 	histoJet1 -> Rebin(50);
-	histoJet1 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{#gamma}");
+	histoJet1 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{#gamma}");
 	histoJet1 -> GetYaxis()->SetTitle("# Events");
 	histoJet1 -> SetTitle("Measured Response - Jet Hemisphere");
 	histoJet1 -> SetMinimum(1.);
@@ -579,7 +579,7 @@ int plotAllResponseHistograms_MC(){
 	canvas1[i][j][k][1] -> cd();
 	histoPhoton1 -> Scale(histoPhoton1->GetEntries()/histoPhoton1->Integral());
 	histoPhoton1 -> Rebin(50);
-	histoPhoton1 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{#gamma}");
+	histoPhoton1 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{#gamma}");
 	histoPhoton1 -> GetYaxis()->SetTitle("# Events");
 	histoPhoton1 -> SetTitle("Measured Response - Photon Hemisphere");
 	histoPhoton1 -> SetMinimum(1.);

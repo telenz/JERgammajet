@@ -348,7 +348,7 @@ int plotResponse(){
   histoTogether1 -> Rebin(40);
   histoTogether1 -> GetXaxis() -> SetRangeUser(0.,2.);
 
-  histoTogether1 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{#gamma}");
+  histoTogether1 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{#gamma}");
   histoTogether1 -> GetYaxis()->SetTitle("# Events");
   histoTogether1 -> SetTitle("Measured Response");
   histoTogether1 -> SetMinimum(1.);
@@ -516,7 +516,7 @@ int plotResponse(){
   histoJet3 -> Rebin(40);
   histoJet3 -> GetXaxis() -> SetRangeUser(0.,2.);
 
-  histoJet3 -> GetXaxis()->SetTitle("p_{T}^{recon. jet}/p_{T}^{gen. jet}");
+  histoJet3 -> GetXaxis()->SetTitle("p_{T}^{reco. jet}/p_{T}^{gen. jet}");
   histoJet3 -> GetYaxis()->SetTitle("# Events");
   histoJet3 -> SetTitle("Intrinsic");
   histoJet3 -> SetMinimum(1.);
