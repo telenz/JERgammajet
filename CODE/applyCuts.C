@@ -297,11 +297,8 @@ bool applyCuts(){
       if((photonPt[0] >= ptBins[5] && photonPt[0] < ptBins[6]) && !hltPhoton[5]){
 	cut12[5] += 1; 
 	return 0;}
-      if((photonPt[0] >= ptBins[6] && photonPt[0] < ptBins[7]) && !hltPhoton[6]){
+      if((photonPt[0] >= ptBins[6]) && !hltPhoton[6]){
 	cut12[6] += 1;
-	return 0;}
-      if((photonPt[0] >= ptBins[7]) && !hltPhoton[7]){
-	cut12[7] += 1; 
 	return 0;}
     }
   }  
