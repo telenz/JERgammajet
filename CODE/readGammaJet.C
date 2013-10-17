@@ -118,7 +118,7 @@ int readGammaJet(int nEvents) {
   cout<<"filename = "<<DataFilename<<endl; 
   chain->Add(DataFilename); 
 
-  if(QCDUncertaintyEvaluation && !isMC){
+  if((QCDUncertaintyEvaluation && !isMC) || addQCD){
     //if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V20/OnlyTightPhotons/ak5PFCHS*.root"); 
     if(jetType==2) chain->Add("/scratch/hh/dust/naf/cms/user/telenz/mc/QCDenriched_pythia_PtBinned_START53_V22/OnlyTightPhotons/ak5PFCHS*.root"); 
     else{
