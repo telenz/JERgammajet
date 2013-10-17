@@ -337,11 +337,13 @@ bool applyCuts(){
   for(int i=0; i<numTrigger-1; i++){
     if(photonPt[0] >= ptBins[i] && photonPt[0] < ptBins[i+1]){
       hVtxPtbinned[i] ->Fill(vtxN,weight*PUWeight);
+      hVtxPtbinnedwoWeights[i] ->Fill(vtxN,weight);
       //hRho[i] -> Fill(rho,weight*PUWeight);
       break;
     }
     else if(photonPt[0]>=ptBins[numTrigger-1]){
       hVtxPtbinned[numTrigger-1]->Fill(vtxN,weight*PUWeight); 
+      hVtxPtbinnedwoWeights[numTrigger-1]->Fill(vtxN,weight);
       //hRho[numTrigger-1] -> Fill(rho,weight*PUWeight);
       break;
     }
