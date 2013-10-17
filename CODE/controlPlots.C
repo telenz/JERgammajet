@@ -7,6 +7,7 @@
 
 TH1D* hPhotonPt[numTrigger]    = {0};
 TH1D* hVtxPtbinned[numTrigger] = {0};
+TH1D* hVtxPtbinnedwoWeights[numTrigger] = {0};
 TH1D* hPUgenMC[numTrigger]           = {0};
 TH1D* hPhoton1Pt    = 0;  
 TH1D* hJet1Pt       = 0;  
@@ -62,6 +63,8 @@ void initializeControlPlots(){
     else           sprintf(tname,"#Vtx for %4.1f GeV < p_{T}",ptBins[i]);
     histoName.Form("hVtxPtBinned%i",i);
     hVtxPtbinned[i] = createTH1(hVtxPtbinned[i],histoName,tname,60,0,60,"Number of Vertices");
+    histoName.Form("hVtxPtBinnedwoWeights%i",i);
+    hVtxPtbinnedwoWeights[i] = createTH1(hVtxPtbinnedwoWeights[i],histoName,tname,60,0,60,"Number of Vertices");
   
     if(i<numTrigger-1) sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T} < %4.1f GeV ",ptBins[i],ptBins[i+1]);
     else               sprintf(tname,"PU distribution MC for %4.1f GeV < p_{T}",ptBins[i]);
@@ -123,7 +126,10 @@ void plotControlPlots(){
 
   for(int i=0; i<numTrigger; i++){
     texte.Form("VtxN%i",i);
-    plotTH1(hVtxPtbinned[i],texte,0);   
+    plotTH1(hVtxPtbinned[i],texte,0); 
+
+    texte.Form("VtxNwoWeights%i",i);
+    plotTH1(hVtxPtbinnedwoWeights[i],texte,0);   
 
     texte.Form("PUgenMC%i",i);
     plotTH1(hPUgenMC[i],texte,0);
