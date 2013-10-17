@@ -778,43 +778,6 @@ void MCClosureRatioALLMETHODS(){
    //c->Print("MCClosure.pdf");   
 }
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-int compareDataMC_VtxDistribution(){
-
-
-  
-  TFile *file, *file1;  
-  char title[100];
-  TH1D* hNVtxD[numTrigger];
-  TH1D* hNVtxM[numTrigger];
-  TCanvas* canv[numTrigger];
-  
-  for(int i=1; i<numTrigger;i++){
-
- 
-    sprintf(title,"../plots_2012/PF_L1CHS/data/root_files/VtxN%i_PFCHS_data.root",i);
-    file = TFile::Open(title);  
-    file->GetObject("histo",hNVtxD[i]);
-    
-    sprintf(title,"../plots_2012/PF_L1CHS/mc/root_files/VtxN%i_PFCHS_mc.root",i);
-    file1 = TFile::Open(title);
-    file1->GetObject("histo",hNVtxM[i]);
-    
-    hNVtxM[i]->Scale(hNVtxD[i]->Integral()/hNVtxM[i]->Integral()); 
-    
-    sprintf(title,"Number of Vertices (data and MC) pt %i  NEW PU Dist",i);
-    canv[i] = DrawComparison(hNVtxD[i], hNVtxM[i],title,"","#Vtx", 1);
-    canv[i] ->SetLogy();
-    sprintf(title,"plots/NVtxComparison%i.pdf",i);
-    canv[i] ->Print(title);
-  
-  }
-
-  delete file;
-  delete file1;
-  
-  return 0;
-}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 int drawDeltaPhiCut(bool isData = true){
@@ -860,6 +823,52 @@ int drawDeltaPhiCut(bool isData = true){
    
   return 0;
 }
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int compareDataMC_VtxDistribution(bool withWeights = true){
+
+  //TeresaPlottingStyle::init();
+  gStyle->SetOptStat("");
+  
+  TFile *file, *file1;  
+  char title[100];
+  TH1D* hNVtxD[numTrigger];
+  TH1D* hNVtxM[numTrigger];
+  TCanvas* canv[numTrigger];
+  
+  for(int i=0; i<numTrigger;i++){
+
+    sprintf(title,"../plots_2012/PF_L1CHS/data/root_files/VtxN%i_PFCHS_data.root",i);
+    file = TFile::Open(title);  
+    file->GetObject("histo",hNVtxD[i]);
+    
+    if(withWeights) sprintf(title,"../plots_2012/PF_L1CHS/mc/root_files/VtxN%i_PFCHS_mc.root",i);
+    else            sprintf(title,"../plots_2012/PF_L1CHS/mc/root_files/VtxNwoWeights%i_PFCHS_mc.root",i);
+    file1 = TFile::Open(title);
+    file1->GetObject("histo",hNVtxM[i]);
+    
+    hNVtxM[i]->Scale(hNVtxD[i]->Integral()/hNVtxM[i]->Integral()); 
+    
+    if(i == 0)      sprintf(title,"HLT_Photon20_CaloIdVL_IsoL");
+    else if(i == 1) sprintf(title,"HLT_Photon30_CaloIdVL_IsoL");
+    else if(i == 2) sprintf(title,"HLT_Photon50_CaloIdVL_IsoL");
+    else if(i == 3) sprintf(title,"HLT_Photon75_CaloIdVL_IsoL");
+    else if(i == 4) sprintf(title,"HLT_Photon90_CaloIdVL_IsoL");
+    else if(i == 5) sprintf(title,"HLT_Photon135");
+    else if(i == 6) sprintf(title,"HLT_Photon150");
+
+    canv[i] = DrawComparison(hNVtxD[i], hNVtxM[i],title,"","#Vtx", 0);
+    canv[i] ->SetLogy();
+    if(withWeights) sprintf(title,"plots/NVtxComparison%i.pdf",i);
+    else            sprintf(title,"plots/NVtxComparisonWoWeights%i.pdf",i);
+    canv[i] ->Print(title);
+  
+  }
+
+  delete file;
+  delete file1;
+  
+  return 0;
+}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Some Functions
@@ -898,106 +907,115 @@ TH1D* GetTH1D(TString filename, TString objectName){
   return object;
 }
 
-TCanvas* DrawComparison(TH1D* prediction, TH1D* selection, TString Title, TString LumiTitle, TString xTitle, bool isData)
+TCanvas* DrawComparison(TH1D* prediction, TH1D* selection, TString Title, TString LumiTitle, TString xTitle, bool withPad2)
 {
-   double MinX = selection->GetXaxis()->GetXmin();
-   double MaxX = selection->GetXaxis()->GetXmax();
-   double MaxY = selection->GetMaximum();
-   double YRangeMax = 2*MaxY;
-   TString titlePrediction;
-   TString titleSelection;
-   TString RatioTitle;
-   
-   if( isData ){
-      titlePrediction = "Data";
-      titleSelection = "MC";
-      RatioTitle = "(Data-MC)/MC";
-   }
-   else {
-      titlePrediction = "Data-driven Pred. from MC";
-      titleSelection = "MC Expectation";
-      RatioTitle = "(Pred-MC)/MC";
-   }
 
-   //static Int_t c_LightBrown   = TColor::GetColor( "#D9D9CC" );
-   static Int_t c_LightGray    = TColor::GetColor( "#DDDDDD" );
-
-   prediction->SetAxisRange(MinX, MaxX, "X");
-   prediction->GetYaxis()->SetRangeUser(0.005, YRangeMax);
-   prediction->SetMarkerStyle(20);
-   prediction->SetMarkerSize(0.9);
-   prediction->SetMarkerColor(kBlack);
-   prediction->SetXTitle(xTitle);
-   prediction->SetYTitle("Events");
-   selection->SetAxisRange(MinX, MaxX, "X");
-   selection->GetYaxis()->SetRangeUser(0.05, YRangeMax);
-   // selection->SetFillColor(c_LightBrown);
-   selection->SetFillColor(c_LightGray);
-   selection->SetTitle("");
-   selection->SetXTitle(xTitle);
-   selection->SetYTitle("Events");
-   TCanvas *c = new TCanvas("ca", "Comparison and ratio of two histos", 700, 700);
-   TPad *pad1 = new TPad("pad1a", "pad1a", 0, 0.35, 1, 1);
-   pad1->SetLogy();
-   pad1->SetBottomMargin(0);
-   pad1->Draw();
-   pad1->cd();
+  double MinX = selection->GetXaxis()->GetXmin();
+  double MaxX = selection->GetXaxis()->GetXmax();
+  double MaxY = selection->GetMaximum();
+  double YRangeMax = 2*MaxY;
+  TString titlePrediction;
+  TString titleSelection;
+  TString RatioTitle;
   
-   selection->DrawCopy("hist");
-   prediction->Draw("same");
-   selection->SetFillColor(kAzure-3);
-   selection->SetFillStyle(3354);
-   selection->DrawCopy("e2same");
-   selection->SetFillStyle(1001);
-   //  selection->SetFillColor(c_LightBrown);
-   selection->SetFillColor(c_LightGray);
 
-   TLegend* leg1 = new TLegend(0.48, 0.63, 0.95, 0.83);
-   leg1->SetFillStyle(0);
-   leg1->SetLineStyle(1);
-   leg1->SetTextFont(42);
-   leg1->SetTextSize(0.04);
-   leg1->AddEntry(selection, titleSelection, "lf");
-   leg1->AddEntry(prediction, titlePrediction, "lep");
-   leg1->Draw("same");
+  titlePrediction = "Data";
+  titleSelection = "MC";
+  RatioTitle = "(Data-MC)/MC";
+
+  //static Int_t c_LightBrown   = TColor::GetColor( "#D9D9CC" );
+  static Int_t c_LightGray    = TColor::GetColor( "#DDDDDD" );
+
+  prediction->SetAxisRange(MinX, MaxX, "X");
+  prediction->GetYaxis()->SetRangeUser(0.005, YRangeMax);
+  prediction->SetMarkerStyle(20);
+  prediction->SetMarkerSize(0.9);
+  prediction->SetMarkerColor(kBlack);
+  prediction->SetXTitle(xTitle);
+  prediction->SetYTitle("# Events");
+  selection->SetAxisRange(MinX, MaxX, "X");
+  selection->GetYaxis()->SetRangeUser(0.05, YRangeMax);
+  // selection->SetFillColor(c_LightBrown);
+  selection->SetFillColor(c_LightGray);
+  selection->SetTitle("");
+  selection->SetXTitle(xTitle);
+  selection->SetYTitle("# Events");
+  selection->SetTitleSize(0.05, "XYZ");
+  selection->SetTitleOffset(0.65, "Y");
+  selection->SetLabelSize(0.05,"XYZ");
+  selection->SetTitleOffset(1.2,"XYZ");
+  TCanvas *c = new TCanvas("c", "Comparison and ratio of two histos", 700, 700);
+  TPad *pad1;
+  if(withPad2) pad1 = new TPad("pad1a", "pad1a", 0, 0.35, 1, 1);
+  else         pad1 = new TPad("pad1a", "pad1a", 0, 0, 1, 1);
+  pad1->SetLogy();
+  if(withPad2) pad1->SetBottomMargin(0);
+  else pad1->SetBottomMargin(0.15);
+  pad1->SetLeftMargin(0.15);
+  pad1->Draw();
+  pad1->cd();
+  
+  selection->DrawCopy("hist");
+  prediction->Draw("same");
+  selection->SetFillColor(kAzure-3);
+  selection->SetFillStyle(3354);
+  selection->DrawCopy("e2same");
+  selection->SetFillStyle(1001);
+  //  selection->SetFillColor(c_LightBrown);
+  selection->SetFillColor(c_LightGray);
+  
+  TLegend* leg1 = new TLegend(0.60, 0.73, 0.90, 0.90);
+  leg1->SetFillStyle(0);
+  leg1->SetLineStyle(1);
+  leg1->SetTextFont(42);
+  leg1->SetTextSize(0.05);
+  leg1->AddEntry(selection, titleSelection, "lf");
+  leg1->AddEntry(prediction, titlePrediction, "lep");
+  leg1->Draw("same");
  
-   TPaveText* pt = new TPaveText(0.11, 0.98, 0.95, 0.86, "NDC");
-   pt->SetBorderSize(0);
-   pt->SetFillStyle(0);
-   pt->SetTextAlign(12);
-   pt->SetTextSize(0.045);
-   pt->AddText(Title);
-   pt->AddText(LumiTitle);
-   pt->Draw();
-   c->cd();
-   TPad *pad2 = new TPad("pad2a", "pad2a", 0, 0, 1, 0.35);
-   pad2->SetTopMargin(0);
-   pad2->Draw();
-   pad2->cd();
-   TH1D* r = new TH1D(*selection);
-   r->SetTitle("");
-   r->SetLabelSize(0.08, "XYZ");
-   r->SetLabelOffset(0.01, "XYZ");
-   r->SetTitleSize(0.09, "XYZ");
-   r->SetTitleOffset(0.65, "Y");
-   r->SetTickLength(0.05);
-   r->SetYTitle(RatioTitle);
-   r->SetStats(0);
-   r->SetMarkerStyle(20);
-   r->SetMarkerSize(0.9);
-   r->SetMarkerColor(kBlack);
-   r->Reset();
-   r->Add(prediction, 1);
-   r->Add(selection, -1);
-   r->Divide(selection);
-   r->SetMaximum(1.2);
-   r->SetMinimum(-1.2);
-   //r->SetMaximum(0.5);
-   //r->SetMinimum(-0.5);
-   r->Draw("ep");
-   TLine l;
-   l.DrawLine(MinX, 0., MaxX, 0.);
-   c->cd();
+  
+  TPaveText* pt = new TPaveText(0.11, 0.98, 0.95, 0.86, "NDC");
+  pt->SetBorderSize(0);
+  pt->SetFillStyle(0);
+  pt->SetTextAlign(12);
+  pt->SetTextSize(0.045);
+  pt->AddText(Title);
+  pt->AddText(LumiTitle);
+  pt->Draw();
+  
+  c->cd();
+  if(withPad2){
+    TPad *pad2 = new TPad("pad2a", "pad2a", 0, 0, 1, 0.35);
+    pad2->SetTopMargin(0);
+    pad2->SetBottomMargin(0.25);
+    pad2->SetLeftMargin(0.15);
+    pad2->Draw();
+    pad2->cd();
+    TH1D* r = new TH1D(*selection);
+    r->SetTitle("");
+    r->SetLabelSize(0.1, "XYZ");
+    r->SetLabelOffset(0.01, "XYZ");
+    r->SetTitleSize(0.09, "XYZ");
+    r->SetTitleOffset(0.65, "Y");
+    r->SetTickLength(0.05);
+    r->SetYTitle(RatioTitle);
+    r->SetStats(0);
+    r->SetMarkerStyle(20);
+    r->SetMarkerSize(0.9);
+    r->SetMarkerColor(kBlack);
+    r->Reset();
+    r->Add(prediction, 1);
+    r->Add(selection, -1);
+    r->Divide(selection);
+    r->SetMaximum(1.2);
+    r->SetMinimum(-1.2);
+    //r->SetMaximum(0.5);
+    //r->SetMinimum(-0.5);
+    r->Draw("ep");
+    TLine l;
+    l.DrawLine(MinX, 0., MaxX, 0.);
+    c->cd();
+  }
    return c;
 }
 
