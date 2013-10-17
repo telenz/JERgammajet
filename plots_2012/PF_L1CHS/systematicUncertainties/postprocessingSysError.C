@@ -601,7 +601,7 @@ latexTable<<"\\\\\\hline"<<endl;
   latexTable<<"\\\\"<<endl;
   for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownPU[z]*100<<" \\% $ ";
   latexTable<<"\\\\\\hline\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{Together}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{Total}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaTotalSysUp[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
   for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaTotalSysDown[z]*100<<" \\% $ ";
