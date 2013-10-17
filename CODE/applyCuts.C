@@ -266,6 +266,7 @@ bool applyCuts(){
   //--------------------------------------------------------------------------------------------------------------
 
   //------------------------------------------------------------------------------(11. CUT)------------------------
+  hDeltaPhi->Fill(deltaphi,weight*PUWeight);
   // Select events with back-to-back photon and jet   (11. CUT)
   if( deltaphi < deltaPhiCutValue){
     cut11 = cut11 +1;
