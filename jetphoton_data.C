@@ -69,7 +69,7 @@ int jetphoton_data(int nEvts, int step) {
     cout<<"Please correct the number of Triggers used (in CODE/myDeclarations.h)!"<<endl;  
     return 0;
   }
-  if(date == 2012 && numTrigger!=8){
+  if(date == 2012 && numTrigger!=7){
     cout<<"Please correct the number of Triggers used (in CODE/myDeclarations.h)!"<<endl;  
     return 0;
   }
