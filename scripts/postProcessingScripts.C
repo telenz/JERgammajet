@@ -10,6 +10,7 @@
 #include "TFile.h"
 #include "TGraph.h"
 #include "TMath.h"
+#include "TLine.h"
 #include "TMultiGraph.h"
 #include "TStyle.h"
 #include "TGraphAsymmErrors.h"
@@ -812,6 +813,51 @@ int compareDataMC_VtxDistribution(){
   delete file;
   delete file1;
   
+  return 0;
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int drawDeltaPhiCut(bool isData = true){
+
+  TeresaPlottingStyle::init();
+
+  TFile *file;
+  TString filename;
+  TString saveName;
+  TH1D* histo;  
+  TCanvas* c = new TCanvas("c","c",200,10,450,450);
+  c -> cd();
+  c -> SetLogy(); 
+ 
+  if(isData) filename = "../plots_2012/PF_L1CHS/data/root_files/hDeltaPhi_PFCHS_data.root";
+  else       filename = "../plots_2012/PF_L1CHS/mc/root_files/hDeltaPhi_PFCHS_mc.root";
+
+  file = TFile::Open(filename);  
+  file -> GetObject("histo",histo);
+  histo-> SetTitle("#Delta #Phi after all cuts");
+  histo -> GetYaxis()->SetRangeUser(1,histo->GetMaximum()*5);
+  histo -> GetXaxis()->SetRangeUser(1.5,3.2);
+  histo -> Draw();
+
+  TLine *line = new TLine(2.95,histo->GetMinimum(),2.95,histo->GetMaximum());
+  line -> SetLineColor(2);
+  line -> SetLineWidth(2);
+  line -> Draw("same");
+
+
+
+  TLatex *info   = new TLatex();
+  
+  info -> SetNDC();    
+  info -> SetTextSize(0.06);
+  if(isData) info->DrawLatex(0.20,0.60, "Data");
+  else       info->DrawLatex(0.20,0.60, "MC");
+
+  if(isData) saveName = "plots/hDeltaPhi_PFCHS_data.pdf";
+  else       saveName = "plots/hDeltaPhi_PFCHS_mc.pdf";
+
+  c -> Print(saveName);
+   
   return 0;
 }
 
