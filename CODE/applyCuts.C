@@ -350,7 +350,9 @@ bool applyCuts(){
   }
 
   
-  hPhoton1Pt        -> Fill(photonPt[0],weight*PUWeight);
+  hPhoton1Pt          -> Fill(photonPt[0],weight*PUWeight);
+  hPhoton1PtwoWeights -> Fill(photonPt[0]);
+ 
   hJet2Pt           -> Fill(jetPt2nd,weight*PUWeight);
   hJet1Pt           -> Fill(jetPt1stJet,weight*PUWeight);
   hMet              -> Fill(met_T1,weight*PUWeight);
