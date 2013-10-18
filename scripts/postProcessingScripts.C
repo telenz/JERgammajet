@@ -549,24 +549,28 @@ int plotResolutionOfPhotonPt(){
 
   TeresaPlottingStyle::init();
 
-  TString sourceData, sourceIntrinsic, sourceMC, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
+  TString sourceData, sourceIntrinsic, sourceMC, sourceImbalance, pdfFile, etaRegion, ptRegion, title, EtaPtRegion; 
     
   TLatex*  info;
-  TGraphErrors* intrinsicJER, *dataJER, *mcJER;
-  TCanvas *c[nEtaBins];
+  TGraphErrors* intrinsicJER, *imbalanceJER, *dataJER, *mcJER;
+  TCanvas *c[nEtaBins], *cImb[nEtaBins];
   for(int j=0; j<nEtaBins; j++){
 
     sourceIntrinsic.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_intrinsic_PFCHS_mc_RMS99.root",j+1);
+    sourceImbalance.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_imbalance_PFCHS_mc_RMS99.root",j+1);
     sourceMC.Form("../plots_2012/PF_L1CHS/mc/root_files/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.root",j+1);
     sourceData.Form("../plots_2012/PF_L1CHS/data/root_files/Resolution_for_%i_eta_bin_PFCHS_data_RMS99.root",j+1);
     pdfFile.Form("plots/Resolution_for_%i_eta_bin_PFCHS_mc_RMS99.pdf",j+1);
 
 
     c[j] = new TCanvas(EtaPtRegion,title,200,10,450,450);
+    TString name = "imbalance";
+    cImb[j] = new TCanvas(name,name,200,10,450,450);
     c[j] -> cd();
     TLegend *legend = new TLegend(0.4,0.75,0.9,0.9);      
 
     intrinsicJER = GetTGraphErrors(sourceIntrinsic,"Graph");  
+    imbalanceJER = GetTGraphErrors(sourceImbalance,"Graph");
     dataJER      = GetTGraphErrors(sourceData,"Graph");  
     mcJER        = GetTGraphErrors(sourceMC,"Graph");  
     if(intrinsicJER  == 0) continue;
@@ -574,6 +578,9 @@ int plotResolutionOfPhotonPt(){
     intrinsicJER -> GetFunction("fResolution")-> SetLineColor(46);
     intrinsicJER -> SetMarkerColor(46);
     intrinsicJER -> SetLineColor(46);
+    imbalanceJER -> GetFunction("fResolution")-> SetBit(TF1::kNotDraw);
+    imbalanceJER -> SetMarkerColor(4);
+    imbalanceJER -> SetLineColor(4);
     mcJER -> GetFunction("fResolution")-> SetLineColor(1);
     mcJER -> SetMarkerColor(1);
     mcJER -> SetLineColor(1);
@@ -583,18 +590,25 @@ int plotResolutionOfPhotonPt(){
 
 
     intrinsicJER -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
+    imbalanceJER -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
     mcJER        -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
     dataJER      -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
     intrinsicJER -> GetYaxis() -> SetTitle("Resolution"); 
+    imbalanceJER -> GetYaxis() -> SetTitle("Imbalance"); 
     mcJER        -> GetYaxis() -> SetTitle("Resolution"); 
     dataJER      -> GetYaxis() -> SetTitle("Resolution"); 
     intrinsicJER -> SetTitle("");
+    imbalanceJER -> SetTitle("");
     mcJER        -> SetTitle("");
     dataJER      -> SetTitle("");
                         
     intrinsicJER -> SetMinimum(0.00);
     intrinsicJER -> SetMaximum(0.15);   
     intrinsicJER -> GetXaxis() -> SetRangeUser(0,600);
+    imbalanceJER -> SetMinimum(0.00);
+    imbalanceJER -> SetMaximum(0.15);   
+    imbalanceJER -> GetXaxis() -> SetRangeUser(0,600);
+
     mcJER -> SetMinimum(0.00);
     mcJER -> SetMaximum(0.15);   
     mcJER -> GetXaxis() -> SetRangeUser(0,600);
@@ -602,8 +616,6 @@ int plotResolutionOfPhotonPt(){
     //intrinsicJER -> Draw("AP");
     mcJER        -> Draw("AP");
     dataJER      -> Draw("Psame");
-
-
 
     //legend -> SetTextSize(0.033);
     legend -> SetFillColor(0);
@@ -624,6 +636,19 @@ int plotResolutionOfPhotonPt(){
     info->DrawLatex(0.40,0.25, "Anti-k_{T} 0.5 PFCHSJets");
       
     c[j] -> SaveAs(pdfFile);
+
+    // Draw imbalance
+    cImb[j] -> cd(); 
+    imbalanceJER -> Draw("AP");
+    delete info;
+    info   = new TLatex();
+    info -> SetNDC();    
+    info->DrawLatex(0.45,0.65,  etaRegion);
+    info->DrawLatex(0.45,0.75, "Anti-k_{T} 0.5 PFCHSJets");
+
+    pdfFile.Form("plots/Imbalance_for_%i_eta_bin_PFCHS_mc_RMS99.pdf",j+1);
+    cImb[j] -> SaveAs(pdfFile);
+    
   }
 
   return 0;
