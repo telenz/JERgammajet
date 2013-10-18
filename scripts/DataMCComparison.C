@@ -342,6 +342,31 @@ int plotDataMCComparisonFINAL(){
     info -> DrawLatex(0.20,0.78,Form("#chi^{2}/ndof = %4.2f / %i",f1 -> GetChisquare(),f1 -> GetNDF()));
     info -> DrawLatex(0.60,0.78,Form("f = %4.3f #pm %4.3f", f1 -> GetParameter(0), f1->GetParError(0)));
     info -> DrawLatex(0.60,0.85,Form("#bf{%4.1f < |#eta^{Jet}| < %4.1f}",etaBins[eta],etaBins[eta+1]));
+    double m_lumi = 19.7;
+
+    TString infotext = TString::Format("CMS Preliminary, %3.1f fb^{-1}", m_lumi);
+    TLatex *text1 = new TLatex(3.5, 24, infotext);
+    text1->SetNDC();
+    text1->SetX(0.22);
+    text1->SetTextFont(42);
+    infotext = TString::Format("#sqrt{s} = 8 TeV");
+    TLatex *text2 = new TLatex(3.5, 24, infotext);
+    text2->SetNDC();
+    text2->SetX(0.22);
+    text2->SetTextFont(42);
+
+    text1->SetTextSize(0.040);
+    text1->SetTextAlign(11);
+    text1->SetY(0.96);
+    text1->SetX(0.15);
+
+    text2->SetTextSize(0.040);
+    text2->SetTextAlign(31);
+    text2->SetY(0.96);
+    text2->SetX(0.95);
+
+    text1->Draw("same");
+    text2->Draw("same");
 
     filename = (TString) "plots/Ratio_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_comparison_" + Method + (TString) ".pdf";
     c11 -> SaveAs(filename);
