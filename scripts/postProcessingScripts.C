@@ -871,6 +871,60 @@ int compareDataMC_VtxDistribution(bool withWeights = true){
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int compare_PhotonPtWithWoWeights(){
+
+  TeresaPlottingStyle::init();
+  gStyle->SetOptStat("");
+  
+  TFile *file;  
+  TH1D *histo, *histoReweighted;
+  TCanvas* canv = new TCanvas("c", "Photon Pt", 700, 700);
+  canv->cd();  
+
+  TString filename = "../plots_2012/PF_L1CHS/mc/root_files/hPhoton1PtwoWeights_PFCHS_mc.root";
+  file = TFile::Open(filename);
+  file->GetObject("histo",histo);
+  filename = "../plots_2012/PF_L1CHS/mc/root_files/hPhoton1Pt_PFCHS_mc.root";
+  file = TFile::Open(filename);
+  file->GetObject("histo",histoReweighted);
+      
+  histo           -> SetLineColor(9);
+  histo           -> SetMarkerColor(9);
+  histo           -> SetMarkerStyle(1);
+  histo           -> Rebin(10);
+  histoReweighted -> SetLineColor(2);
+  histoReweighted -> SetMarkerColor(2);
+  histoReweighted -> SetMarkerStyle(1);
+  histoReweighted -> Rebin(10);
+
+  histo -> SetMinimum(0.000000001);
+  histo -> SetMaximum(histo->GetMaximum()*40);
+  histo -> SetYTitle("frequency");
+  histo -> SetTitle("");
+
+  histo->Draw();
+  histoReweighted->Draw("same");
+
+  TLegend* leg1 = new TLegend(0.60, 0.73, 0.90, 0.90);
+  leg1->SetFillStyle(0);
+  //leg1->SetLineStyle(1);
+  //leg1->SetTextFont(42);
+  //leg1->SetTextSize(0.05);
+  leg1->AddEntry(histo, "not reweighted" , "lep");
+  leg1->AddEntry(histoReweighted, "reweighted", "lep");
+  leg1->Draw("same");
+ 
+
+  //canv = DrawComparison(histo, histoReweighted,"photon Pt","","Photon pt", 0);
+  canv->SetLogy();
+  canv ->Print("plots/PhotonPtComparison_reweighted.pdf");
+  
+  delete file;
+  
+  return 0;
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Some Functions
 
 TGraphErrors* GetTGraphErrors(TString filename, TString objectName){
@@ -932,14 +986,14 @@ TCanvas* DrawComparison(TH1D* prediction, TH1D* selection, TString Title, TStrin
   prediction->SetMarkerSize(0.9);
   prediction->SetMarkerColor(kBlack);
   prediction->SetXTitle(xTitle);
-  prediction->SetYTitle("# Events");
+  prediction->SetYTitle("frequency");
   selection->SetAxisRange(MinX, MaxX, "X");
   selection->GetYaxis()->SetRangeUser(0.05, YRangeMax);
   // selection->SetFillColor(c_LightBrown);
   selection->SetFillColor(c_LightGray);
   selection->SetTitle("");
   selection->SetXTitle(xTitle);
-  selection->SetYTitle("# Events");
+  selection->SetYTitle("frequency");
   selection->SetTitleSize(0.05, "XYZ");
   selection->SetTitleOffset(0.65, "Y");
   selection->SetLabelSize(0.05,"XYZ");
