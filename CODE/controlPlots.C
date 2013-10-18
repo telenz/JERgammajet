@@ -9,7 +9,8 @@ TH1D* hPhotonPt[numTrigger]    = {0};
 TH1D* hVtxPtbinned[numTrigger] = {0};
 TH1D* hVtxPtbinnedwoWeights[numTrigger] = {0};
 TH1D* hPUgenMC[numTrigger]           = {0};
-TH1D* hPhoton1Pt    = 0;  
+TH1D* hPhoton1Pt          = 0;  
+TH1D* hPhoton1PtwoWeights = 0;  
 TH1D* hJet1Pt       = 0;  
 TH1D* hJet2Pt       = 0;
 TH1D* hDeltaPhi     = 0;
@@ -73,7 +74,8 @@ void initializeControlPlots(){
   }
 
   
-  hPhoton1Pt = createTH1(hPhoton1Pt,"hPhoton1Pt","leading Photon p_{T} (after all cuts)",3000,0,3000,"p_{T}^{#gamma} (GeV)");
+  hPhoton1Pt          = createTH1(hPhoton1Pt,"hPhoton1Pt","leading Photon p_{T} (after all cuts)",3000,0,3000,"p_{T}^{#gamma} (GeV)");
+  hPhoton1PtwoWeights = createTH1(hPhoton1PtwoWeights,"hPhoton1PtwoWeights","leading Photon p_{T} (after all cuts)",3000,0,3000,"p_{T}^{#gamma} (GeV)");
   hJet1Pt    = createTH1(hJet1Pt,"hJet1Pt","Jet12 p_{T}",2000,0,2000,"p_{T} (GeV)");
   hJet2Pt    = createTH1(hJet2Pt,"hJet2Pt","Jet p_{T}",2000,0,2000,"p_{T} (GeV)");
   hDeltaPhi  = createTH1(hDeltaPhi,"hDeltaPhi","#Delta #Phi",100,0,3.142,"#Delta #Phi");
@@ -136,6 +138,7 @@ void plotControlPlots(){
   }
 
   plotTH1(hPhoton1Pt,"hPhoton1Pt",0);
+  plotTH1(hPhoton1PtwoWeights,"hPhoton1PtwoWeights",0);
   plotTH1(hJet1Pt,"hJet1Pt",0);
   plotTH1(hJet2Pt,"hJet2Pt",0);
   plotTH1(hDeltaPhi,"hDeltaPhi",0);
