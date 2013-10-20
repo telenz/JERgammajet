@@ -429,12 +429,25 @@ int postprocessingSysError(){
 
   }
 
-  TGraphAsymmErrors* ratioEtaBinnedSys = new TGraphAsymmErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ratioEtaBinnedEX,ratioEtaBinnedEX,DeltaTotalSysDown,DeltaTotalSysUp);
+  double ex[nEta] ={0.};
+
+  TGraphAsymmErrors* ratioEtaBinnedSys = new TGraphAsymmErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ex,ex,DeltaTotalSysDown,DeltaTotalSysUp);
+
+  double *TotalSysUp   = new double[nEta];
+  double *TotalSysDown = new double[nEta];
+ 
+
+  for(int i=0; i<nEta; i++){
+    TotalSysUp[i]   = ratioEtaBinnedY[i]+DeltaTotalSysUp[i];
+    TotalSysDown[i] = ratioEtaBinnedY[i]-DeltaTotalSysDown[i];
+  }
+
+  TGraph* ratioSysBorderUp   = new TGraph(nEta, ratioEtaBinnedX, TotalSysUp);
+  TGraph* ratioSysBorderDown = new TGraph(nEta, ratioEtaBinnedX, TotalSysDown);
 
   TGraph* ratioRelativeErrorsUp   = new TGraph(nEta,ratioEtaBinnedX,deltaTotalSysUp);
   TGraph* ratioRelativeErrorsDown = new TGraph(nEta,ratioEtaBinnedX,deltaTotalSysDown);
 
-  double ex[nEta] ={0.};
 
   TGraphErrors* ratioEtaBinnedStat = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ratioEtaBinnedEX,ratioEtaBinnedEY);
   TGraphAsymmErrors* ratioEtaBinnedStatPlusSys = new TGraphAsymmErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ex,ex,DeltaTotalDown,DeltaTotalUp);
@@ -467,11 +480,11 @@ int postprocessingSysError(){
   ratioEtaBinnedSys -> GetXaxis() -> SetNdivisions(6,6,0, "X");
   ratioEtaBinnedSys -> DrawClone("Ae3p");
   
-  ratioEtaBinnedSys -> SetPointError(0, 0., 0., 0., 0.);
-  ratioEtaBinnedSys -> SetPointError(1, 0., 0., 0., 0.);
-  ratioEtaBinnedSys -> SetPointError(2, 0., 0., 0., 0.);
-  ratioEtaBinnedSys -> SetPointError(3, 0., 0., 0., 0.);
-  ratioEtaBinnedSys -> SetPointError(4, 0., 0., 0., 0.);
+  //ratioEtaBinnedSys -> SetPointError(0, 0., 0., 0., 0.);
+  //ratioEtaBinnedSys -> SetPointError(1, 0., 0., 0., 0.);
+  //ratioEtaBinnedSys -> SetPointError(2, 0., 0., 0., 0.);
+  //ratioEtaBinnedSys -> SetPointError(3, 0., 0., 0., 0.);
+  //ratioEtaBinnedSys -> SetPointError(4, 0., 0., 0., 0.);
 
 
   ratioEtaBinnedStat -> SetMarkerStyle(20);
@@ -483,6 +496,7 @@ int postprocessingSysError(){
   
   cmsPrel();
 
+ 
   TLatex *infoFinal   = new TLatex();
   infoFinal -> SetTextFont(132);
   infoFinal -> SetNDC();
@@ -638,9 +652,14 @@ latexTable<<"\\\\\\hline"<<endl;
 
   ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetTitle("|#eta|");
   ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetRangeUser(0., 2.3);
-  //ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetNdivisions(505, "X");
   ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
   ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetRangeUser(0.8, 1.5);
+
+  ratioEtaBinnedSys -> GetXaxis() -> SetTitle("|#eta|");
+  ratioEtaBinnedSys -> GetXaxis() -> SetRangeUser(0., 2.3);
+  ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
+  ratioEtaBinnedSys -> GetYaxis() -> SetRangeUser(0.8, 1.5);
+
 
   Res_2011 -> GetXaxis() -> SetTitle("|#eta|");
   Res_2011 -> GetXaxis() -> SetLimits(0., 2.3);
@@ -648,30 +667,31 @@ latexTable<<"\\\\\\hline"<<endl;
   Res_2011 -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
   Res_2011 -> GetYaxis() -> SetRangeUser(0.8, 1.5);
 
-  //  Color_t color = ();
-
   ratioEtaBinnedStatPlusSys -> SetMarkerStyle(20); 
   ratioEtaBinnedStatPlusSys -> SetMarkerSize(2.0);
   ratioEtaBinnedStatPlusSys -> SetLineColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetMarkerColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetFillColor(kPink-8);
+
+  ratioEtaBinnedSys -> SetMarkerStyle(20); 
+  ratioEtaBinnedSys -> SetMarkerSize(2.0);
+  ratioEtaBinnedSys -> SetLineColor(1);
+  ratioEtaBinnedSys -> SetMarkerColor(kPink-8);
+  ratioEtaBinnedSys -> SetFillColor(1);
+
   gStyle->SetHatchesSpacing(2.);
-  //gStyle->SetHatchesLineWidth(2);
   gROOT->ForceStyle();
-  ratioEtaBinnedStatPlusSys -> SetFillStyle(3244);
-  //ratioEtaBinnedStatPlusSys -> SetFillStyle(1001);
-  //ratioEtaBinnedStatPlusSys -> SetFillStyle(4050);
+  ratioEtaBinnedStatPlusSys -> SetFillStyle(3144);
+  ratioEtaBinnedSys -> SetFillStyle(3144);
 
   Res_2011->SetMarkerStyle(24);
   Res_2011->SetMarkerSize(2.0);
   Res_2011->SetLineColor(1);
   Res_2011->SetFillColor(kGray);
-  //Res_2011->SetFillStyle(3001);
   Res_2011->SetFillStyle(1001);
   Res_2011->SetLineColor(kGray);
 
   cFinal2->Update();
-
   Res_2011->DrawClone("Ae3p");
   ratioEtaBinnedStatPlusSys -> Draw("3epsame");
   Res_2011->DrawClone("pXsame");
@@ -681,8 +701,11 @@ latexTable<<"\\\\\\hline"<<endl;
   Res_2011->Draw("pXsame");
   ratioEtaBinnedStatPlusSys -> Draw("pXsame");
   
-  
-  
+  ratioSysBorderUp -> SetLineColor(12);
+  ratioSysBorderUp -> Draw("Lsame");
+  ratioSysBorderDown -> SetLineColor(12);
+  ratioSysBorderDown -> Draw("Lsame");
+    
 
   //ratioEtaBinnedStatPlusSys -> Draw("e3psame");
 
@@ -694,7 +717,35 @@ latexTable<<"\\\\\\hline"<<endl;
 
   //Res_2011->Draw("psame");
 
+  //cmsPrel(19.7);
   cmsPrel();
+
+  double m_lumi = 19.7;
+
+  TString infotext = TString::Format("CMS Preliminary, %3.1f fb^{-1}", m_lumi);
+  TLatex *text1 = new TLatex(3.5, 24, infotext);
+  text1->SetNDC();
+  text1->SetX(0.22);
+  text1->SetTextFont(42);
+  infotext = TString::Format("#sqrt{s} = 8 TeV");
+  TLatex *text2 = new TLatex(3.5, 24, infotext);
+  text2->SetNDC();
+  text2->SetX(0.22);
+  text2->SetTextFont(42);
+
+  text1->SetTextSize(0.040);
+  text1->SetTextAlign(11);
+  text1->SetY(0.96);
+  text1->SetX(0.15);
+
+  text2->SetTextSize(0.040);
+  text2->SetTextAlign(31);
+  text2->SetY(0.96);
+  text2->SetX(0.95);
+
+  text1->Draw("same");
+  text2->Draw("same");
+  
 
   TLegend *leg = new TLegend(0.20, 0.70, 0.40, 0.90);
   leg->SetBorderSize(0);
@@ -704,8 +755,9 @@ latexTable<<"\\\\\\hline"<<endl;
   leg->SetTextFont(42);
   leg->SetTextSize(0.040);
   
-  leg->AddEntry(Res_2011,"2011 (total error)", "pl");
-  leg->AddEntry(ratioEtaBinnedStatPlusSys,"2012 (total error)", "pl");
+  leg->AddEntry(Res_2011,"2011 (total error)", "plf");
+  leg->AddEntry(ratioEtaBinnedStatPlusSys,"2012 (total error)", "plf");
+  leg->AddEntry(ratioSysBorderUp,"systematic error (2012)", "l");
  
    
   leg->Draw("same");
