@@ -594,7 +594,7 @@ int plotResolutionOfPhotonPt(){
     mcJER        -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
     dataJER      -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");   
     intrinsicJER -> GetYaxis() -> SetTitle("Resolution"); 
-    imbalanceJER -> GetYaxis() -> SetTitle("Imbalance"); 
+    imbalanceJER -> GetYaxis() -> SetTitle("Residual Imbalance"); 
     mcJER        -> GetYaxis() -> SetTitle("Resolution"); 
     dataJER      -> GetYaxis() -> SetTitle("Resolution"); 
     intrinsicJER -> SetTitle("");
