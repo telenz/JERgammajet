@@ -859,6 +859,7 @@ int compareDataMC_VtxDistribution(bool withWeights = true){
   TH1D* hNVtxD[numTrigger];
   TH1D* hNVtxM[numTrigger];
   TCanvas* canv[numTrigger];
+  TLatex *info;
   
   for(int i=0; i<numTrigger;i++){
 
@@ -883,6 +884,14 @@ int compareDataMC_VtxDistribution(bool withWeights = true){
 
     canv[i] = DrawComparison(hNVtxD[i], hNVtxM[i],title,"","#Vtx", 0);
     canv[i] ->SetLogy();
+
+    info  = new TLatex();
+    info -> SetNDC();    
+    info -> SetTextSize(0.04);
+
+    if(withWeights) info->DrawLatex(0.65,0.60, "reweighed");
+    else       info->DrawLatex(0.65,0.60, "#splitline{not}{reweighed}");
+
     if(withWeights) sprintf(title,"plots/NVtxComparison%i.pdf",i);
     else            sprintf(title,"plots/NVtxComparisonWoWeights%i.pdf",i);
     canv[i] ->Print(title);
