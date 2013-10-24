@@ -261,7 +261,7 @@ int evalPUUncertainty(){
   
     mg->Draw("AP");
 
-    mg -> GetYaxis() -> SetTitle("JER_{MBX = 73.0/65.8} /JER_{MBX = 69.4}");
+    mg -> GetYaxis() -> SetTitle("JER_{MBX = 73.0/65.8} /JER_{MBX = 69.4} - 1");
     mg -> SetMinimum(-0.03);
     mg -> SetMaximum(0.03); 
     //mg -> GetXaxis() -> SetNdivisions(505, "X");
@@ -423,7 +423,7 @@ int evalPUUncertainty(){
     else             AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBins[iEta+1],etaBins[iEta+2]);
  
     Ratio -> SetTitle(AuxString); 
-    Ratio -> GetXaxis() -> SetTitle("Photon pT");
+    Ratio -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
     Ratio -> GetXaxis() -> SetTitleOffset(1.1); 
     Ratio -> GetYaxis() -> SetTitle("Ratio of JER (DATA/MC)");
     Ratio -> GetYaxis() -> SetTitleOffset(1.2);   
