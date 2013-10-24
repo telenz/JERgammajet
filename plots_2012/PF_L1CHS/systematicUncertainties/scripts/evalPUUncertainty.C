@@ -48,8 +48,6 @@ int evalPUUncertainty(){
   double finalErrorsLowY[nEta][nPtBins] = {{0}};
   double finalErrorsUpX[nEta][nPtBins]  = {{0}};
   double finalErrorsLowX[nEta][nPtBins] = {{0}};
-  double finalErrors[nEta]  = {0};
-  double finalErrorsE[nEta] = {0};
   int nCount[nEtaBins] = {0};
 
   TString rootFile[3];
@@ -287,23 +285,6 @@ int evalPUUncertainty(){
 
   }
 
-  // Save relative uncertainties for every eta bin in another root-file
-  double eta[nEta] = {1.};
-  double etaError[nEta] = {0.};
-  for(int i =0; i<nEta-1; i++) eta[i] = eta[i+1]+1.;
-
-  
-  TGraphErrors* finalErrorsPU = new TGraphErrors(nEta,eta,finalErrors,etaError,finalErrorsE);
-  finalErrorsPU -> SetMarkerStyle(20);
-  finalErrorsPU -> SetTitle("Final relative Erros (PU)");
-  finalErrorsPU -> GetXaxis() -> SetTitle("#eta^{Jet}");
-  finalErrorsPU -> GetYaxis() -> SetTitle("JER_{MBX = 73.0/65.8} /JER_{MBX = 69.4}");
-
-  tot_filename = (TString) "plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root"; 
-  TFile *f = new TFile(tot_filename,"RECREATE");
-  f -> WriteTObject(finalErrorsPU,"graph");
-  f->Close();
-  delete f;
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -497,7 +478,7 @@ int evalPUUncertainty(){
   TGraphErrors* ratioEtaBinnedLow = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedLowY,ratioEtaBinnedEX,ratioEtaBinnedLowEY);
 
   TString filename = (TString) "plotsPU/RatioEtaBinned_" + type + (TString) "_" + method + (TString) ".root";
-  f = new TFile(filename,"RECREATE");
+  TFile *f = new TFile(filename,"RECREATE");
   f -> WriteTObject(ratioEtaBinned,"Graph");
   f->Close();
   delete f;
