@@ -289,23 +289,24 @@ int postprocessingSysError(){
     
   if(JEC){
 
-    rootFiles                     = (TString) "scripts/plotsJEC/FinalErrorsJEC_" + type + (TString) "_" + method + (TString) ".root";  
-    TGraphErrors *JECuncertainty  = readTGraphErrors(rootFiles,"graph","Graph");
-    double       *sysRelJEC       = JECuncertainty -> GetY();
-  
-    // Multiply on mc (as symmetric Error)
-    // ratioUp = 1/(1 - delta) * ratio
-    // ratioUp = 1/(1 + delta) * ratio
-    
+    rootFiles                          = (TString) "scripts/plotsJEC/FinalEtaBinnedErrorsJECUp_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *JECuncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelJECUp       = JECuncertaintyUp -> GetY();
+
+    rootFiles                          = (TString) "scripts/plotsJEC/FinalEtaBinnedErrorsJECLow_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *JECuncertaintyLow = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelJECLow      = JECuncertaintyLow -> GetY();
+      
     for(int eta = 0; eta<nEta; eta++){
 
-      deltaRatioUpJEC[eta]   = sysRelJEC[eta];
-      deltaRatioDownJEC[eta] = sysRelJEC[eta];
+      deltaRatioUpJEC[eta]   = sysRelJECUp[eta];
+      deltaRatioDownJEC[eta] = sysRelJECLow[eta];
 
       //cout<<"deltaRatioUpJEC["<<eta<<"] = "<<deltaRatioUpJEC[eta]<<endl;
       //cout<<"deltaRatioDownJEC["<<eta<<"] = "<<deltaRatioDownJEC[eta]<<endl;     
 
     }
+
   }
  
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -321,19 +322,19 @@ int postprocessingSysError(){
 
   if(flavor){
 
-    rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
+    rootFiles                          = (TString) "scripts/plotsFlavor/FinalEtaBinnedErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
     TGraphErrors *FlavoruncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
     double       *sysRelFlavorUp       = FlavoruncertaintyUp -> GetY();
-
-    rootFiles                          = (TString) "scripts/plotsFlavor/FinalErrorsFlavorLow_" + type + (TString) "_" + method + (TString) ".root"; 
+    
+    rootFiles                          = (TString) "scripts/plotsFlavor/FinalEtaBinnedErrorsFlavorLow_" + type + (TString) "_" + method + (TString) ".root"; 
     TGraphErrors *FlavoruncertaintyLow = readTGraphErrors(rootFiles,"graph","Graph");
     double       *sysRelFlavorLow      = FlavoruncertaintyLow -> GetY();
   
     
     for(int eta = 0; eta<nEta; eta++){
 
-      deltaRatioUpFlavor[eta]   = abs(1./(1. - sysRelFlavorLow[eta]) - 1.);
-      deltaRatioDownFlavor[eta] = abs(1./(1. + sysRelFlavorUp[eta]) - 1.);
+      deltaRatioUpFlavor[eta]   = sysRelFlavorUp[eta];
+      deltaRatioDownFlavor[eta] = sysRelFlavorLow[eta];
 
       //cout<<"deltaRatioUpFlavor["<<eta<<"] = "<<deltaRatioUpFlavor[eta]<<endl;
       //cout<<"deltaRatioDownFlavor["<<eta<<"] = "<<deltaRatioDownFlavor[eta]<<endl;
@@ -349,10 +350,14 @@ int postprocessingSysError(){
   double deltaRatioDownPU[nEta]    = {0.};
   
   if(PU){
+    
+    rootFiles                          = (TString) "scripts/plotsPU/FinalEtaBinnedErrorsPUUp_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *PUuncertaintyUp  = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelPUUp       = PUuncertaintyUp -> GetY();
 
-    rootFiles                       = (TString) "scripts/plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root";
-    TGraphErrors *PUuncertainty = readTGraphErrors(rootFiles,"graph","Graph");
-    double       *sysRelPU      = PUuncertainty -> GetY();
+    rootFiles                          = (TString) "scripts/plotsPU/FinalEtaBinnedErrorsPULow_" + type + (TString) "_" + method + (TString) ".root"; 
+    TGraphErrors *PUuncertaintyLow = readTGraphErrors(rootFiles,"graph","Graph");
+    double       *sysRelPULow      = PUuncertaintyLow -> GetY();
   
     // Multiply on mc (as symmetric Error)
     // ratioUp = 1/(1 - delta) * ratio
@@ -360,8 +365,8 @@ int postprocessingSysError(){
         
     for(int eta = 0; eta<nEta; eta++){
     
-      deltaRatioUpPU[eta]   = abs(1./(1. - sysRelPU[eta]) - 1.);
-      deltaRatioDownPU[eta] = abs(1./(1. + sysRelPU[eta]) - 1.);
+      deltaRatioUpPU[eta]   = sysRelPUUp[eta];
+      deltaRatioDownPU[eta] = sysRelPULow[eta];
 
       //cout<<"deltaRatioUpPU["<<eta<<"] = "<<deltaRatioUpPU[eta]<<endl;
       //cout<<"deltaRatioDownPU["<<eta<<"] = "<<deltaRatioDownPU[eta]<<endl;
@@ -590,30 +595,30 @@ int postprocessingSysError(){
   latexTable<<"\\multicolumn{1}{c}{} & \\multicolumn{4}{c}{$|\\eta^{\\text{Jet}}|$}\\\\\\hline"<<endl<<fixed<<setprecision(1);
   for(int z=0;z<nEta;z++) latexTable<<"& \\textbf{"<<etaBins[z]<<" - "<<etaBins[z+1]<<"}";
   latexTable<<"\\\\\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{QCD}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{Multijet contamination}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaRatioUpQCD[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
   for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownQCD[z]*100<<" \\% $ ";
   latexTable<<"\\\\\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{Flavor}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{Flavor uncertainty}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaRatioUpFlavor[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
-  for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownFlavor[z]*100<<" \\% $ ";
+  for(int z=0;z<nEta;z++) latexTable<<"& $"<<deltaRatioDownFlavor[z]*100<<" \\% $ ";
 latexTable<<"\\\\\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{JEC}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{JEC uncertainty}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaRatioUpJEC[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
-  for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownJEC[z]*100<<" \\% $ ";
+  for(int z=0;z<nEta;z++) latexTable<<"& $"<<deltaRatioDownJEC[z]*100<<" \\% $ ";
 latexTable<<"\\\\\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{MC}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{Out-of-Cone showering simulation}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaRatioUpMC[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
   for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownMC[z]*100<<" \\% $ ";
   latexTable<<"\\\\\\hline"<<endl;
-  latexTable<<"\\multirow{2}{*}{\\textbf{PU}}";
+  latexTable<<"\\multirow{2}{*}{\\textbf{PU uncertainty}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaRatioUpPU[z]*100<<" \\% $ ";
   latexTable<<"\\\\"<<endl;
-  for(int z=0;z<nEta;z++) latexTable<<"& $-"<<deltaRatioDownPU[z]*100<<" \\% $ ";
+  for(int z=0;z<nEta;z++) latexTable<<"& $"<<deltaRatioDownPU[z]*100<<" \\% $ ";
   latexTable<<"\\\\\\hline\\hline"<<endl;
   latexTable<<"\\multirow{2}{*}{\\textbf{Total}}";
   for(int z=0;z<nEta;z++) latexTable<<"& $+"<<deltaTotalSysUp[z]*100<<" \\% $ ";
