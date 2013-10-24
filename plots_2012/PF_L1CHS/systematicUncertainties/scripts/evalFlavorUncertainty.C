@@ -34,12 +34,11 @@ int evalFlavorUncertainty(TString definition = "algo"){
   gErrorIgnoreLevel = 1001;
 
   TeresaPlottingStyle::init();
-
-  const int nEta = 4;
+  gStyle -> SetTitleOffset(1.4,"Y");
+  gROOT->ForceStyle(); 
   
   const TString method = "RMS99";
   const TString type   = "PFCHS";
-
 
   TString pathName       = (TString) "root_files_FlavorUncertainty/together_" + definition+ "/";
   TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "/";
@@ -47,87 +46,99 @@ int evalFlavorUncertainty(TString definition = "algo"){
   TString pathNameUDS    = (TString) "root_files_FlavorUncertainty/uds_" + definition+ "/";
   TString pathNameCB     = (TString) "root_files_FlavorUncertainty/cb_" + definition+ "/";
 
+  cout<<endl<<endl<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQuarks<<endl<<pathNameGluons<<endl<<endl<<endl;
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Evaluation of the flavor composition
   
   TH2D *charm2D, *bottom2D, *gluon2D, *lightQuark2D;
-  TH1D *charm[4], *bottom[4], *gluon[4], *lightQuark[4],  *allQuarks[4], *togetherWoUndefined[4], *allQuarksComp[4], *gluonWoUndefinedComp[4];
+  TH1D *charm1D[nEtaBins], *bottom1D[nEtaBins], *gluon1D[nEtaBins], *lightQuark1D[nEtaBins];
+  double allQuarks[nEtaBins][nPtBins] = {{0.}};
+  double togetherWoUndefined[nEtaBins][nPtBins] = {{0.}};
+  double allQuarksComp[nEtaBins][nPtBins] = {{0.}};
+  double charm[nEtaBins][nPtBins] = {{0.}};
+  double bottom[nEtaBins][nPtBins] = {{0.}};
+  double lightQuark[nEtaBins][nPtBins] = {{0.}};
+  double gluon[nEtaBins][nPtBins] = {{0.}};
   TString fileName;  
   TFile *fileFlavor;  
 
-  double mixture[nEta]    ={0.};
-  double mixtureUp[nEta]  ={0.};
-  double mixtureLow[nEta] ={0.};
+  double mixture[nEtaBins][nPtBins]    ={{0.}};
+  double mixtureUp[nEtaBins][nPtBins]  ={{0.}};
+  double mixtureLow[nEtaBins][nPtBins] ={{0.}};
 
-  double correlationQuarks[nEta] = {0.};
-  double correlationGluons[nEta] = {0.};
+  double correlationQuarks[nEtaBins][nPtBins] = {{0.}};
+  double correlationGluons[nEtaBins][nPtBins] = {{0.}};
   
-  for(int i=0; i<nEta; i++){
-
+  for(int i=0; i<nEtaBins; i++){
+  
     // Read Files
     fileName =  pathName + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     bottom2D =  (TH2D*) gDirectory->Get("histo");
     bottom2D -> SetDirectory(0);
-    bottom[i]  = (TH1D*) bottom2D->ProjectionX("bottom0",bottom2D->GetYaxis()->FindBin(etaBins[i]),bottom2D->GetYaxis()->FindBin(etaBins[i+1]));
-    bottom[i] -> Rebin(20);
-    bottom[i] -> SetDirectory(0);
+    bottom1D[i]  = (TH1D*) bottom2D->ProjectionX("bottom0",bottom2D->GetYaxis()->FindBin(etaBins[i]),bottom2D->GetYaxis()->FindBin(etaBins[i+1]));
+    bottom1D[i] -> SetDirectory(0);
     delete fileFlavor;
 
     fileName =  pathName + "hPhotonPtJetEtaFlavorCharm_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     charm2D  =  (TH2D*) gDirectory->Get("histo");
     charm2D  -> SetDirectory(0);
-    charm[i] = charm2D->ProjectionX("charm0",charm2D->GetYaxis()->FindBin(etaBins[i]),charm2D->GetYaxis()->FindBin(etaBins[i+1]),"");
-    charm[i]  -> Rebin(20);
-    charm[i]  -> SetDirectory(0);
+    charm1D[i] = charm2D->ProjectionX("charm0",charm2D->GetYaxis()->FindBin(etaBins[i]),charm2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    charm1D[i]  -> SetDirectory(0);
     delete fileFlavor;
 
     fileName =  pathName + "hPhotonPtJetEtaFlavorGluon_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     gluon2D  =  (TH2D*) gDirectory->Get("histo");
     gluon2D  -> SetDirectory(0);
-    gluon[i]    = gluon2D->ProjectionX("gluon0",gluon2D->GetYaxis()->FindBin(etaBins[i]),gluon2D->GetYaxis()->FindBin(etaBins[i+1]),"");
-    gluon[i] -> Rebin(20);
-    gluon[i] -> SetDirectory(0); 
+    gluon1D[i]    = gluon2D->ProjectionX("gluon0",gluon2D->GetYaxis()->FindBin(etaBins[i]),gluon2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    gluon1D[i] -> SetDirectory(0); 
     delete fileFlavor;
 
-    fileName     =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
-    fileFlavor         =  new TFile(fileName);
-    lightQuark2D =  (TH2D*) gDirectory->Get("histo");
-    lightQuark2D -> SetDirectory(0);
-    lightQuark[i] = lightQuark2D->ProjectionX("lightQuark0",lightQuark2D->GetYaxis()->FindBin(etaBins[i]),lightQuark2D->GetYaxis()->FindBin(etaBins[i+1]),"");
-    lightQuark[i] -> Rebin(20);
-    lightQuark[i] -> SetDirectory(0);
+    fileName      =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
+    fileFlavor    =  new TFile(fileName);
+    lightQuark2D  =  (TH2D*) gDirectory->Get("histo");
+    lightQuark2D  -> SetDirectory(0);
+    lightQuark1D[i] = lightQuark2D->ProjectionX("lightQuark0",lightQuark2D->GetYaxis()->FindBin(etaBins[i]),lightQuark2D->GetYaxis()->FindBin(etaBins[i+1]),"");
+    lightQuark1D[i] -> SetDirectory(0);
     
-    allQuarks[i] = (TH1D*) bottom[i]->Clone(Form("allQuarks%i",i));
-    allQuarks[i] -> Add(charm[i]);
-    allQuarks[i] -> Add(lightQuark[i]);
-
-    togetherWoUndefined[i] = (TH1D*) bottom[i]->Clone(Form("together%i",i));
-    togetherWoUndefined[i] -> Add(charm[i]);
-    togetherWoUndefined[i] -> Add(gluon[i]);
-    togetherWoUndefined[i] -> Add(lightQuark[i]);
-
-    correlationQuarks[i] = sqrt(allQuarks[i]->Integral()/togetherWoUndefined[i]->Integral());
-    correlationGluons[i] = sqrt(gluon[i]->Integral()/togetherWoUndefined[i]->Integral());
-
-    togetherWoUndefined[i]-> Rebin(togetherWoUndefined[i]->GetNbinsX());
-    allQuarks[i]          -> Rebin(allQuarks[i]->GetNbinsX());
-    gluon[i]              -> Rebin(gluon[i]->GetNbinsX());
     
-    allQuarksComp[i]        = (TH1D*) allQuarks[i]->Clone(Form("allQuarks%i",i+3));
-    allQuarksComp[i]        -> Divide(togetherWoUndefined[i]);    
-    gluonWoUndefinedComp[i] = (TH1D*) gluon[i]->Clone(Form("gluon%i",i+3));
-    gluonWoUndefinedComp[i] -> Divide(togetherWoUndefined[i]);
+    for(int j=0; j<nPtBins; j++){
+      
+      for(int bin=lightQuark1D[i]->GetXaxis()->FindBin(ptBins[j]); bin<lightQuark1D[i]->GetXaxis()->FindBin(ptBins[j+1]); bin++){
+	lightQuark[i][j] += lightQuark1D[i]->GetBinContent(bin);
+      }
+      for(int bin=bottom1D[i]->GetXaxis()->FindBin(ptBins[j]); bin<bottom1D[i]->GetXaxis()->FindBin(ptBins[j+1]); bin++){
+	bottom[i][j] += bottom1D[i]->GetBinContent(bin);
+      }
+      for(int bin=charm1D[i]->GetXaxis()->FindBin(ptBins[j]); bin<=charm1D[i]->GetXaxis()->FindBin(ptBins[j+1]); bin++){
+	charm[i][j] += charm1D[i]->GetBinContent(bin);
+      }
+      
+      for(int bin=gluon1D[i]->GetXaxis()->FindBin(ptBins[j]); bin<gluon1D[i]->GetXaxis()->FindBin(ptBins[j+1]); bin++){
+	gluon[i][j] += gluon1D[i]->GetBinContent(bin);
+      }
 
-    cout<<"Gluon Flavor Fraction for systematics  = "<<gluonWoUndefinedComp[i]->GetBinContent(1)<<endl;
-    cout<<"Quark Flavor Fraction for systematics  = "<<allQuarksComp[i]->GetBinContent(1)<<endl<<endl;
+      allQuarks[i][j] = bottom[i][j];
+      allQuarks[i][j] += charm[i][j];
+      allQuarks[i][j] += lightQuark[i][j];
+
+      togetherWoUndefined[i][j]  = allQuarks[i][j];
+      togetherWoUndefined[i][j] += gluon[i][j];
+
+      correlationQuarks[i][j] = sqrt(allQuarks[i][j]/togetherWoUndefined[i][j]);
+      correlationGluons[i][j] = sqrt(gluon[i][j]/togetherWoUndefined[i][j]);
+    
+      allQuarksComp[i][j]     = allQuarks[i][j]/togetherWoUndefined[i][j];
    
-    mixture[i]    = allQuarksComp[i]->GetBinContent(1);
-    mixtureUp[i]  = allQuarksComp[i]->GetBinContent(1) + 0.10;
-    mixtureLow[i] = allQuarksComp[i]->GetBinContent(1) - 0.10;
+      mixture[i][j]    = allQuarksComp[i][j];
+      mixtureUp[i][j]  = allQuarksComp[i][j] + 0.10;
+      mixtureLow[i][j] = allQuarksComp[i][j] - 0.10;
+
+    }
+    //cout<<"--------------------"<<endl;
   }
 
   
@@ -137,14 +148,19 @@ int evalFlavorUncertainty(TString definition = "algo"){
   
   TString tot_filename, AuxString, fitName;;
   TGraphErrors* graph[5]; 
-  double finalErrorsUp[nEta]   = {0};
-  double finalErrorsUpE[nEta]  = {0};
-  double finalErrorsLow[nEta]  = {0};
-  double finalErrorsLowE[nEta] = {0};  
+  double finalErrorsUpX[nEtaBins][nPtBins]   = {{0}};
+  double finalErrorsUpEX[nEtaBins][nPtBins]  = {{0}};
+  double finalErrorsLowX[nEtaBins][nPtBins]  = {{0}};
+  double finalErrorsLowEX[nEtaBins][nPtBins] = {{0}};
+  double finalErrorsUpY[nEtaBins][nPtBins]   = {{0}};
+  double finalErrorsUpEY[nEtaBins][nPtBins]  = {{0}};
+  double finalErrorsLowY[nEtaBins][nPtBins]  = {{0}};
+  double finalErrorsLowEY[nEtaBins][nPtBins] = {{0}};
+  int nCount[nEtaBins] = {0};
   TString rootFile[5];
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  for(int eta = 0; eta<nEta; eta++){
+  for(int eta = 0; eta<nEtaBins; eta++){
     
     rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
     rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
@@ -200,7 +216,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     mg -> GetYaxis() -> SetTitle("JER");
     mg -> SetMinimum(0.04);
     mg -> SetMaximum(0.14);   
-    mg -> GetXaxis() -> SetLimits(0,600);
+    mg -> GetXaxis() -> SetRangeUser(0.,600.);
     mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]"); 
     legend -> Draw("same");
 
@@ -217,9 +233,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // 2.) Calculate Relative uncertainty for a 10% different mixture with measured resolution
 
-    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
+    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
+    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
 
     for(int i =0; i<3; i++){
       graph[i] = readTGraphErrors(rootFile[i],"Graph","Graph");    
@@ -232,6 +248,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     int nData = 0;
     if(nDataGluon < nDataQuark) nData = nDataGluon;
     else nData = nDataQuark;
+
 
 
     double *dataY, *dataQuarksY, *dataGluonsY, *dataX, *dataQuarksX, *dataGluonsX, *dataEY, *dataQuarksEY, *dataGluonsEY, *dataEX ;
@@ -256,6 +273,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     int idxGluon   = 0;
     int idxQuark   = 0;
     int idx        = 0;
+    int idxMix     = 0;
     int countNData = 0;
 
    
@@ -271,14 +289,21 @@ int evalFlavorUncertainty(TString definition = "algo"){
 	else idx += 1;
 	continue;
       }
-      
-      dataY[idx]            = (1.-mixture[eta])*(dataGluonsY[idxGluon])+mixture[eta]*(dataQuarksY[idxQuark]);
-      errorUpY[countNData]  = ((1.-mixtureUp[eta])*(dataGluonsY[idxGluon])+mixtureUp[eta]*(dataQuarksY[idxQuark]))/(dataY[idx]) -1.;
-      errorLowY[countNData] = ((1.-mixtureLow[eta])*dataGluonsY[idxGluon]+mixtureLow[eta]*dataQuarksY[idxQuark])/(dataY[idx]) -1.;
 
-      errorUpEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureUp[eta])*dataGluonsEY[idxGluon],2) + pow(mixtureUp[eta]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureUp[eta])*dataGluonsY[idxGluon]+mixtureUp[eta]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureUp[eta])*correlationGluons[eta]*dataGluonsEY[idxGluon] + mixtureUp[eta]*correlationQuarks[eta]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureUp[eta])*dataGluonsY[idxGluon]+mixtureUp[eta]*dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
+      
+
+      for(int i=0; i<nPtBins; i++){
+
+	if(dataX[idx]>ptBins[i] && dataX[idx]<ptBins[i+1]) idxMix = i;
+      }
+      
+      dataY[idx]            = (1.-mixture[eta][idxMix])*(dataGluonsY[idxGluon])+mixture[eta][idxMix]*(dataQuarksY[idxQuark]);
+      errorUpY[countNData]  = ((1.-mixtureUp[eta][idxMix])*(dataGluonsY[idxGluon])+mixtureUp[eta][idxMix]*(dataQuarksY[idxQuark]))/(dataY[idx]) -1.;
+      errorLowY[countNData] = ((1.-mixtureLow[eta][idxMix])*dataGluonsY[idxGluon]+mixtureLow[eta][idxMix]*dataQuarksY[idxQuark])/(dataY[idx]) -1.;
+
+      errorUpEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureUp[eta][idxMix])*dataGluonsEY[idxGluon],2) + pow(mixtureUp[eta][idxMix]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureUp[eta][idxMix])*dataGluonsY[idxGluon]+mixtureUp[eta][idxMix]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureUp[eta][idxMix])*correlationGluons[eta][idxMix]*dataGluonsEY[idxGluon] + mixtureUp[eta][idxMix]*correlationQuarks[eta][idxMix]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureUp[eta][idxMix])*dataGluonsY[idxGluon]+mixtureUp[eta][idxMix]*dataQuarksY[idxQuark])/(pow(dataY[idx],3))*dataEY[idx]);
             
-      errorLowEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureLow[eta])*dataGluonsEY[idxGluon],2) + pow(mixtureLow[eta]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureLow[eta])*dataGluonsY[idxGluon]+mixtureLow[eta]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureLow[eta])*correlationGluons[eta]*dataGluonsEY[idxGluon] + mixtureLow[eta]*correlationQuarks[eta]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureLow[eta])*dataGluonsY[idxGluon]+mixtureLow[eta]*dataQuarksY[idxQuark])/(2.*pow(dataY[idx],3))*dataEY[idx]);
+      errorLowEY[countNData] = sqrt(pow(1./(dataY[idx]),2)*(pow((1.-mixtureLow[eta][idxMix])*dataGluonsEY[idxGluon],2) + pow(mixtureLow[eta][idxMix]*dataQuarksEY[idxQuark],2)) + pow(abs((1.-mixtureLow[eta][idxMix])*dataGluonsY[idxGluon]+mixtureLow[eta][idxMix]*dataQuarksY[idxQuark])/(pow(dataY[idx],2)),2)*pow(dataEY[idx],2) - ((1.-mixtureLow[eta][idxMix])*correlationGluons[eta][idxMix]*dataGluonsEY[idxGluon] + mixtureLow[eta][idxMix]*correlationQuarks[eta][idxMix]*dataQuarksEY[idxQuark])*2.0 * abs((1.-mixtureLow[eta][idxMix])*dataGluonsY[idxGluon]+mixtureLow[eta][idxMix]*dataQuarksY[idxQuark])/(pow(dataY[idx],3))*dataEY[idx]);
 
       dataX[countNData]  = dataX[idx];
       dataEX[countNData] = dataEX[idx];
@@ -293,14 +318,12 @@ int evalFlavorUncertainty(TString definition = "algo"){
     TGraphErrors *plotUp  = new TGraphErrors(nData,dataX,errorUpY,dataEX,errorUpEY);
     TGraphErrors *plotLow = new TGraphErrors(nData,dataX,errorLowY,dataEX,errorLowEY);
 
+    plotUp  -> GetXaxis() -> SetRangeUser(0.,600.);  
+    plotLow -> GetXaxis() -> SetRangeUser(0.,600.);  
 
-    TF1 *fitLineUp   =  new TF1("fitLineUp","pol0",0,600);
-    fitLineUp        -> SetLineColor(1);
-    plotUp -> Fit("fitLineUp","QR");
+    TF1 *Line   =  new TF1("Line","pol0",0.,600.);
 
-    TF1 *fitLineLow   =  new TF1("fitLineLow","pol0",0,600);
-    fitLineLow        -> SetLineColor(9);
-    plotLow -> Fit("fitLineLow","QR");
+    Line->SetParameter(0,0);
 
     TCanvas* c1 = new TCanvas("c1","c1",200,10,800,800);
     c1 -> cd();
@@ -316,9 +339,9 @@ int evalFlavorUncertainty(TString definition = "algo"){
     
     TLegend* legend1  = new TLegend(0.30,0.75,0.9,0.9);
     legend1 -> SetTextSize(0.033);
-   
-    legend1 -> AddEntry(plotLow,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureLow[eta], 1.-mixtureLow[eta]),"p");
-    legend1 -> AddEntry(plotUp,Form("%4.2f #upoint Quarks, %4.2f #upoint Gluons", mixtureUp[eta], 1.-mixtureUp[eta]),"p");
+    
+    legend1 -> AddEntry(plotLow,Form("- 10%% quarks/ + 10%% gluons"),"p");
+    legend1 -> AddEntry(plotUp ,Form("+ 10%% quarks/ - 10%% gluons"),"p");
  
     mg = new TMultiGraph();
     mg->Add(plotLow);  
@@ -329,14 +352,15 @@ int evalFlavorUncertainty(TString definition = "algo"){
   
     mg->Draw("AP");
 
-
     mg -> GetYaxis() -> SetTitle("JER_{different mixture} /JER_{full sample} ");
-    mg -> SetMinimum(-0.2);
-    mg -> SetMaximum(0.2); 
-    mg -> GetXaxis() -> SetLimits(0,600);  
+    mg -> SetMinimum(-0.1);
+    mg -> SetMaximum(0.1); 
+    mg -> GetXaxis() -> SetLimits(0.,600.);  
     mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
   
     legend1->Draw("same");
+
+    Line->Draw("same");
 
     
     TLatex* info1   = new TLatex();
@@ -344,25 +368,42 @@ int evalFlavorUncertainty(TString definition = "algo"){
     info1-> SetNDC();
     info1->DrawLatex(0.6,0.7,AuxString);
   
-    AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineUp->GetChisquare(),fitLineUp->GetNDF());
-    info1->DrawLatex(0.55,0.2,AuxString);
+    double *xUp   = plotUp  -> GetX();
+    double *xEUp  = plotUp  -> GetEX();
+    double *xLow  = plotLow -> GetX();
+    double *xELow = plotLow -> GetEX();
+    double *yUp   = plotUp  -> GetY();
+    double *yEUp  = plotUp  -> GetEY();
+    double *yLow  = plotLow -> GetY();
+    double *yELow = plotLow -> GetEY();
 
-    AuxString = Form("#delta^{Flavor}_{Up} = %4.3f #pm %4.3f",fitLineUp->GetParameter(0),fitLineUp->GetParError(0));
-    info1->DrawLatex(0.55,0.25,AuxString);
 
-    AuxString = Form("#chi^{2}/ndof = %4.1f/%i",fitLineLow->GetChisquare(),fitLineLow->GetNDF());
-    info1->DrawLatex(0.18,0.2,AuxString);
+    int idxPtBins = 0;
+    nCount[eta] = 0;
 
- AuxString = Form("#delta^{Flavor}_{Down} = %4.3f #pm %4.3f",fitLineLow->GetParameter(0),fitLineLow->GetParError(0));
-    info1->DrawLatex(0.18,0.25,AuxString);
+    for(int pt=0;pt<nPtBins;pt++){
+      
+      if(idxPtBins>nPtBins) break;
 
-    finalErrorsUp[eta]  = fitLineUp -> GetParameter(0);
-    finalErrorsUpE[eta] = fitLineUp -> GetParError(0);
-    finalErrorsLow[eta] = fitLineLow -> GetParameter(0);
-    finalErrorsLowE[eta]= fitLineLow -> GetParError(0);
+      if(!(xUp[pt]<ptBins[idxPtBins+1] && xUp[pt]>ptBins[idxPtBins])){
+	idxPtBins += 1;
+	pt -= 1;
+	continue;
+      }
 
-    cout<<"finalErrorUp["<<eta<<"]  = "<<finalErrorsUp[eta]<<endl;
-    cout<<"finalErrorLow["<<eta<<"] = "<<finalErrorsLow[eta]<<endl<<endl;
+      finalErrorsUpX[eta][pt]  = xUp[pt];
+      finalErrorsUpEX[eta][pt] = xEUp[pt];
+      finalErrorsUpY[eta][pt]  = yUp[pt];
+      finalErrorsUpEY[eta][pt] = yEUp[pt];
+      finalErrorsLowX[eta][pt] = xLow[pt];
+      finalErrorsLowEX[eta][pt]= xELow[pt];
+      finalErrorsLowY[eta][pt] = yLow[pt];
+      finalErrorsLowEY[eta][pt]= yELow[pt];
+
+      nCount[eta] += 1;
+
+
+    }
 
     tot_filename = (TString) "plotsFlavor/Relative_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) "_mixture.pdf";
   
@@ -375,32 +416,244 @@ int evalFlavorUncertainty(TString definition = "algo"){
   }
 
   // Save relative uncertainties for every eta bin in another root-file
-  double eta[nEta] = {1.};
-  double etaError[nEta] = {0.};
-  for(int i =0; i<nEta-1; i++) eta[i+1] = eta[i]+1.;
+
+  TGraphErrors* finalErrorsFlavorUp[nEtaBins];
+  TGraphErrors* finalErrorsFlavorLow[nEtaBins]; 
+
+
+  for(int i=0; i<nEtaBins; i++){
+
+
+    finalErrorsFlavorUp[i] = new TGraphErrors(nCount[i],finalErrorsUpX[i],finalErrorsUpY[i],finalErrorsUpEX[i],finalErrorsUpEY[i]);
+    finalErrorsFlavorUp[i] -> SetMarkerStyle(20);
+    finalErrorsFlavorUp[i] -> SetTitle("Final relative Erros (Flavor)");
+    finalErrorsFlavorUp[i] -> GetXaxis() -> SetTitle("#eta^{Jet}");
+    finalErrorsFlavorUp[i] -> GetYaxis() -> SetTitle("JER_{quarks/gluons} /JER_{full sample}");
+    
+    finalErrorsFlavorLow[i] = new TGraphErrors(nCount[i],finalErrorsLowX[i],finalErrorsLowY[i],finalErrorsLowEX[i],finalErrorsLowEY[i]);
+    finalErrorsFlavorLow[i] -> SetMarkerStyle(20);
+    finalErrorsFlavorLow[i] -> SetTitle("Final relative Erros (Flavor)");
+    finalErrorsFlavorLow[i] -> GetXaxis() -> SetTitle("#eta^{Jet}");
+    finalErrorsFlavorLow[i] -> GetYaxis() -> SetTitle("JER_{quarks/gluons} /JER_{full sample}");
+
+    tot_filename = (TString) "plotsFlavor/RelativeErrorsPtBinnedFlavorUp_" + type + (TString) "_" + (long) (i+1) + "_bin_" + method + (TString) ".root"; 
+    TFile *f = new TFile(tot_filename,"RECREATE");
+    f -> WriteTObject(finalErrorsFlavorUp[i],"graph");
+    f->Close();
+    delete f;
+    tot_filename = (TString) "plotsFlavor/RelativeErrorsPtBinnedFlavorLow_" + type + (TString) "_" + (long) (i+1) + "_bin_" + method + (TString) ".root"; 
+    f = new TFile(tot_filename,"RECREATE");
+    f -> WriteTObject(finalErrorsFlavorLow[i],"graph");
+    f->Close();
+    delete f;
+  }
 
   
-  TGraphErrors* finalErrorsFlavorUp = new TGraphErrors(nEta,eta,finalErrorsUp,etaError,finalErrorsUpE);
-  finalErrorsFlavorUp -> SetMarkerStyle(20);
-  finalErrorsFlavorUp -> SetTitle("Final relative Erros (Flavor)");
-  finalErrorsFlavorUp -> GetXaxis() -> SetTitle("#eta^{Jet}");
-  finalErrorsFlavorUp -> GetYaxis() -> SetTitle("JER_{quarks/gluons} /JER_{full sample}");
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // Move MC points up and down with the errors and fit again the data/MC_up and data/MC_down ratios -> Get errors for every eta Bin
 
-  TGraphErrors* finalErrorsFlavorLow = new TGraphErrors(nEta,eta,finalErrorsLow,etaError,finalErrorsLowE);
-  finalErrorsFlavorLow -> SetMarkerStyle(20);
-  finalErrorsFlavorLow -> SetTitle("Final relative Erros (Flavor)");
-  finalErrorsFlavorLow -> GetXaxis() -> SetTitle("#eta^{Jet}");
-  finalErrorsFlavorLow -> GetYaxis() -> SetTitle("JER_{quarks/gluons} /JER_{full sample}");
+  TString rootFiles;
+  TString JetType = "PFCHS";
+
+  double *ratioEtaBinnedX     = new double[nEtaBins];
+  double *ratioEtaBinnedY     = new double[nEtaBins];
+  double *ratioEtaBinnedUpY   = new double[nEtaBins];
+  double *ratioEtaBinnedLowY  = new double[nEtaBins];
+  double *ratioEtaBinnedEX    = new double[nEtaBins];
+  double *ratioEtaBinnedEY    = new double[nEtaBins];
+  double *ratioEtaBinnedUpEY  = new double[nEtaBins];
+  double *ratioEtaBinnedLowEY = new double[nEtaBins];
+
+  for(int iEta = 0; iEta < nEtaBins; iEta++){
+    
+    // Read the MC and data results 
+    rootFiles = (TString) "../root_files_FINAL_data/Resolution_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_" + method + (TString) ".root";
+    TGraphErrors* JERData = readTGraphErrors(rootFiles,"Graph;1","Graph;1");
+    rootFiles = (TString) "../root_files_FINAL_mc/Resolution_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + JetType + (TString) "_mc_" + method + (TString) ".root";
+    TGraphErrors* JERMC = readTGraphErrors(rootFiles,"Graph","Graph");   
+    if(iEta+1 == 1) etaString = Form("JER for |#eta| < %4.1f",etaBins[iEta+1]);
+    else           etaString = Form("JER for %4.1f <|#eta|< %4.1f",etaBins[iEta+1],etaBins[iEta+2]);
+ 
+    int nData    = JERData->GetN();
+    
+    double *dataX  = JERData->GetX();
+    double *dataY  = JERData->GetY();
+    double *dataEX = JERData->GetEX();
+    double *dataEY = JERData->GetEY();
+    
+    double *mcX     = new double[nData];
+    double *mcY     = new double[nData];
+    double *mcUpY   = new double[nData];
+    double *mcLowY  = new double[nData];
+    double *mcEX    = new double[nData];
+    double *mcEY    = new double[nData];
+        
+    double *ratioX     = new double[nData];
+    double *ratioY     = new double[nData];
+    double *ratioUpY   = new double[nData];
+    double *ratioLowY  = new double[nData];
+    double *ratioEX    = new double[nData];
+    double *ratioEY    = new double[nData];
+     
+    int idx     = 0;
+    int idxUp   = 0;
+    int idxLow  = 0;
+    int idxData = 0;
+    int idxMC   = 0;
+    
+    while(idx<nData){
+
+      JERMC    -> GetPoint(idxMC,mcX[0],mcY[0]);
+      mcUpY[0]  = mcY[0];
+      mcLowY[0] = mcY[0];
+      mcEX[0]   = JERMC -> GetErrorX(idxMC);
+      mcEY[0]   = JERMC -> GetErrorY(idxMC);
 
 
-  tot_filename = (TString) "plotsFlavor/FinalErrorsFlavorUp_" + type + (TString) "_" + method + (TString) ".root"; 
-  TFile *f = new TFile(tot_filename,"RECREATE");
-  f -> WriteTObject(finalErrorsFlavorUp,"graph");
+      if(idxMC>nPtBins || idxUp>nPtBins || idxLow>nPtBins) break;
+
+      if(abs(mcX[0]/finalErrorsUpX[iEta][idxUp]-1.)>0.05){
+	idxMC += 1;
+	continue;
+      }
+      else{
+	mcUpY[0] = mcY[0]*(1.+finalErrorsUpY[iEta][idxUp]);
+      }
+
+      if(abs(mcX[0]/finalErrorsLowX[iEta][idxLow]-1.)>0.05){
+	idxMC += 1;
+	continue;
+      }
+      else{
+	mcLowY[0] = mcY[0]*(1.+finalErrorsLowY[iEta][idxLow]);
+      }
+
+      if(abs(dataX[idxData]/mcX[0] - 1.) > 0.05){
+
+	if(dataX[idxData]<mcX[0]){
+	  idxData += 1;
+	  nData -= 1;
+	  continue; 
+	}
+	else{
+	  idxMC  += 1;
+	  idxUp  += 1;
+	  idxLow += 1;
+	  continue;
+	}
+      }
+          
+      ratioX[idx]  = 1./2.*(dataX[idxData] + mcX[0]);
+      ratioY[idx]  = dataY[idxData]/mcY[0];
+      ratioUpY[idx]   = dataY[idxData]/mcLowY[0];
+      ratioLowY[idx]  = dataY[idxData]/mcUpY[0];
+      ratioEX[idx] = 1./2.*TMath::Sqrt(TMath::Power(dataEX[idxData],2)+TMath::Power(mcEX[0],2));
+      ratioEY[idx] = TMath::Sqrt(TMath::Power((1./mcY[0]),2)*TMath::Power(dataEY[idxData],2)+TMath::Power((dataY[idxData]/(TMath::Power(mcY[0],2))),2)*TMath::Power(mcEY[0],2));
+
+      idxData += 1;
+      idxMC   += 1;
+      idxUp   += 1;
+      idxLow  += 1;
+      idx     += 1;
+    }
+    
+    TGraphErrors *Ratio    = new TGraphErrors(nData,ratioX,ratioY,ratioEX,ratioEY);
+    TGraphErrors *RatioUp  = new TGraphErrors(nData,ratioX,ratioUpY,ratioEX,ratioEY);
+    TGraphErrors *RatioLow = new TGraphErrors(nData,ratioX,ratioLowY,ratioEX,ratioEY);
+
+    if(iEta+1 == 1 ) AuxString = Form("Ratio between Data and MC for |#eta| < %4.1f",etaBins[iEta+1]);
+    else             AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBins[iEta+1],etaBins[iEta+2]);
+ 
+    Ratio -> SetTitle(AuxString); 
+    Ratio -> GetXaxis() -> SetTitle("Photon pT");
+    Ratio -> GetXaxis() -> SetTitleOffset(1.1); 
+    Ratio -> GetYaxis() -> SetTitle("Ratio of JER (DATA/MC)");
+    Ratio -> GetYaxis() -> SetTitleOffset(1.2);   
+    Ratio -> GetXaxis() -> SetLimits(0,600);
+    TF1* f1 = new TF1("name","pol0",0,600);  
+    f1->SetLineColor(2); 
+    Ratio->SetMarkerColor(2); 
+    Ratio->SetLineColor(2); 
+    Ratio -> Fit("name","QR");
+    TF1* f1Up = new TF1("nameUp","pol0",0,600);   
+    f1Up->SetLineColor(9); 
+    RatioUp->SetMarkerColor(9);
+    RatioUp->SetLineColor(9);
+    RatioUp -> Fit("nameUp","QR");
+    TF1* f1Low = new TF1("nameLow","pol0",0,600);   
+    f1Low->SetLineColor(1);
+    RatioLow->SetMarkerColor(1); 
+    RatioLow->SetLineColor(1); 
+    RatioLow -> Fit("nameLow","QR");
+    
+
+    TLegend *legend  = 0;
+    legend = new TLegend(0.50,0.7,0.9,0.9);
+    legend -> SetFillColor(0);
+
+    legend -> AddEntry(Ratio,Form("Ratio =  %4.3f #pm %4.3f", f1 -> GetParameter(0), f1->GetParError(0)),"pl");
+    legend -> AddEntry(RatioUp,Form("RatioUp =  %4.3f #pm %4.3f", f1Up -> GetParameter(0), f1Up->GetParError(0)),"pl");
+    legend -> AddEntry(RatioLow,Form("RatioDown =  %4.3f #pm %4.3f", f1Low -> GetParameter(0), f1Low->GetParError(0)),"pl");
+
+
+   
+    TCanvas *c11 = new TCanvas("c11",AuxString,200,10,500,500);
+    c11 -> cd();
+    Ratio -> SetMinimum(0.85);
+    Ratio -> SetMaximum(1.25);
+  
+    Ratio  -> Draw("AP"); 
+    RatioUp  -> Draw("Psame");
+    RatioLow  -> Draw("Psame");
+    legend -> Draw("same");
+
+    TLatex*  info   = new TLatex();
+    info-> SetNDC();
+    AuxString = Form("#splitline{+%4.1f %%}{%4.1f %%}",(f1Up->GetParameter(0)/f1->GetParameter(0)-1)*100,(f1Low->GetParameter(0)/f1->GetParameter(0)-1)*100);
+    info->DrawLatex(0.6,0.30,AuxString);
+
+
+    
+    TString filename = (TString) "plotsFlavor/Ratios_upper_lower_Error_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + type + (TString) "_" + method + (TString) ".pdf";
+    c11 -> SaveAs(filename);
+    delete c11;
+ 
+    
+    ratioEtaBinnedX[iEta]     = (etaBins[iEta+1] + etaBins[iEta])/2.; 
+    ratioEtaBinnedY[iEta]     = f1 -> GetParameter(0);
+    ratioEtaBinnedUpY[iEta]   = f1Up -> GetParameter(0)/f1 -> GetParameter(0)-1.;
+    ratioEtaBinnedLowY[iEta]  = f1Low -> GetParameter(0)/f1 -> GetParameter(0)-1.;
+    ratioEtaBinnedEX[iEta]    = 0;
+    ratioEtaBinnedEY[iEta]    = f1->GetParError(0);
+    ratioEtaBinnedUpEY[iEta]  = f1Up->GetParError(0);
+    ratioEtaBinnedLowEY[iEta] = f1Low->GetParError(0);
+
+    
+    cout<<"upper rel. Error "<<iEta<<". eta Bin = "<<ratioEtaBinnedUpY[iEta]<<endl;
+    cout<<"lower rel. Error "<<iEta<<". eta Bin = "<<ratioEtaBinnedLowY[iEta]<<endl<<endl;
+  }
+
+  TGraphErrors* ratioEtaBinned    = new TGraphErrors(nEtaBins,ratioEtaBinnedX,ratioEtaBinnedY,ratioEtaBinnedEX,ratioEtaBinnedEY);
+  TGraphErrors* ratioEtaBinnedUp  = new TGraphErrors(nEtaBins,ratioEtaBinnedX,ratioEtaBinnedUpY,ratioEtaBinnedEX,ratioEtaBinnedUpEY);
+  TGraphErrors* ratioEtaBinnedLow = new TGraphErrors(nEtaBins,ratioEtaBinnedX,ratioEtaBinnedLowY,ratioEtaBinnedEX,ratioEtaBinnedLowEY);
+
+  TString filename = (TString) "plotsFlavor/RatioEtaBinned_" + type + (TString) "_" + method + (TString) ".root";
+  TFile *f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinned,"Graph");
   f->Close();
   delete f;
-  tot_filename = (TString) "plotsFlavor/FinalErrorsFlavorLow_" + type + (TString) "_" + method + (TString) ".root"; 
-  f = new TFile(tot_filename,"RECREATE");
-  f -> WriteTObject(finalErrorsFlavorLow,"graph");
+
+  filename = (TString) "plotsFlavor/FinalEtaBinnedErrorsFlavorUp_" + type + (TString) "_"  + method + (TString) ".root"; 
+  f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinnedUp,"graph");
+  f->Close();
+  delete f;
+
+  filename = (TString) "plotsFlavor/FinalEtaBinnedErrorsFlavorLow_" + type + (TString) "_"  + method + (TString) ".root"; 
+  f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinnedLow,"graph");
   f->Close();
   delete f;
 
