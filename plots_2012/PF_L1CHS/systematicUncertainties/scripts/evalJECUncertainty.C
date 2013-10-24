@@ -49,10 +49,6 @@ int evalJECUncertainty(){
   double finalErrorsLowY[nEta][nPtBins] = {{0}};
   double finalErrorsUpX[nEta][nPtBins]  = {{0}};
   double finalErrorsLowX[nEta][nPtBins] = {{0}};
-  double finalErrorsUpEY[nEta][nPtBins]  = {{0}};
-  double finalErrorsLowEY[nEta][nPtBins] = {{0}};
-  double finalErrorsUpEX[nEta][nPtBins]  = {{0}};
-  double finalErrorsLowEX[nEta][nPtBins] = {{0}};
   double finalErrors[nEta] = {0};
   double finalErrorsE[nEta] = {0};
   int nCount[nEtaBins] = {0};
@@ -162,7 +158,7 @@ int evalJECUncertainty(){
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // 2.) Relative uncertainty to MC -> MC*(1 +- Delta)
-    double *dataY, *dataLowY, *dataUpY, *dataX, *dataLowX, *dataUpX, *dataEY, *dataLowEY, *dataUpEY, *dataEX, *dataLowEX, *dataUpEX ;
+    double *dataY, *dataLowY, *dataUpY, *dataX, *dataLowX, *dataUpX, *dataEY, *dataLowEY, *dataUpEY, *dataEX;
 
     int nData = graph[0]->GetN();
   
@@ -184,9 +180,6 @@ int evalJECUncertainty(){
     dataLowEY = graph[1] -> GetEY();
     dataUpEY  = graph[2] -> GetEY();
     dataEX    = graph[0] -> GetEX();
-    dataLowEX = graph[1] -> GetEX();
-    dataUpEX  = graph[2] -> GetEX();
-
 
     int idxLow     = 0;
     int idxUp      = 0;
@@ -239,14 +232,9 @@ int evalJECUncertainty(){
 
     
     double *xUp   = plotUp  -> GetX();
-    double *xEUp  = plotUp  -> GetEX();
     double *xLow  = plotLow -> GetX();
-    double *xELow = plotLow -> GetEX();
     double *yUp   = plotUp  -> GetY();
-    double *yEUp  = plotUp  -> GetEY();
     double *yLow  = plotLow -> GetY();
-    double *yELow = plotLow -> GetEY();
-
 
     int idxPtBins = 0;
     nCount[eta] = 0;
@@ -262,16 +250,15 @@ int evalJECUncertainty(){
       }
 
       finalErrorsUpX[eta][pt]  = xUp[pt];
-      finalErrorsUpEX[eta][pt] = xEUp[pt];
       finalErrorsUpY[eta][pt]  = yUp[pt];
-      finalErrorsUpEY[eta][pt] = yEUp[pt];
       finalErrorsLowX[eta][pt] = xLow[pt];
-      finalErrorsLowEX[eta][pt]= xELow[pt];
       finalErrorsLowY[eta][pt] = yLow[pt];
-      finalErrorsLowEY[eta][pt]= yELow[pt];
 
       nCount[eta] += 1;
     }
+
+    TF1 *Line   =  new TF1("Line","pol0",0.,600.);
+    Line->SetParameter(0,0);
   
     TCanvas *c1 = new TCanvas("c1","c1",200,10,800,800);
     c1 -> cd();
@@ -322,6 +309,8 @@ int evalJECUncertainty(){
 
     info1->DrawLatex(0.6,0.7,AuxString);
 
+    Line->Draw("same");
+
     tot_filename = (TString) "plotsJEC/Relative_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_JECUncertainty_" + method + (TString) ".pdf";
   
     c1 -> SaveAs(tot_filename);
@@ -335,7 +324,7 @@ int evalJECUncertainty(){
   // Save relative uncertainties for every eta bin in another root-file
   double eta[nEta] = {1.};
   double etaError[nEta] = {0.};
-  for(int i =0; i<nEta-1; i++) eta[i] = eta[i-1]+1.;
+  for(int i =0; i<nEta-1; i++) eta[i+1] = eta[i]+1.;
 
   
   TGraphErrors* finalErrorsJEC = new TGraphErrors(nEta,eta,finalErrors,etaError,finalErrorsE);
