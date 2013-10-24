@@ -49,8 +49,6 @@ int evalJECUncertainty(){
   double finalErrorsLowY[nEta][nPtBins] = {{0}};
   double finalErrorsUpX[nEta][nPtBins]  = {{0}};
   double finalErrorsLowX[nEta][nPtBins] = {{0}};
-  double finalErrors[nEta] = {0};
-  double finalErrorsE[nEta] = {0};
   int nCount[nEtaBins] = {0};
 
   TString rootFile[3]; 
@@ -326,21 +324,6 @@ int evalJECUncertainty(){
   double etaError[nEta] = {0.};
   for(int i =0; i<nEta-1; i++) eta[i+1] = eta[i]+1.;
 
-  
-  TGraphErrors* finalErrorsJEC = new TGraphErrors(nEta,eta,finalErrors,etaError,finalErrorsE);
-  finalErrorsJEC -> SetMarkerStyle(20);
-  finalErrorsJEC -> SetTitle("Final relative Erros (JEC)");
-  finalErrorsJEC -> GetXaxis() -> SetTitle("#eta^{Jet}");
-  finalErrorsJEC -> GetYaxis() -> SetTitle("JER_{#pm #Delta JEC} /JER - 1");
-
-  tot_filename = (TString) "plotsJEC/FinalErrorsJEC_" + type + (TString) "_" + method + (TString) ".root"; 
-  TFile *f = new TFile(tot_filename,"RECREATE");
-  f -> WriteTObject(finalErrorsJEC,"graph");
-  f->Close();
-  delete f;
-
-
-
 
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -540,7 +523,7 @@ int evalJECUncertainty(){
   TGraphErrors* ratioEtaBinnedLow = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedLowY,ratioEtaBinnedEX,ratioEtaBinnedLowEY);
 
   TString filename = (TString) "plotsJEC/RatioEtaBinned_" + type + (TString) "_" + method + (TString) ".root";
-  f = new TFile(filename,"RECREATE");
+  TFile* f = new TFile(filename,"RECREATE");
   f -> WriteTObject(ratioEtaBinned,"Graph");
   f->Close();
   delete f;
