@@ -352,7 +352,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
   
     mg->Draw("AP");
 
-    mg -> GetYaxis() -> SetTitle("JER_{different mixture} /JER_{full sample} ");
+    mg -> GetYaxis() -> SetTitle("JER_{different mixture} /JER_{full sample} - 1");
     mg -> SetMinimum(-0.1);
     mg -> SetMaximum(0.1); 
     mg -> GetXaxis() -> SetLimits(0.,600.);  
