@@ -44,8 +44,13 @@ int evalPUUncertainty(){
   
   TString tot_filename, AuxString, fitName;;
   
+  double finalErrorsUpY[nEta][nPtBins]  = {{0}};
+  double finalErrorsLowY[nEta][nPtBins] = {{0}};
+  double finalErrorsUpX[nEta][nPtBins]  = {{0}};
+  double finalErrorsLowX[nEta][nPtBins] = {{0}};
   double finalErrors[nEta]  = {0};
   double finalErrorsE[nEta] = {0};
+  int nCount[nEtaBins] = {0};
 
   TString rootFile[3];
   TString pathName[3];
@@ -65,9 +70,9 @@ int evalPUUncertainty(){
   cout<<"root files from following folders:"<<endl<<pathName[0]<<endl<<pathName[1]<<endl<<pathName[2]<<endl<<endl<<endl;
 
 
-  for(int eta = 1; eta<nEta+1; eta++){
+  for(int eta = 0; eta<nEta; eta++){
 
-    for(int i=0; i<3; i++) rootFile[i]  = pathName[i] + (TString) "Resolution_for_" + (long) eta + (TString) "_eta_bin_" + type + (TString) "_mc_" + method + (TString) ".root";
+    for(int i=0; i<3; i++) rootFile[i]  = pathName[i] + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
    
     TMultiGraph* mg = new TMultiGraph();
     etaString       = "PU Uncertainty";
@@ -118,11 +123,11 @@ int evalPUUncertainty(){
     TLatex*  info   = new TLatex();
     
     info-> SetNDC();
-    AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta-1],etaBins[eta]);
+    AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta],etaBins[eta+1]);
     info->DrawLatex(0.6,0.7,AuxString);
 
 
-    tot_filename = (TString) "plotsPU/Resolution_for_" + (long) eta + (TString) "_eta_bin_PUUncertainty_" + method + (TString) ".pdf";
+    tot_filename = (TString) "plotsPU/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_PUUncertainty_" + method + (TString) ".pdf";
     c -> SaveAs(tot_filename);
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -194,53 +199,38 @@ int evalPUUncertainty(){
     TGraphErrors *plotUp  = new TGraphErrors(nData,dataX,errorUpY,dataEX,errorUpEY);
     TGraphErrors *plotLow = new TGraphErrors(nData,dataX,errorLowY,dataEX,errorLowEY);
 
-    // Search for the interval where 68% of all point are included
-    double* arraySort = new double[2*nData];
-    float auxSort     = 10000000.;
 
-  
-    for(int i=0; i<nData; i++){
-      arraySort[i]       = abs(errorUpY[i]);
-      arraySort[i+nData] = abs(errorLowY[i]);
-    }
+    double *xUp   = plotUp  -> GetX();
+    double *xLow  = plotLow -> GetX();
+    double *yUp   = plotUp  -> GetY();
+    double *yLow  = plotLow -> GetY();
 
-    for(int j=0; j<2*nData; j++){
-      for(int i=0; i<2*nData-1; i++){
-	if(arraySort[i] > arraySort[i+1]){
-	  auxSort        = arraySort[i];
-	  arraySort[i]   = arraySort[i+1];
-	  arraySort[i+1] = auxSort;
-	}
+    int idxPtBins = 0;
+    nCount[eta] = 0;
+
+    for(int pt=0;pt<nPtBins;pt++){
+      
+      if(idxPtBins>nPtBins) break;
+
+      if(!(xUp[pt]<ptBins[idxPtBins+1] && xUp[pt]>ptBins[idxPtBins])){
+	idxPtBins += 1;
+	pt -= 1;
+	continue;
       }
-    }
 
-    TF1* sigma1Interval = new TF1("sigma1Interval","pol0",0,600);
-    sigma1Interval->SetLineColor(8);
+      finalErrorsUpX[eta][pt]  = xUp[pt];
+      finalErrorsUpY[eta][pt]  = yUp[pt];
+      finalErrorsLowX[eta][pt] = xLow[pt];
+      finalErrorsLowY[eta][pt] = yLow[pt];
 
-    // 0.5 are added to have the right rounding to an integer
-    int interval68 = (int) (2.*nData*0.6827 + 0.5);
-    int interval95 = (int) (2.*nData*0.9545 + 0.5);
-    //cout<<endl<<"2.*nData*0.6827 = "<<2.*nData*0.6827<<endl;
-    //cout<<"2.*nData*0.9545 = "<<2.*nData*0.9545<<endl;
-    //cout<<"interval95 = "<<interval95<<endl;
-    //cout<<"interval68 = "<<interval68<<endl<<endl<<endl;
-  
-  
+      nCount[eta] += 1;
 
-    if(2*arraySort[interval68-1]<arraySort[interval95-1]){
-      sigma1Interval->SetParameter(0,arraySort[interval95-1]/2.);
-      //cout<<"arraySort["<<interval68-1<<"]    = "<<arraySort[interval68-1]<<endl;
-      //cout<<"arraySort["<<interval95-1<<"]/2. = "<<arraySort[interval95-1]/2.<<endl;
-      //cout<<"arraySort["<<2*nData-1<<"] = "<<arraySort[2*nData -1]<<endl;
-      //cout<<"arraySort["<<2*nData-2<<"] = "<<arraySort[2*nData -2]<<endl;
-    }
-    else sigma1Interval->SetParameter(0,arraySort[interval68-1]);
-    sigma1Interval->SetParameter(0,arraySort[interval68-1]);
-    cout<<"sigma1Interval->GetParameter(0) = "<<sigma1Interval->GetParameter(0)<<endl<<endl;
-    TF1* sigma1Intervaldown = new TF1("sigma1Intervaldown","pol0",0,600);
-    sigma1Intervaldown->SetParameter(0,-sigma1Interval->GetParameter(0));
-    sigma1Intervaldown->SetLineColor(8);
-  
+
+    }  
+
+    TF1 *Line   =  new TF1("Line","pol0",0.,600.);
+    Line->SetParameter(0,0);
+
     TCanvas *c1 = new TCanvas("c1","c1",200,10,800,800);
     c1 -> cd();
     c1 -> SetBottomMargin(0.14);
@@ -270,12 +260,11 @@ int evalPUUncertainty(){
     mg -> SetTitle(etaString);  
   
     mg->Draw("AP");
-    sigma1Interval->Draw("same");
-    sigma1Intervaldown->Draw("same");    
 
     mg -> GetYaxis() -> SetTitle("JER_{MBX = 73.0/65.8} /JER_{MBX = 69.4}");
-    mg -> SetMinimum(-0.05);
-    mg -> SetMaximum(0.05); 
+    mg -> SetMinimum(-0.03);
+    mg -> SetMaximum(0.03); 
+    //mg -> GetXaxis() -> SetNdivisions(505, "X");
     mg -> GetXaxis() -> SetLimits(0,600);  
     mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]");
   
@@ -285,17 +274,10 @@ int evalPUUncertainty(){
     info1-> SetNDC();
 
     info1->DrawLatex(0.6,0.7,AuxString);
-    TString text = "#scale[0.9]{68% of points are included in Interval:} " ;
-    info1->DrawLatex(0.2,0.3,text);
-    text = (TString) Form("#scale[0.9]{#delta^{PU} = #pm %4.3f}",sigma1Interval->GetParameter(0)) ;
-    info1->DrawLatex(0.7,0.25,text);
 
-    finalErrors[eta-1] = sigma1Interval->GetParameter(0);
-    finalErrorsE[eta-1] = sigma1Interval->GetParError(0);
-
-
-
-    tot_filename = (TString) "plotsPU/Relative_Resolution_for_" + (long) eta + (TString) "_eta_bin_PUUncertainty_" + method + (TString) ".pdf";
+    Line->Draw("same");
+ 
+    tot_filename = (TString) "plotsPU/Relative_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_PUUncertainty_" + method + (TString) ".pdf";
   
     c1 -> SaveAs(tot_filename);
 
@@ -308,7 +290,7 @@ int evalPUUncertainty(){
   // Save relative uncertainties for every eta bin in another root-file
   double eta[nEta] = {1.};
   double etaError[nEta] = {0.};
-  for(int i =0; i<nEta-1; i++) eta[i+1] = eta[i]+1.;
+  for(int i =0; i<nEta-1; i++) eta[i] = eta[i+1]+1.;
 
   
   TGraphErrors* finalErrorsPU = new TGraphErrors(nEta,eta,finalErrors,etaError,finalErrorsE);
@@ -320,6 +302,215 @@ int evalPUUncertainty(){
   tot_filename = (TString) "plotsPU/FinalErrorsPU_" + type + (TString) "_" + method + (TString) ".root"; 
   TFile *f = new TFile(tot_filename,"RECREATE");
   f -> WriteTObject(finalErrorsPU,"graph");
+  f->Close();
+  delete f;
+
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // Move MC points up and down with the errors and fit again the data/MC_up and data/MC_down ratios -> Get errors for every eta Bin
+
+  TString rootFiles;
+  TString JetType = "PFCHS";
+
+  double *ratioEtaBinnedX     = new double[nEta];
+  double *ratioEtaBinnedY     = new double[nEta];
+  double *ratioEtaBinnedUpY   = new double[nEta];
+  double *ratioEtaBinnedLowY  = new double[nEta];
+  double *ratioEtaBinnedEX    = new double[nEta];
+  double *ratioEtaBinnedEY    = new double[nEta];
+  double *ratioEtaBinnedUpEY  = new double[nEta];
+  double *ratioEtaBinnedLowEY = new double[nEta];
+
+  for(int iEta = 0; iEta < nEta; iEta++){
+    
+    // Read the MC and data results 
+    rootFiles = (TString) "../root_files_FINAL_data/Resolution_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_" + method + (TString) ".root";
+    TGraphErrors* JERData = readTGraphErrors(rootFiles,"Graph;1","Graph;1");
+    rootFiles = (TString) "../root_files_FINAL_mc/Resolution_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + JetType + (TString) "_mc_" + method + (TString) ".root";
+    TGraphErrors* JERMC = readTGraphErrors(rootFiles,"Graph","Graph");   
+    if(iEta+1 == 1) etaString = Form("JER for |#eta| < %4.1f",etaBins[iEta+1]);
+    else           etaString = Form("JER for %4.1f <|#eta|< %4.1f",etaBins[iEta+1],etaBins[iEta+2]);
+ 
+    int nData    = JERData->GetN();
+    
+    double *dataX  = JERData->GetX();
+    double *dataY  = JERData->GetY();
+    double *dataEX = JERData->GetEX();
+    double *dataEY = JERData->GetEY();
+    
+    double *mcX     = new double[nData];
+    double *mcY     = new double[nData];
+    double *mcUpY   = new double[nData];
+    double *mcLowY  = new double[nData];
+    double *mcEX    = new double[nData];
+    double *mcEY    = new double[nData];
+        
+    double *ratioX     = new double[nData];
+    double *ratioY     = new double[nData];
+    double *ratioUpY   = new double[nData];
+    double *ratioLowY  = new double[nData];
+    double *ratioEX    = new double[nData];
+    double *ratioEY    = new double[nData];
+     
+    int idx     = 0;
+    int idxUp   = 0;
+    int idxLow  = 0;
+    int idxData = 0;
+    int idxMC   = 0;
+    
+    while(idx<nData){
+
+      JERMC    -> GetPoint(idxMC,mcX[0],mcY[0]);
+      mcUpY[0]  = mcY[0];
+      mcLowY[0] = mcY[0];
+      mcEX[0]   = JERMC -> GetErrorX(idxMC);
+      mcEY[0]   = JERMC -> GetErrorY(idxMC);
+
+
+      if(idxMC>nPtBins || idxUp>nPtBins || idxLow>nPtBins) break;
+
+      if(abs(mcX[0]/finalErrorsUpX[iEta][idxUp]-1.)>0.05){
+	idxMC += 1;
+	continue;
+      }
+      else{
+	mcUpY[0] = mcY[0]*(1.+finalErrorsUpY[iEta][idxUp]);
+      }
+
+      if(abs(mcX[0]/finalErrorsLowX[iEta][idxLow]-1.)>0.05){
+	idxMC += 1;
+	continue;
+      }
+      else{
+	mcLowY[0] = mcY[0]*(1.+finalErrorsLowY[iEta][idxLow]);
+      }
+
+      if(abs(dataX[idxData]/mcX[0] - 1.) > 0.05){
+
+	if(dataX[idxData]<mcX[0]){
+	  idxData += 1;
+	  nData -= 1;
+	  continue; 
+	}
+	else{
+	  idxMC  += 1;
+	  idxUp  += 1;
+	  idxLow += 1;
+	  continue;
+	}
+      }
+          
+      ratioX[idx]  = 1./2.*(dataX[idxData] + mcX[0]);
+      ratioY[idx]  = dataY[idxData]/mcY[0];
+      ratioUpY[idx]   = dataY[idxData]/mcLowY[0];
+      ratioLowY[idx]  = dataY[idxData]/mcUpY[0];
+      ratioEX[idx] = 1./2.*TMath::Sqrt(TMath::Power(dataEX[idxData],2)+TMath::Power(mcEX[0],2));
+      ratioEY[idx] = TMath::Sqrt(TMath::Power((1./mcY[0]),2)*TMath::Power(dataEY[idxData],2)+TMath::Power((dataY[idxData]/(TMath::Power(mcY[0],2))),2)*TMath::Power(mcEY[0],2));
+
+      idxData += 1;
+      idxMC   += 1;
+      idxUp   += 1;
+      idxLow  += 1;
+      idx     += 1;
+    }
+    
+    TGraphErrors *Ratio    = new TGraphErrors(nData,ratioX,ratioY,ratioEX,ratioEY);
+    TGraphErrors *RatioUp  = new TGraphErrors(nData,ratioX,ratioUpY,ratioEX,ratioEY);
+    TGraphErrors *RatioLow = new TGraphErrors(nData,ratioX,ratioLowY,ratioEX,ratioEY);
+
+    if(iEta+1 == 1 ) AuxString = Form("Ratio between Data and MC for |#eta| < %4.1f",etaBins[iEta+1]);
+    else             AuxString = Form("Ratio between Data and MC for %4.1f <|#eta|<%4.1f",etaBins[iEta+1],etaBins[iEta+2]);
+ 
+    Ratio -> SetTitle(AuxString); 
+    Ratio -> GetXaxis() -> SetTitle("Photon pT");
+    Ratio -> GetXaxis() -> SetTitleOffset(1.1); 
+    Ratio -> GetYaxis() -> SetTitle("Ratio of JER (DATA/MC)");
+    Ratio -> GetYaxis() -> SetTitleOffset(1.2);   
+    Ratio -> GetXaxis() -> SetLimits(0,600);
+    TF1* f1 = new TF1("name","pol0",0,600);  
+    f1->SetLineColor(2); 
+    Ratio->SetMarkerColor(2); 
+    Ratio->SetLineColor(2); 
+    Ratio -> Fit("name","QR");
+    TF1* f1Up = new TF1("nameUp","pol0",0,600);   
+    f1Up->SetLineColor(9); 
+    RatioUp->SetMarkerColor(9);
+    RatioUp->SetLineColor(9);
+    RatioUp -> Fit("nameUp","QR");
+    TF1* f1Low = new TF1("nameLow","pol0",0,600);   
+    f1Low->SetLineColor(1);
+    RatioLow->SetMarkerColor(1); 
+    RatioLow->SetLineColor(1); 
+    RatioLow -> Fit("nameLow","QR");
+    
+
+    TLegend *legend  = 0;
+    legend = new TLegend(0.50,0.7,0.9,0.9);
+    legend -> SetFillColor(0);
+
+    legend -> AddEntry(Ratio,Form("Ratio =  %4.3f #pm %4.3f", f1 -> GetParameter(0), f1->GetParError(0)),"pl");
+    legend -> AddEntry(RatioUp,Form("RatioUp =  %4.3f #pm %4.3f", f1Up -> GetParameter(0), f1Up->GetParError(0)),"pl");
+    legend -> AddEntry(RatioLow,Form("RatioDown =  %4.3f #pm %4.3f", f1Low -> GetParameter(0), f1Low->GetParError(0)),"pl");
+
+
+   
+    TCanvas *c11 = new TCanvas("c11",AuxString,200,10,500,500);
+    c11 -> cd();
+    Ratio -> SetMinimum(0.85);
+    Ratio -> SetMaximum(1.25);
+  
+    Ratio  -> Draw("AP"); 
+    RatioUp  -> Draw("Psame");
+    RatioLow  -> Draw("Psame");
+    legend -> Draw("same");
+
+    TLatex*  info   = new TLatex();
+    info-> SetNDC();
+    AuxString = Form("#splitline{+%4.1f %%}{%4.1f %%}",(f1Up->GetParameter(0)/f1->GetParameter(0)-1)*100,(f1Low->GetParameter(0)/f1->GetParameter(0)-1)*100);
+    info->DrawLatex(0.6,0.30,AuxString);
+
+
+    
+    TString filename = (TString) "plotsPU/Ratios_upper_lower_Error_for_" + (long) (iEta+1) + (TString) "_eta_bin_" + type + (TString) "_" + method + (TString) ".pdf";
+    c11 -> SaveAs(filename);
+    delete c11;
+ 
+    
+    ratioEtaBinnedX[iEta]     = (etaBins[iEta+1] + etaBins[iEta])/2.; 
+    ratioEtaBinnedY[iEta]     = f1 -> GetParameter(0);
+    ratioEtaBinnedUpY[iEta]   = f1Up -> GetParameter(0)/f1 -> GetParameter(0)-1.;
+    ratioEtaBinnedLowY[iEta]  = f1Low -> GetParameter(0)/f1 -> GetParameter(0)-1.;
+    ratioEtaBinnedEX[iEta]    = 0;
+    ratioEtaBinnedEY[iEta]    = f1->GetParError(0);
+    ratioEtaBinnedUpEY[iEta]  = f1Up->GetParError(0);
+    ratioEtaBinnedLowEY[iEta] = f1Low->GetParError(0);
+
+
+    cout<<" ratioEtaBinnedY["<<iEta<<"] = "<< ratioEtaBinnedY[iEta]<<endl;    
+    cout<<"upper rel. Error "<<iEta<<". eta Bin = "<<ratioEtaBinnedUpY[iEta]<<endl;
+    cout<<"lower rel. Error "<<iEta<<". eta Bin = "<<ratioEtaBinnedLowY[iEta]<<endl<<endl;
+  }
+
+  TGraphErrors* ratioEtaBinned    = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ratioEtaBinnedEX,ratioEtaBinnedEY);
+  TGraphErrors* ratioEtaBinnedUp  = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedUpY,ratioEtaBinnedEX,ratioEtaBinnedUpEY);
+  TGraphErrors* ratioEtaBinnedLow = new TGraphErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedLowY,ratioEtaBinnedEX,ratioEtaBinnedLowEY);
+
+  TString filename = (TString) "plotsPU/RatioEtaBinned_" + type + (TString) "_" + method + (TString) ".root";
+  f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinned,"Graph");
+  f->Close();
+  delete f;
+
+  filename = (TString) "plotsPU/FinalEtaBinnedErrorsPUUp_" + type + (TString) "_"  + method + (TString) ".root"; 
+  f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinnedUp,"graph");
+  f->Close();
+  delete f;
+
+  filename = (TString) "plotsPU/FinalEtaBinnedErrorsPULow_" + type + (TString) "_"  + method + (TString) ".root"; 
+  f = new TFile(filename,"RECREATE");
+  f -> WriteTObject(ratioEtaBinnedLow,"graph");
   f->Close();
   delete f;
 
