@@ -686,8 +686,8 @@ latexTable<<"\\\\\\hline"<<endl;
 
   gStyle->SetHatchesSpacing(2.);
   gROOT->ForceStyle();
-  ratioEtaBinnedStatPlusSys -> SetFillStyle(3144);
-  ratioEtaBinnedSys -> SetFillStyle(3144);
+  ratioEtaBinnedStatPlusSys -> SetFillStyle(3244);
+  ratioEtaBinnedSys -> SetFillStyle(3244);
 
   Res_2011->SetMarkerStyle(24);
   Res_2011->SetMarkerSize(2.0);
@@ -706,9 +706,11 @@ latexTable<<"\\\\\\hline"<<endl;
   Res_2011->Draw("pXsame");
   ratioEtaBinnedStatPlusSys -> Draw("pXsame");
   
-  ratioSysBorderUp -> SetLineColor(12);
+  ratioSysBorderUp -> SetLineColor(kGray+3);
+  //ratioSysBorderUp -> SetLineWidth(2);
   ratioSysBorderUp -> Draw("Lsame");
-  ratioSysBorderDown -> SetLineColor(12);
+  ratioSysBorderDown -> SetLineColor(kGray+3);
+  //ratioSysBorderDown -> SetLineWidth(2);
   ratioSysBorderDown -> Draw("Lsame");
     
 
