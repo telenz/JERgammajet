@@ -20,7 +20,7 @@ const double alphaBins[nAlphaBins+1]={0.0,7.5,10.0,12.5,15.0,17.5,20.0};
 const double etaBins[nEtaBins+1]={0.0,0.5,1.1,1.7,2.3};
 
 
-const int numTrigger = 7;   // 8 for 2012 and 5 for 2011
+const int numTrigger = 7;   // 7 for 2012 and 5 for 2011
 
 const int detJER=3;         // = 1 (2sigma Gaus) = 2 (RMS 95%) = 3 (RMS 99%)
 const int jetType=2;        // 1 = PF_L1Fast , 2 = PF_CHS Jets , 3 = Calo_L1FastJ, 4 = ak7 PF_CHS Jetset 
