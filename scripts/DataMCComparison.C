@@ -30,7 +30,7 @@
 #include "../CODE/myFunctions.h"
 #include "../CODE/myFunctions.C"
 #include "plotStyle.h"
-#include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
+#include "/nfs/dust/cms/user/tlenz/tdrstyle_mod.C"
 
 
 int plotDataMCComparison(int eta){
