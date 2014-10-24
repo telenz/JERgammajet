@@ -7,20 +7,20 @@ cd ../
 # Change relevant stuff for running the PU uncertainty
 # ----------------------------------------------------------------------------------------------------
 # 1) Deactivate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' "$i"
-for i in CODE/myDeclarations.h ; sed -i 's/PUreweighting=false;/PUreweighting=true;/g' "$i"
+sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' CODE/myDeclarations.h
+sed -i 's/PUreweighting=false;/PUreweighting=true;/g' CODE/myDeclarations.h
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/centralValue ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/centralValue plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/centralValue_SAVED
@@ -30,15 +30,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (upward variation)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/readGammaJet.C ; sed -i 's/MBXS69400/MBXS73000/g' "$i"
+sed -i 's/MBXS69400/MBXS73000/g' CODE/readGammaJet.C
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/upwardVariation ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/upwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/upwardVariation_SAVED
@@ -47,15 +47,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (downward variation)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/readGammaJet.C ; sed -i 's/MBXS73000/MBXS65800/g' "$i"
+sed -i 's/MBXS73000/MBXS65800/g' CODE/readGammaJet.C
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/downwardVariation ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/downwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_PUUncertainty/downwardVariation_SAVED
@@ -66,9 +66,9 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # Make changes back
 # ----------------------------------------------------------------------------------------------------
 # 1) Deactivate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' "$i"
+sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' CODE/myDeclarations.h
 # 2) Correct Pu weights
-for i in CODE/readGammaJet.C ; sed -i  's/MBXS65800/MBXS69400/g' "$i"
+sed -i  's/MBXS65800/MBXS69400/g' CODE/readGammaJet.C
 
 # ----------------------------------------------------------------------------------------------------
 # Remove all unnecessary files
