@@ -7,21 +7,21 @@ cd ../
 # Change relevant stuff for running the QCD uncertainty
 # ----------------------------------------------------------------------------------------------------
 # 1) deactivate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' "$i"
+sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' "$i"
 # 2) deactivate PU weighting
-for i in CODE/myDeclarations.h ; sed -i 's/PUreweighting=true;/PUreweighting=false;/g' "$i"
+sed -i 's/PUreweighting=true;/PUreweighting=false;/g' "$i"
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue_SAVED
@@ -30,15 +30,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (upwards variation)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/applyCuts.C ; sed -i 's/corrJets.add(j,\/\*(1.+jetUncert\[j\])\*\/jetCorrL1\[j\]/corrJets.add(j,(1.+jetUncert\[j\])\*jetCorrL1\[j\]/g' "$i"
+sed -i 's/corrJets.add(j,\/\*(1.+jetUncert\[j\])\*\/jetCorrL1\[j\]/corrJets.add(j,(1.+jetUncert\[j\])\*jetCorrL1\[j\]/g' CODE/applyCuts.C
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation_SAVED
@@ -47,15 +47,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (downward variation)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/applyCuts.C ; sed -i 's/corrJets.add(j,(1.+jetUncert\[j\])\*jetCorrL1\[j\]/corrJets.add(j,(1.-jetUncert\[j\])\*jetCorrL1\[j\]/g' "$i"
+sed -i 's/corrJets.add(j,(1.+jetUncert\[j\])\*jetCorrL1\[j\]/corrJets.add(j,(1.-jetUncert\[j\])\*jetCorrL1\[j\]/g' CODE/applyCuts.C
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation_SAVED
@@ -66,11 +66,11 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # Make changes back
 # ----------------------------------------------------------------------------------------------------
 # 1) deactivate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' "$i"
+sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' CODE/myDeclarations.h
 # 2) deactivate PU weighting
-for i in CODE/myDeclarations.h ; sed -i 's/PUreweighting=false;/PUreweighting=true;/g' "$i"
+sed -i 's/PUreweighting=false;/PUreweighting=true;/g' CODE/myDeclarations.h
 # 1) Switch to ak7PFCHS jets
-for i in CODE/applyCuts.C ; sed -i 's/corrJets.add(j,(1.-jetUncert\[j\])\*jetCorrL1\[j\]/corrJets.add(j,\/\*(1.+jetUncert\[j\])\*\/jetCorrL1\[j\]/g' "$i"
+sed -i 's/corrJets.add(j,(1.-jetUncert\[j\])\*jetCorrL1\[j\]/corrJets.add(j,\/\*(1.+jetUncert\[j\])\*\/jetCorrL1\[j\]/g' CODE/applyCuts.C
 
 # ----------------------------------------------------------------------------------------------------
 # Remove all unnecessary files
