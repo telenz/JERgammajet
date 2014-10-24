@@ -7,26 +7,26 @@ cd ../
 # Change relevant stuff for running the Flavor  uncertainty
 # ----------------------------------------------------------------------------------------------------
 # 1) Deactivate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' "$i"
+sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' CODE/myDeclarations.h
 # 2) Deactivate PU weighting
-for i in CODE/myDeclarations.h ; sed -i 's/PUreweighting=true;/PUreweighting=false;/g' "$i"
+sed -i 's/PUreweighting=true;/PUreweighting=false;/g' CODE/myDeclarations.h
 # 3) Activate flavor Uncertainty evaluation -Algo
-for i in CODE/myDeclarations.h ; sed -i 's/const bool flavorUncertaintyEvaluationAlgo=false;/const bool flavorUncertaintyEvaluationAlgo=true;/g' "$i"
-for i in CODE/myDeclarations.h ; sed -i 's/const bool flavorUncertaintyEvaluationPhys=true;/const bool flavorUncertaintyEvaluationAlgo=false;/g' "$i"
+sed -i 's/const bool flavorUncertaintyEvaluationAlgo=false;/const bool flavorUncertaintyEvaluationAlgo=true;/g' CODE/myDeclarations.h
+sed -i 's/const bool flavorUncertaintyEvaluationPhys=true;/const bool flavorUncertaintyEvaluationAlgo=false;/g' CODE/myDeclarations.h
 #
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC (together - algo)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=1;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo_SAVED
@@ -35,15 +35,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (quarks -algo )
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=2;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo_SAVED
@@ -52,15 +52,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (gluons - algo)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=3;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo_SAVED
@@ -69,15 +69,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (light quarks uds - algo)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=4;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=4;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo_SAVED
@@ -86,15 +86,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (light quarks cb - algo)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=5;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=5;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo_SAVED
@@ -104,22 +104,22 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 
 # ----------------------------------------------------------------------------------------------------
 # 1) Activate flavor Uncertainty evaluation - phys
-for i in CODE/myDeclarations.h ; sed -i 's/const bool flavorUncertaintyEvaluationAlgo=true;/const bool flavorUncertaintyEvaluationAlgo=false;/g' "$i"
-for i in CODE/myDeclarations.h ; sed -i 's/const bool flavorUncertaintyEvaluationPhys=false;/const bool flavorUncertaintyEvaluationPhys=true;/g' "$i"
+sed -i 's/const bool flavorUncertaintyEvaluationAlgo=true;/const bool flavorUncertaintyEvaluationAlgo=false;/g' CODE/myDeclarations.h
+sed -i 's/const bool flavorUncertaintyEvaluationPhys=false;/const bool flavorUncertaintyEvaluationPhys=true;/g' CODE/myDeclarations.h
 #
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC (together - phys)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=1;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys_SAVED
@@ -128,15 +128,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (quarks - phys)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=2;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys_SAVED
@@ -145,15 +145,15 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # ----------------------------------------------------------------------------------------------------
 # Run whole analysis for MC (gluons - phys)
 # ----------------------------------------------------------------------------------------------------
-for i in CODE/myDeclarations.h ; sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=3;/g' "$i"
+sed -i 's/const int setFlavorSelection=.;/const int setFlavorSelection=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys_SAVED
@@ -164,11 +164,11 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # Make changes back
 # ----------------------------------------------------------------------------------------------------
 # 1) Activate trigger requirement
-for i in CODE/myDeclarations.h ; sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' "$i"
+sed -i 's/applyTriggeronMC=false;/applyTriggeronMC=true;/g' CODE/myDeclarations.h
 # 2) Activate PU weighting
-for i in CODE/myDeclarations.h ; sed -i 's/PUreweighting=false;/PUreweighting=true;/g' "$i"
+sed -i 's/PUreweighting=false;/PUreweighting=true;/g' CODE/myDeclarations.h
 # 3) Deactivate flavor uncertainty evaluation
-for i in CODE/myDeclarations.h ; sed -i 's/const bool flavorUncertaintyEvaluationPhys=true;/const bool flavorUncertaintyEvaluationPhys=false;/g' "$i"
+sed -i 's/const bool flavorUncertaintyEvaluationPhys=true;/const bool flavorUncertaintyEvaluationPhys=false;/g' CODE/myDeclarations.h
 
 # ----------------------------------------------------------------------------------------------------
 # Remove all unnecessary files
