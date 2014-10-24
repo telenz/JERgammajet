@@ -35,6 +35,7 @@ int readGammaJet(int nEvents) {
       else if(set == 5){
 	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/mc/pythia_flat_535_START53_V20_WithHasPixelSeed/MCPhoton2012/OnlyTightPhotons/";
 	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/mc/pythia_flat_535_START53_V22/MCPhoton2012/OnlyTightPhotons/";
+	DataFilename = "/nfs/dust/cms/user/tlenz/mc/pythia_flat_535_START53_V22/MCPhoton2012/OnlyTightPhotons/";
 	if(jetType==1)      DataFilename += "ak5FastPF*.root";
 	else if(jetType==2) DataFilename += "ak5PFCHS*.root"; 
 	else if(jetType==4) DataFilename += "ak7PFCHS*.root";    
@@ -84,7 +85,8 @@ int readGammaJet(int nEvents) {
       }
       else if(set == 5){
 	//DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/data/PhotonJetTuple2012ABC_5_3_5_FT_53_V21/OnlyTightPhotons/";     
-	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/data/2012/PhotonJetTuple2012ABCDrereco_5_3_5_FT_53_V21_AN4/OnlyTightPhotons/";     
+	DataFilename = "/scratch/hh/dust/naf/cms/user/telenz/data/2012/PhotonJetTuple2012ABCDrereco_5_3_5_FT_53_V21_AN4/OnlyTightPhotons/";
+	DataFilename = "/nfs/dust/cms/user/tlenz/data/2012/PhotonJetTuple2012ABCDrereco_5_3_5_FT_53_V21_AN4/OnlyTightPhotons/";
 	if(jetType==1)      DataFilename += "ak5FastPF_*.root";
 	else if(jetType==2) DataFilename += "ak5PFCHS_*.root";     
 	else if(jetType==4) DataFilename += "ak7PFCHS_*.root";     
