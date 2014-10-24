@@ -7,19 +7,19 @@ cd ../
 # Change relevant stuff for running the QCD uncertainty
 # ----------------------------------------------------------------------------------------------------
 # 1) Switch to ak7PFCHS jets
-for i in CODE/myDeclarations.h ; sed -i 's/jetType=2;/jetType=4;/g' "$i"
+sed -i 's/jetType=2;/jetType=4;/g' CODE/myDeclarations.h
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc_SAVED
@@ -30,13 +30,13 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # Run whole analysis for Data
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_data.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data_SAVED
@@ -47,18 +47,18 @@ cp -r plots_2012/PF_L1CHS/data/root_files plots_2012/PF_L1CHS/systematicUncertai
 # Make changes back
 # ----------------------------------------------------------------------------------------------------
 # 1) Switch to ak7PFCHS jets
-for i in CODE/myDeclarations.h ; sed -i 's/jetType=4;/jetType=2;/g' "$i"
+sed -i 's/jetType=4;/jetType=2;/g' CODE/myDeclarations.h
 
 # Run whole analysis for MC (ak5)
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_mc.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_mc.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc_SAVED
@@ -69,13 +69,13 @@ cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertaint
 # Run whole analysis for Data (ak5)
 # ----------------------------------------------------------------------------------------------------
 root -b -l -q jetphoton_data.C+"(10**9,1)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=2;/g' "$i"
+sed -i 's/detJER=.;/detJER=2;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=1;/g' "$i"
+sed -i 's/detJER=.;/detJER=1;/g' CODE/myDeclarations.h
 root -b -l -q jetphoton_data.C+"(10**9,2)"
-for i in CODE/myDeclarations.h ; sed -i 's/detJER=.;/detJER=3;/g' "$i"
+sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_data ]
   then
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_data plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_data_SAVED
