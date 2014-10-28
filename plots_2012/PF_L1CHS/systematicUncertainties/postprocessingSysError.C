@@ -28,7 +28,7 @@
 #include "TLatex.h"
 #include "TColor.h"
 #include "../../../CODE/myDeclarations.h"
-#include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
+#include "/nfs/dust/cms/user/tlenz/tdrstyle_mod.C"
 
 //#include "utils.h"
 //#include "HistOps.h"
