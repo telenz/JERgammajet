@@ -7,9 +7,9 @@ cd ../
 # Change relevant stuff for running the QCD uncertainty
 # ----------------------------------------------------------------------------------------------------
 # 1) deactivate trigger requirement
-sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' "$i"
+sed -i 's/applyTriggeronMC=true;/applyTriggeronMC=false;/g' CODE/myDeclarations.h
 # 2) deactivate PU weighting
-sed -i 's/PUreweighting=true;/PUreweighting=false;/g' "$i"
+sed -i 's/PUreweighting=true;/PUreweighting=false;/g' CODE/myDeclarations.h
 # ----------------------------------------------------------------------------------------------------
 
 # Run whole analysis for MC
