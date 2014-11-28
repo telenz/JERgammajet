@@ -24,6 +24,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/centralValue
@@ -41,6 +42,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/upwardVariation
@@ -58,6 +60,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_JECUncertainty/downwardVariation
