@@ -22,6 +22,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_mc
@@ -39,6 +40,7 @@ root -b -l -q jetphoton_data.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/data/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak7PFCHS_data
@@ -61,6 +63,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_MCUncertainty/ak5PFCHS_mc
