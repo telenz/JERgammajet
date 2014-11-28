@@ -29,6 +29,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_algo
@@ -46,6 +47,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_algo
@@ -63,6 +65,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_algo
@@ -80,6 +83,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/uds_algo
@@ -97,6 +101,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/cb_algo
@@ -122,6 +127,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/together_phys
@@ -139,6 +145,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/quarks_phys
@@ -156,6 +163,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_FlavorUncertainty/gluons_phys
