@@ -1,6 +1,8 @@
 #!/bin/bash
 start=$(date +%s) ## get current time/date to $start
 
+ini ROOT
+module load root
 
 # ----------------------------------------------------------------------------------------------------
 echo "Time needed: " $(date -d "1970-01-01 $thetime sec" +"%H:%M:%S") / $thetime "secs" ## prints out the time ( like: 00:01:29 / 89 secs )
