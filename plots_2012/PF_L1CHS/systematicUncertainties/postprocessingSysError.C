@@ -27,9 +27,8 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TColor.h"
+#include "tdrstyle_mod14.C"
 #include "../../../CODE/myDeclarations.h"
-//#include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
-#include "/nfs/dust/cms/user/tlenz/tdrstyle_mod.C"
 
 //#include "utils.h"
 //#include "HistOps.h"
@@ -42,8 +41,6 @@ int postprocessingSysError(){
 
   cout<<endl<<endl<<endl<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Postproccess all systematic uncertainties! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl<<endl;
   gErrorIgnoreLevel = 1001;
-
-  setTDRStyle(false);
 
   const TString method  = "RMS99";
   const TString type    = "PFCHS";
@@ -191,9 +188,8 @@ int postprocessingSysError(){
     legend -> Draw("same");
   
     TLatex*  info   = new TLatex();
-    info->SetTextFont(132);
     info-> SetNDC();
-    info->SetTextSize(0.041); 
+    info->SetTextSize(0.045); 
     info->DrawLatex(0.22,0.84,Form("#splitline{#chi^{2} = %4.2f}{dof = %i}",f1 -> GetChisquare(),f1 -> GetNDF()));
   
     filename = (TString) "plots/Ratio_Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + type + (TString) "_data_comparison_" + method + (TString) ".pdf";
@@ -202,7 +198,10 @@ int postprocessingSysError(){
     
     ratioEtaBinnedX[eta]  = (eta_bins[eta+1] + eta_bins[eta])/2.; 
     ratioEtaBinnedY[eta]  = f1 -> GetParameter(0);
-    ratioEtaBinnedEX[eta] = 0;
+    ratioEtaBinnedEX[0]=0.25;
+    ratioEtaBinnedEX[1]=0.3;
+    ratioEtaBinnedEX[2]=0.3;
+    ratioEtaBinnedEX[3]=0.3;
     ratioEtaBinnedEY[eta] = f1->GetParError(0);
 
     if(QCD){
@@ -236,7 +235,7 @@ int postprocessingSysError(){
       delete legend;
       legend = new TLegend(0.4,0.8,0.9,0.9);
       legend -> SetFillColor(0);
-      legend -> SetTextSize(0.033);
+      legend -> SetTextSize(0.045);
       legend -> AddEntry(Ratio,"Central Value","l");
       legend -> AddEntry(QCDUp,Form("Upward variation: + %4.3f",abs(ratioEtaBinnedQCDUpY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
       legend -> AddEntry(QCDDown,Form("Downward variation: - %4.3f",abs(ratioEtaBinnedQCDDownY[eta]/ratioEtaBinnedY[eta]-1.)),"l");
@@ -435,7 +434,7 @@ int postprocessingSysError(){
 
   }
 
-  double ex[nEta] ={0.};
+  double ex[nEta] ={0.25,0.3,0.3,0.3};
 
   TGraphAsymmErrors* ratioEtaBinnedSys = new TGraphAsymmErrors(nEta,ratioEtaBinnedX,ratioEtaBinnedY,ex,ex,DeltaTotalSysDown,DeltaTotalSysUp);
 
@@ -461,7 +460,7 @@ int postprocessingSysError(){
   TCanvas *cFinal = new TCanvas("cFinal","cFinal",200,10,500,500);
   cFinal -> cd();  
   
-  ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
+  ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
   ratioEtaBinnedSys -> GetXaxis() -> SetTitle("|#eta|");
 
   if(PU  && flavor  && JEC  && MC && QCD)    etaString  = "All sys. Uncertainties";
@@ -500,13 +499,11 @@ int postprocessingSysError(){
   ratioEtaBinnedStat -> SetLineColor(1);
   ratioEtaBinnedStat -> Draw("psame");
   
-  cmsPrel();
-
  
   TLatex *infoFinal   = new TLatex();
   infoFinal -> SetTextFont(132);
   infoFinal -> SetNDC();
-  infoFinal -> SetTextSize(0.050);
+  infoFinal -> SetTextSize(0.045);
   infoFinal -> DrawLatex(0.2,0.8,etaString);
 
   filename = (TString) "plots/FinalErrorPlot_" + type + (TString) "_" + method + (TString) ".pdf";
@@ -640,141 +637,170 @@ latexTable<<"\\\\\\hline"<<endl;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // Comparison to 2011 Data 
   cout<<endl; 
+
+  gROOT->LoadMacro("tdrstyle_mod14.C");
+  setTDRStyle();
+
+  gROOT->LoadMacro("CMS_lumi.C");
+
+  writeExtraText = true;       // if extra text
+  extraText  = "Preliminary";  // default extra text is "Preliminary"
+  lumi_8TeV  = "19.7 fb^{-1}"; // default is "19.7 fb^{-1}"
+  lumi_7TeV  = "4.9 fb^{-1}";  // default is "5.1 fb^{-1}"
+
+  int iPeriod = 2;    // 1=7TeV, 2=8TeV, 3=7+8TeV, 7=7+8+13TeV 
   
+  gStyle->SetHatchesLineWidth(1);
+  gStyle->SetHatchesSpacing(2.2);   
+  //-----------------------------------------------------
+
   TCanvas *cFinal2 = new TCanvas("cFinal2","cFinal2",200,10,1000,1000);
   cFinal2 -> cd();  
 
+  double x_2011[4];
+  x_2011[0]=0.25;
+  x_2011[1]=0.80;
+  x_2011[2]=1.40;
+  x_2011[3]=2.00;
+  double y_2011[4];
+  y_2011[0]=1.052;
+  y_2011[1]=1.057;
+  y_2011[2]=1.096;
+  y_2011[3]=1.134;
+  double yErrStat_2011[4];
+  yErrStat_2011[0]=0.012;
+  yErrStat_2011[1]=0.012;
+  yErrStat_2011[2]=0.017;
+  yErrStat_2011[3]=0.035;
+  double yErrSysHigh_2011[4];
+  yErrSysHigh_2011[0]=0.062;
+  yErrSysHigh_2011[1]=0.056;
+  yErrSysHigh_2011[2]=0.063;
+  yErrSysHigh_2011[3]=0.087;
+  double yErrSysLow_2011[4];
+  yErrSysLow_2011[0]=0.061;
+  yErrSysLow_2011[1]=0.055;
+  yErrSysLow_2011[2]=0.062;
+  yErrSysLow_2011[3]=0.085;
+  double xErrLow_2011[4];
+  xErrLow_2011[0]=0.25;
+  xErrLow_2011[1]=0.3;
+  xErrLow_2011[2]=0.3;
+  xErrLow_2011[3]=0.3;
+  double xErrHigh_2011[4];
+  xErrHigh_2011[0]=0.25;
+  xErrHigh_2011[1]=0.3;
+  xErrHigh_2011[2]=0.3;
+  xErrHigh_2011[3]=0.3;
 
-  TH1F *Res_2011Final = new TH1F("Data_MC_ratio_2011","", 4, etaBins);
-  Res_2011Final->SetBinContent(1, 1.052);
-  Res_2011Final->SetBinContent(2, 1.057);
-  Res_2011Final->SetBinContent(3, 1.096);
-  Res_2011Final->SetBinContent(4, 1.134);
-  TGraphAsymmErrors *Res_2011 = new TGraphAsymmErrors(Res_2011Final);
-  Res_2011->SetName("Res_2011_");
-  Res_2011->SetPointError(0, 0., 0., 0.063, 0.062);
-  Res_2011->SetPointError(1, 0., 0., 0.057, 0.056);
-  Res_2011->SetPointError(2, 0., 0., 0.065, 0.064);
-  Res_2011->SetPointError(3, 0., 0., 0.094, 0.092);
+  double yErrTotalHigh_2011[4];
+  double yErrTotalLow_2011[4];
 
+  for(int i=0; i<4; i++){
+
+    yErrTotalHigh_2011[i]=sqrt(pow(yErrStat_2011[i],2) + pow(yErrSysHigh_2011[i],2));
+    yErrTotalLow_2011[i]=sqrt(pow(yErrStat_2011[i],2) + pow(yErrSysLow_2011[i],2));
+
+
+  }
+
+  TGraphAsymmErrors *Res_2011_stat = new TGraphAsymmErrors(4,x_2011,y_2011,xErrLow_2011,xErrHigh_2011,yErrStat_2011,yErrStat_2011);
+  Res_2011_stat->SetName("Res_2011_stat");
+  TGraphAsymmErrors *Res_2011_sys  = new TGraphAsymmErrors(4,x_2011,y_2011,xErrLow_2011,xErrHigh_2011,yErrSysLow_2011,yErrSysHigh_2011);
+  Res_2011_sys->SetName("Res_2011_sys");
+  TGraphAsymmErrors *Res_2011_total  = new TGraphAsymmErrors(4,x_2011,y_2011,xErrLow_2011,xErrHigh_2011,yErrTotalLow_2011,yErrTotalHigh_2011);
+  Res_2011_sys->SetName("Res_2011_total");
+  
+  //-----------------------------------------------------
   ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetTitle("|#eta|");
   ratioEtaBinnedStatPlusSys -> GetXaxis() -> SetRangeUser(0., 2.3);
-  ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
-  ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetRangeUser(0.8, 1.5);
-
+  ratioEtaBinnedStatPlusSys -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
   ratioEtaBinnedSys -> GetXaxis() -> SetTitle("|#eta|");
   ratioEtaBinnedSys -> GetXaxis() -> SetRangeUser(0., 2.3);
-  ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
-  ratioEtaBinnedSys -> GetYaxis() -> SetRangeUser(0.8, 1.5);
+  ratioEtaBinnedSys -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
+  ratioEtaBinnedStat -> GetXaxis() -> SetTitle("|#eta|");
+  ratioEtaBinnedStat -> GetXaxis() -> SetRangeUser(0., 2.3);
+  ratioEtaBinnedStat -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
+  ratioEtaBinnedStat -> GetYaxis() -> SetRangeUser(0.8, 1.6);
+  Res_2011_stat -> GetXaxis() -> SetTitle("|#eta|");
+  Res_2011_stat -> GetXaxis() -> SetLimits(0., 2.3);
+  Res_2011_stat -> GetXaxis() -> SetNdivisions(505, "X");
+  Res_2011_stat -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
+  Res_2011_sys -> GetXaxis() -> SetTitle("|#eta|");
+  Res_2011_sys -> GetXaxis() -> SetLimits(0., 2.3);
+  Res_2011_sys -> GetXaxis() -> SetNdivisions(505, "X");
+  Res_2011_sys -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
+  Res_2011_total -> GetXaxis() -> SetTitle("|#eta|");
+  Res_2011_total -> GetXaxis() -> SetLimits(0., 2.3);
+  Res_2011_total -> GetXaxis() -> SetNdivisions(505, "X");
+  Res_2011_total -> GetYaxis() -> SetTitle("Data/MC ratio for JER");
+  Res_2011_total -> GetYaxis() -> SetRangeUser(0.8, 1.5);
 
-
-  Res_2011 -> GetXaxis() -> SetTitle("|#eta|");
-  Res_2011 -> GetXaxis() -> SetLimits(0., 2.3);
-  Res_2011 -> GetXaxis() -> SetNdivisions(505, "X");
-  Res_2011 -> GetYaxis() -> SetTitle("Data/MC ratio (const fit)");
-  Res_2011 -> GetYaxis() -> SetRangeUser(0.8, 1.5);
 
   ratioEtaBinnedStatPlusSys -> SetMarkerStyle(20); 
   ratioEtaBinnedStatPlusSys -> SetMarkerSize(2.0);
   ratioEtaBinnedStatPlusSys -> SetLineColor(kPink-8);
+  ratioEtaBinnedStatPlusSys -> SetLineWidth(2);
   ratioEtaBinnedStatPlusSys -> SetMarkerColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetFillColor(kPink-8);
-  ratioEtaBinnedStatPlusSys -> SetName("statPlusSys");
+  ratioEtaBinnedStatPlusSys -> SetName("statPlusSys_2012");
+  
+  ratioEtaBinnedStat -> SetMarkerStyle(20); 
+  ratioEtaBinnedStat -> SetMarkerSize(2.0);
+  ratioEtaBinnedStat -> SetLineColor(kPink-8);
+  ratioEtaBinnedStat -> SetLineWidth(2);
+  ratioEtaBinnedStat -> SetMarkerColor(kPink-8);
+  ratioEtaBinnedStat -> SetFillColor(kPink-8);
+  ratioEtaBinnedStat -> SetName("Stat_2012");
 
-  ratioEtaBinnedSys -> SetMarkerStyle(20); 
-  ratioEtaBinnedSys -> SetMarkerSize(2.0);
-  ratioEtaBinnedSys -> SetLineColor(1);
-  ratioEtaBinnedSys -> SetMarkerColor(kPink-8);
-  ratioEtaBinnedSys -> SetFillColor(1);
-  ratioEtaBinnedSys -> SetName("Sys");
-
-  gStyle->SetHatchesSpacing(2.);
-  gROOT->ForceStyle();
   ratioEtaBinnedStatPlusSys -> SetFillStyle(3244);
-  ratioEtaBinnedSys -> SetFillStyle(3244);
+  ratioEtaBinnedStat        -> SetFillStyle(3144);
 
-  Res_2011->SetMarkerStyle(24);
-  Res_2011->SetMarkerSize(2.0);
-  Res_2011->SetLineColor(1);
-  Res_2011->SetFillColor(kGray);
-  Res_2011->SetFillStyle(1001);
-  Res_2011->SetLineColor(kGray);
+  Res_2011_stat->SetMarkerStyle(24);
+  Res_2011_stat->SetMarkerSize(2.0);
+  Res_2011_stat->SetLineColor(kGray+2);
+  Res_2011_stat->SetLineWidth(2);
+  Res_2011_stat->SetLineWidth(2);
+  Res_2011_stat->SetFillStyle(1001);
 
-  cFinal2->Update();
-  Res_2011->DrawClone("Ae3p");
-  ratioEtaBinnedStatPlusSys -> Draw("3epsame");
-  Res_2011->DrawClone("pXsame");
-  Res_2011->SetMarkerSize(1.9);
-  Res_2011->DrawClone("pXsame");
-  Res_2011->SetMarkerSize(1.7);
-  Res_2011->Draw("pXsame");
+  Res_2011_total->SetMarkerStyle(24);
+  Res_2011_total->SetMarkerSize(2.0);
+  Res_2011_total->SetLineColor(1);
+  Res_2011_total->SetLineWidth(2);
+  Res_2011_total->SetFillColor(kGray);
+  Res_2011_total->SetFillStyle(1001);
+  Res_2011_total->SetLineColor(kGray+2);
+
+  Res_2011_total->Draw("a2");
+  Res_2011_stat->Draw("esame");
+  
+  ratioEtaBinnedStatPlusSys -> Draw("2same");
+  Res_2011_stat->Draw("pXsame");
+  Res_2011_stat->SetMarkerSize(1.9);
+  Res_2011_stat->Draw("pXsame");
+  Res_2011_stat->SetMarkerSize(1.7);
+  Res_2011_stat->Draw("pXsame");
   ratioEtaBinnedStatPlusSys -> Draw("pXsame");
+  ratioEtaBinnedStat        -> Draw("esame");
   
- ratioSysBorderUp -> SetLineColor(kGray+3);
- ratioSysBorderUp -> SetName("sysUp");
-  //ratioSysBorderUp -> SetLineWidth(2);
-  ratioSysBorderUp -> Draw("Lsame");
-  ratioSysBorderDown -> SetLineColor(kGray+3);
-  ratioSysBorderDown -> SetName("sysDown");
-  //ratioSysBorderDown -> SetLineWidth(2);
-  ratioSysBorderDown -> Draw("Lsame");
-    
-
-  //ratioEtaBinnedStatPlusSys -> Draw("e3psame");
-
-  Res_2011->SetPointError(0, 0., 0., 0., 0.);
-  Res_2011->SetPointError(1, 0., 0., 0., 0.);
-  Res_2011->SetPointError(2, 0., 0., 0., 0.);
-  Res_2011->SetPointError(3, 0., 0., 0., 0.);
-  Res_2011->SetPointError(4, 0., 0., 0., 0.);
-
-  //Res_2011->Draw("psame");
-
-  //cmsPrel(19.7);
-  cmsPrel();
-
-  double m_lumi = 19.7;
-
-  TString infotext = TString::Format("CMS Preliminary, %3.1f fb^{-1}", m_lumi);
-  TLatex *text1 = new TLatex(3.5, 24, infotext);
-  text1->SetNDC();
-  text1->SetX(0.22);
-  text1->SetTextFont(42);
-  infotext = TString::Format("#sqrt{s} = 8 TeV");
-  TLatex *text2 = new TLatex(3.5, 24, infotext);
-  text2->SetNDC();
-  text2->SetX(0.22);
-  text2->SetTextFont(42);
-
-  text1->SetTextSize(0.040);
-  text1->SetTextAlign(11);
-  text1->SetY(0.96);
-  text1->SetX(0.15);
-
-  text2->SetTextSize(0.040);
-  text2->SetTextAlign(31);
-  text2->SetY(0.96);
-  text2->SetX(0.95);
-
-  text1->Draw("same");
-  text2->Draw("same");
-  
-
-  TLegend *leg = new TLegend(0.20, 0.70, 0.40, 0.90);
+  TLegend *leg = new TLegend(0.18, 0.60, 0.55, 0.75);
   leg->SetBorderSize(0);
-  // leg->SetBorderMode(0);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
-  leg->SetTextSize(0.040);
+  leg->SetTextSize(0.045);
   
-  leg->AddEntry(Res_2011,"2011 (total error)", "plf");
-  leg->AddEntry(ratioEtaBinnedStatPlusSys,"2012 (total error)", "plf");
-  leg->AddEntry(ratioSysBorderUp,"systematic error (2012)", "l");
- 
-   
+  leg->AddEntry(Res_2011_total,"5/fb (7 TeV)", "pfl");
+  leg->AddEntry(ratioEtaBinnedStatPlusSys,"20/fb (8 TeV)", "pfl");
+     
   leg->Draw("same");
-  
+
+  TLatex *info = new TLatex();
+  info->SetNDC();
+  info->DrawLatex(0.67,0.83,"Anti-k_{T} R=0.5");
+  info->DrawLatex(0.67,0.77,"PF+CHS");
+
+  CMS_lumi( cFinal2, iPeriod, 11 );
   cFinal2->Print("plots/resultsComparisonFINAL.pdf","pdf");
   cFinal2->SaveAs("plots/resultsComparisonFINAL.C");
 
