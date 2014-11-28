@@ -41,6 +41,7 @@ root -b -l -q jetphoton_mc.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/mcWoQCD ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/mcWoQCD_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/mcWoQCD plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/mcWoQCD_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/mcWoQCD
@@ -57,6 +58,7 @@ root -b -l -q jetphoton_data.C+"(10**9,2)"
 sed -i 's/detJER=.;/detJER=3;/g' CODE/myDeclarations.h
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/dataWithQCD ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/dataWithQCD_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/dataWithQCD plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/dataWithQCD_SAVED
 fi
 cp -r plots_2012/PF_L1CHS/data/root_files plots_2012/PF_L1CHS/systematicUncertainties/scripts/root_files_QCDUncertainty/dataWithQCD
