@@ -28,6 +28,7 @@
 #include "TLatex.h"
 #include "TColor.h"
 #include "../../../CODE/myDeclarations.h"
+//#include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
 #include "/nfs/dust/cms/user/tlenz/tdrstyle_mod.C"
 
 //#include "utils.h"
@@ -85,7 +86,7 @@ int postprocessingSysError(){
 
     // Read the MC and data results 
     rootFiles = (TString) "root_files_FINAL_data/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_data_" + Method + (TString) ".root";
-    TGraphErrors* JERData = readTGraphErrors(rootFiles,"Graph;1","Graph;1");
+    TGraphErrors* JERData = readTGraphErrors(rootFiles,"Graph;1","Graph");
     rootFiles = (TString) "root_files_FINAL_mc/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_" + JetType + (TString) "_mc_" + Method + (TString) ".root";
     TGraphErrors* JERMC = readTGraphErrors(rootFiles,"Graph","Graph");
     
@@ -650,6 +651,7 @@ latexTable<<"\\\\\\hline"<<endl;
   Res_2011Final->SetBinContent(3, 1.096);
   Res_2011Final->SetBinContent(4, 1.134);
   TGraphAsymmErrors *Res_2011 = new TGraphAsymmErrors(Res_2011Final);
+  Res_2011->SetName("Res_2011_");
   Res_2011->SetPointError(0, 0., 0., 0.063, 0.062);
   Res_2011->SetPointError(1, 0., 0., 0.057, 0.056);
   Res_2011->SetPointError(2, 0., 0., 0.065, 0.064);
@@ -677,12 +679,14 @@ latexTable<<"\\\\\\hline"<<endl;
   ratioEtaBinnedStatPlusSys -> SetLineColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetMarkerColor(kPink-8);
   ratioEtaBinnedStatPlusSys -> SetFillColor(kPink-8);
+  ratioEtaBinnedStatPlusSys -> SetName("statPlusSys");
 
   ratioEtaBinnedSys -> SetMarkerStyle(20); 
   ratioEtaBinnedSys -> SetMarkerSize(2.0);
   ratioEtaBinnedSys -> SetLineColor(1);
   ratioEtaBinnedSys -> SetMarkerColor(kPink-8);
   ratioEtaBinnedSys -> SetFillColor(1);
+  ratioEtaBinnedSys -> SetName("Sys");
 
   gStyle->SetHatchesSpacing(2.);
   gROOT->ForceStyle();
@@ -706,10 +710,12 @@ latexTable<<"\\\\\\hline"<<endl;
   Res_2011->Draw("pXsame");
   ratioEtaBinnedStatPlusSys -> Draw("pXsame");
   
-  ratioSysBorderUp -> SetLineColor(kGray+3);
+ ratioSysBorderUp -> SetLineColor(kGray+3);
+ ratioSysBorderUp -> SetName("sysUp");
   //ratioSysBorderUp -> SetLineWidth(2);
   ratioSysBorderUp -> Draw("Lsame");
   ratioSysBorderDown -> SetLineColor(kGray+3);
+  ratioSysBorderDown -> SetName("sysDown");
   //ratioSysBorderDown -> SetLineWidth(2);
   ratioSysBorderDown -> Draw("Lsame");
     
@@ -770,6 +776,7 @@ latexTable<<"\\\\\\hline"<<endl;
   leg->Draw("same");
   
   cFinal2->Print("plots/resultsComparisonFINAL.pdf","pdf");
+  cFinal2->SaveAs("plots/resultsComparisonFINAL.C");
 
 
   return 0;
