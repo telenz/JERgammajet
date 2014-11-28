@@ -40,13 +40,25 @@ int evalFlavorUncertainty(TString definition = "algo"){
   const TString method = "RMS99";
   const TString type   = "PFCHS";
 
-  TString pathName       = (TString) "root_files_FlavorUncertainty/together_" + definition+ "/";
-  TString pathNameGluons = (TString) "root_files_FlavorUncertainty/gluons_" + definition+ "/";
-  TString pathNameQuarks = (TString) "root_files_FlavorUncertainty/quarks_" + definition+ "/";
-  TString pathNameUDS    = (TString) "root_files_FlavorUncertainty/uds_" + definition+ "/";
-  TString pathNameCB     = (TString) "root_files_FlavorUncertainty/cb_" + definition+ "/";
+  TString name[5];
+  name[0]="together";
+  name[1]="gluons";
+  name[2]="quarks";
+  name[3]="uds";
+  name[4]="cb";
 
-  cout<<endl<<endl<<"root files from following folders:"<<endl<<pathName<<endl<<pathNameQuarks<<endl<<pathNameGluons<<endl<<endl<<endl;
+  
+  TString pathName[5];
+  for(int i=0; i<5; i++){
+    pathName[i]       = (TString) "root_files_FlavorUncertainty/"+name[i]+"_" + definition+ "/";
+  }
+
+
+  TString pathNameTogether = (TString) "root_files_FlavorUncertainty/"+name[0]+"_" + definition+ "/";
+  TString pathNameGluons   = (TString) "root_files_FlavorUncertainty/"+name[1]+"_" + definition+ "/";
+  TString pathNameQuarks   = (TString) "root_files_FlavorUncertainty/"+name[2]+"_" + definition+ "/";
+  TString pathNameUDS      = (TString) "root_files_FlavorUncertainty/"+name[3]+"_" + definition+ "/";
+  TString pathNameCB       = (TString) "root_files_FlavorUncertainty/"+name[4]+"_" + definition+ "/";
 
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   // Evaluation of the flavor composition
@@ -73,7 +85,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
   for(int i=0; i<nEtaBins; i++){
   
     // Read Files
-    fileName =  pathName + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
+    fileName =  pathName[0] + "hPhotonPtJetEtaFlavorBottom_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     bottom2D =  (TH2D*) gDirectory->Get("histo");
     bottom2D -> SetDirectory(0);
@@ -81,7 +93,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     bottom1D[i] -> SetDirectory(0);
     delete fileFlavor;
 
-    fileName =  pathName + "hPhotonPtJetEtaFlavorCharm_" + definition + "_PFCHS_mc.root";
+    fileName =  pathName[0] + "hPhotonPtJetEtaFlavorCharm_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     charm2D  =  (TH2D*) gDirectory->Get("histo");
     charm2D  -> SetDirectory(0);
@@ -89,7 +101,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     charm1D[i]  -> SetDirectory(0);
     delete fileFlavor;
 
-    fileName =  pathName + "hPhotonPtJetEtaFlavorGluon_" + definition + "_PFCHS_mc.root";
+    fileName =  pathName[0] + "hPhotonPtJetEtaFlavorGluon_" + definition + "_PFCHS_mc.root";
     fileFlavor     =  new TFile(fileName);
     gluon2D  =  (TH2D*) gDirectory->Get("histo");
     gluon2D  -> SetDirectory(0);
@@ -97,7 +109,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
     gluon1D[i] -> SetDirectory(0); 
     delete fileFlavor;
 
-    fileName      =  pathName + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
+    fileName      =  pathName[0] + "hPhotonPtJetEtaFlavorLightQuarks_" + definition + "_PFCHS_mc.root";
     fileFlavor    =  new TFile(fileName);
     lightQuark2D  =  (TH2D*) gDirectory->Get("histo");
     lightQuark2D  -> SetDirectory(0);
@@ -161,91 +173,140 @@ int evalFlavorUncertainty(TString definition = "algo"){
   // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   for(int eta = 0; eta<nEtaBins; eta++){
-    
-    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[3]  = pathNameUDS + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[4]  = pathNameCB + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";        
-  
+
+    for(int i=0; i<5; i++){
+    rootFile[i]  = pathName[i] + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
+    }
+
     TMultiGraph* mg = new TMultiGraph();
     etaString = "Uncertainty on Flavor Composition";
-    mg -> SetTitle(etaString);
+    //mg -> SetTitle(etaString);
     
     TCanvas *c = new TCanvas("c",etaString,200,10,800,800);
     c -> cd();
     
     double maximum = 0;
      
+    TString newName;
+
     for(int i =0; i<5; i++){
-      graph[i] = readTGraphErrors(rootFile[i],"Graph","Graph");    
-      graph[i] -> SetMarkerStyle(20);
+      newName = (TString) "Graph_" +name[i];
+      graph[i] = readTGraphErrors(rootFile[i],"Graph",newName);    
       if(graph[i]->GetYaxis()->GetXmax() > maximum) maximum = graph[i]->GetYaxis()->GetXmax();
     }
-  
-    graph[0] -> SetMarkerColor(8);
-    graph[1] -> SetMarkerColor(9);
-    graph[2] -> SetMarkerColor(1);
-    graph[3] -> SetMarkerColor(6);
-    graph[4] -> SetMarkerColor(5);
- 
-    graph[0] -> SetLineColor(8);
-    graph[1] -> SetLineColor(9);
-    graph[2] -> SetLineColor(1);
-    graph[3] -> SetLineColor(6);
-    graph[4] -> SetLineColor(5);
 
-    graph[0] -> GetFunction("fResolution") -> SetLineColor(8);
-    graph[1] -> GetFunction("fResolution") -> SetLineColor(9);
-    graph[2] -> GetFunction("fResolution") -> SetLineColor(1);
-    graph[3] -> GetFunction("fResolution") -> SetLineColor(6);
-    graph[4] -> GetFunction("fResolution") -> SetLineColor(5);
- 
-    TLegend *legend  = new TLegend(0.35,0.70,0.9,0.9);
-    legend -> SetTextSize(0.033);
-    legend -> AddEntry(graph[0],"full sample","l");
-    legend -> AddEntry(graph[1],"all quarks","l");
-    legend -> AddEntry(graph[2],"gluons","l");
-    legend -> AddEntry(graph[3],"uds quarks","l");
-    legend -> AddEntry(graph[4],"cb quarks","l");
-  
-    for(int i=0; i<5; i++) mg->Add(graph[i]);  
-  
-    mg->Draw("AP");
+    int colorTogether = kGray+3;
+    int colorGluons   = kBlue;
+    int colorQuarks   = kGreen+1;
+    int colorUDS      = kOrange;
+    int colorCB       = kRed;
+
     
-    mg -> GetYaxis() -> SetTitle("JER");
-    mg -> SetMinimum(0.04);
-    mg -> SetMaximum(0.14);   
-    mg -> GetXaxis() -> SetRangeUser(0.,600.);
-    mg -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]"); 
-    legend -> Draw("same");
+    graph[0] -> SetMarkerStyle(20);
+    graph[1] -> SetMarkerStyle(22);
+    graph[2] -> SetMarkerStyle(30);
+    graph[3] -> SetMarkerStyle(33);
+    graph[4] -> SetMarkerStyle(21);
 
+    graph[0] -> SetMarkerSize(1.1);
+    graph[1] -> SetMarkerSize(1.3);
+    graph[2] -> SetMarkerSize(1.1);
+    graph[3] -> SetMarkerSize(1.5);
+    graph[4] -> SetMarkerSize(1.0);
+
+    graph[0] -> SetMarkerColor(colorTogether);
+    graph[1] -> SetMarkerColor(colorGluons);
+    graph[2] -> SetMarkerColor(colorQuarks);
+    graph[3] -> SetMarkerColor(colorUDS);
+    graph[4] -> SetMarkerColor(colorCB);
+
+    graph[0] -> SetLineColor(colorTogether);
+    graph[1] -> SetLineColor(colorGluons);
+    graph[2] -> SetLineColor(colorQuarks);
+    graph[3] -> SetLineColor(colorUDS);
+    graph[4] -> SetLineColor(colorCB);
+
+
+    TF1* f[5];
+   
+    for(int i=0; i<5; i++){
+      f[i]=graph[i] -> GetFunction("fResolution");
+      newName = (TString) "f_" +name[i];
+      f[i]->SetName(newName);
+    }
+
+    f[0] -> SetLineColor(colorTogether);
+    f[1] -> SetLineColor(colorGluons);
+    f[2] -> SetLineColor(colorQuarks);
+    f[3] -> SetLineColor(colorUDS);
+    f[4] -> SetLineColor(colorCB);
+
+    f[0] -> SetFillColor(colorTogether);
+    f[1] -> SetFillColor(colorGluons);
+    f[2] -> SetFillColor(colorQuarks);
+    f[3] -> SetFillColor(colorUDS);
+    f[4] -> SetFillColor(colorCB);
+    
+    graph[0] -> GetFunction("f_together") -> SetLineColor(colorTogether);
+    graph[1] -> GetFunction("f_gluons")   -> SetLineColor(colorGluons);
+    graph[2] -> GetFunction("f_quarks")   -> SetLineColor(colorQuarks);
+    graph[3] -> GetFunction("f_uds")      -> SetLineColor(colorUDS);
+    graph[4] -> GetFunction("f_cb")       -> SetLineColor(colorCB);
+    
+
+
+    TLegend *legend  = new TLegend(0.55,0.65,0.9,0.9);
+    legend -> SetTextSize(0.045);
+    legend -> AddEntry(graph[0],"full sample","pl");
+    legend -> AddEntry(graph[1],"gluons","pl");
+    legend -> AddEntry(graph[2],"all quarks","pl");
+    legend -> AddEntry(graph[3],"uds quarks","pl");
+    legend -> AddEntry(graph[4],"cb quarks","pl");
+  
+    graph[0] -> Draw("AP");
+    graph[0] -> SetTitle(etaString);
+    graph[0] -> GetYaxis() -> SetTitle("JER");
+    graph[0] -> SetMinimum(0.04);
+    graph[0] -> SetMaximum(0.14);   
+    graph[0] -> GetXaxis() -> SetRangeUser(0.,600.);
+    graph[0] -> GetXaxis() -> SetTitle("p_{T}^{#gamma} [GeV]"); 
+
+    for(int i=1; i<5; i++) graph[i]->Draw("same P");
+  
+    
+    legend -> Draw("same");
+    
     TLatex*  info   = new TLatex();
     info-> SetNDC();
-    AuxString = Form("%4.1f < |#eta^{Jet}| < %4.1f",etaBins[eta],etaBins[eta+1]);
-    info->DrawLatex(0.6,0.65,AuxString);
-
-    tot_filename = (TString) "plotsFlavor/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_FlavorUncertainty_" + method + (TString) ".pdf";
-    c -> SaveAs(tot_filename);
-
+    AuxString = Form("%4.1f < |#eta| < %4.1f",etaBins[eta],etaBins[eta+1]);
+    info->DrawLatex(0.65,0.55,AuxString);
+    info->DrawLatex(0.2,0.22,"Anti-k_{T} R=0.5");
+    info->DrawLatex(0.2,0.16,"PF+CHS");
+    
+    tot_filename = (TString) "plotsFlavor/Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_FlavorUncertainty_" + method ;
+    c->Update();
+    c -> SaveAs(tot_filename + (TString) ".pdf");
+    c -> SaveAs(tot_filename + (TString) ".C");
+    
     delete c;
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // 2.) Calculate Relative uncertainty for a 10% different mixture with measured resolution
 
-    rootFile[0]  = pathName + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[1]  = pathNameQuarks + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-    rootFile[2]  = pathNameGluons + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root";
-
+    rootFile[0]  = pathName[0] + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root"; // Together
+    rootFile[1]  = pathName[1] + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root"; // Gluons
+    rootFile[2]  = pathName[2] + (TString) "Resolution_for_" + (long) (eta+1) + (TString) "_eta_bin_intrinsic_" + type + (TString) "_mc_" + method + (TString) ".root"; // Quarks
+    
     for(int i =0; i<3; i++){
-      graph[i] = readTGraphErrors(rootFile[i],"Graph","Graph");    
+      graph[i] = readTGraphErrors(rootFile[i],"Graph","Graph"+name[i]);    
       graph[i] -> SetMarkerStyle(20);
       if(graph[i]->GetYaxis()->GetXmax() > maximum) maximum = graph[i]->GetYaxis()->GetXmax();
     }
     
-    int nDataQuark = graph[1]->GetN();
-    int nDataGluon = graph[2]->GetN();
+    int nDataGluon = graph[1]->GetN();
+    int nDataQuark = graph[2]->GetN();
     int nData = 0;
+
     if(nDataGluon < nDataQuark) nData = nDataGluon;
     else nData = nDataQuark;
 
@@ -254,14 +315,14 @@ int evalFlavorUncertainty(TString definition = "algo"){
     double *dataY, *dataQuarksY, *dataGluonsY, *dataX, *dataQuarksX, *dataGluonsX, *dataEY, *dataQuarksEY, *dataGluonsEY, *dataEX ;
 
     dataY        = graph[0] -> GetY();
-    dataQuarksY  = graph[1] -> GetY();
-    dataGluonsY  = graph[2] -> GetY();
+    dataQuarksY  = graph[2] -> GetY();
+    dataGluonsY  = graph[1] -> GetY();
     dataX        = graph[0] -> GetX();
-    dataQuarksX  = graph[1] -> GetX();
-    dataGluonsX  = graph[2] -> GetX();
+    dataQuarksX  = graph[2] -> GetX();
+    dataGluonsX  = graph[1] -> GetX();
     dataEY       = graph[0] -> GetEY();
-    dataQuarksEY = graph[1] -> GetEY();
-    dataGluonsEY = graph[2] -> GetEY();
+    dataQuarksEY = graph[2] -> GetEY();
+    dataGluonsEY = graph[1] -> GetEY();
     dataEX       = graph[0] -> GetEX();
 
     double *errorUpY  = new double[nData];
@@ -307,7 +368,6 @@ int evalFlavorUncertainty(TString definition = "algo"){
 
       dataX[countNData]  = dataX[idx];
       dataEX[countNData] = dataEX[idx];
-
       
       countNData += 1;
       idx        += 1;
@@ -338,7 +398,7 @@ int evalFlavorUncertainty(TString definition = "algo"){
  
     
     TLegend* legend1  = new TLegend(0.30,0.75,0.9,0.9);
-    legend1 -> SetTextSize(0.033);
+    legend1 -> SetTextSize(0.045);
     
     legend1 -> AddEntry(plotLow,Form("- 10%% quarks/ + 10%% gluons"),"p");
     legend1 -> AddEntry(plotUp ,Form("+ 10%% quarks/ - 10%% gluons"),"p");
@@ -364,7 +424,6 @@ int evalFlavorUncertainty(TString definition = "algo"){
 
     
     TLatex* info1   = new TLatex();
-    info1->SetTextFont(132);
     info1-> SetNDC();
     info1->DrawLatex(0.6,0.7,AuxString);
   
