@@ -15,15 +15,15 @@ source runMacro.sh
 echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc_SAVED
-    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc
 fi
 cp -r plots_2012/PF_L1CHS/mc/root_files plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc
 
 if [ -d plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data ]
   then
+    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_mc_SAVED
     mv plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data_SAVED
-    rm -rf plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data
 fi
 cp -r plots_2012/PF_L1CHS/data/root_files plots_2012/PF_L1CHS/systematicUncertainties/root_files_FINAL_data
 
