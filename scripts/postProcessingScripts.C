@@ -28,7 +28,7 @@
 #include "TROOT.h"
 #include "../CODE/myDeclarations.h"
 #include "plotStyle.h"
-#include "/afs/naf.desy.de/user/t/telenz/comparison/tdrstyle_mod.C"
+#include "/nfs/dust/cms/user/tlenz/tdrstyle_mod.C"
 
 TGraphErrors* GetTGraphErrors(TString filename, TString objectName);
 TF1* GetTF1(TString filename, TString objectName);
