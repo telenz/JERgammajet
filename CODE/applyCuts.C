@@ -152,16 +152,28 @@ bool applyCuts(){
     for (int i=0 ; i<nobjGenJet ; i++) {
       
       if(genJetColJetIdx[i] == corrJets.idx(idx1stJet) && jet1){
-      	gen1stJetidx = i;
-	test += 1;
-	jet1 = false;
+
+	double dphi1 = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)] - genJetPhi[i]));
+	double deta1 = std::abs(jetEta[corrJets.idx(idx1stJet)]  - genJetEta[i]);
+	double dR1   = TMath::Sqrt(dphi1*dphi1 + deta1*deta1);
+	if(dR1<0.25){
+	  gen1stJetidx = i;
+	  test += 1;
+	  jet1 = false;
+	}
       }
       
       if(idx2ndJet != -1){
 	if(genJetColJetIdx[i] == corrJets.idx(idx2ndJet) && jet2){
-	  gen2ndJetidx = i;
-	  test += 1;
-	  jet2 = false;
+
+	  double dphi1 = std::abs(TVector2::Phi_mpi_pi(jetPhi[corrJets.idx(idx1stJet)] - genJetPhi[i]));
+	  double deta1 = std::abs(jetEta[corrJets.idx(idx1stJet)]  - genJetEta[i]);
+	  double dR1   = TMath::Sqrt(dphi1*dphi1 + deta1*deta1);
+	  if(dR1<0.25){
+	    gen2ndJetidx = i;
+	    test += 1;
+	    jet2 = false;
+	  }
 	}
       }
       
@@ -185,20 +197,20 @@ bool applyCuts(){
     if(testClosure && !isMC){
       //cout<<"You are Smearing all Jets!!"<<endl;
       if(idx2ndJet != -1 && gen2ndJetidx >= 0){
-	if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<0.5) cSmearing = 1.05;
-	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<1.1 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>0.5) cSmearing = 1.07;
-	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<1.7 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>1.1) cSmearing = 1.09;
-	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<2.3 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>1.7) cSmearing = 1.11;
-	else cSmearing = 1.000;
+	if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<0.5) cSmearing = 1.10;
+	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<1.1 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>0.5) cSmearing = 1.10;
+	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<1.7 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>1.1) cSmearing = 1.10;
+	else if(std::abs(jetEta[corrJets.idx(idx2ndJet)])<2.3 && std::abs(jetEta[corrJets.idx(idx2ndJet)])>1.7) cSmearing = 1.10;
+	else cSmearing = 1.100;
 	jetPt2nd = genJetPt[gen2ndJetidx] + cSmearing*(jetPt2nd - genJetPt[gen2ndJetidx]);
       }
 
       // Smear first Jet
-      if(std::abs(jetEta[corrJets.idx(idx1stJet)])<0.5) cSmearing = 1.05;
-      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<1.1 && std::abs(jetEta[corrJets.idx(idx1stJet)])>0.5) cSmearing = 1.07;
-      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<1.7 && std::abs(jetEta[corrJets.idx(idx1stJet)])>1.1) cSmearing = 1.09;
-      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<2.3 && std::abs(jetEta[corrJets.idx(idx1stJet)])>1.7) cSmearing = 1.11;
-      else cSmearing = 1.000;
+      if(std::abs(jetEta[corrJets.idx(idx1stJet)])<0.5) cSmearing = 1.10;
+      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<1.1 && std::abs(jetEta[corrJets.idx(idx1stJet)])>0.5) cSmearing = 1.10;
+      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<1.7 && std::abs(jetEta[corrJets.idx(idx1stJet)])>1.1) cSmearing = 1.10;
+      else if(std::abs(jetEta[corrJets.idx(idx1stJet)])<2.3 && std::abs(jetEta[corrJets.idx(idx1stJet)])>1.7) cSmearing = 1.10;
+      else cSmearing = 1.100;
       
       if(gen1stJetidx >= 0) jetPt1stJet = genJetPt[gen1stJetidx] + cSmearing*(corrJets.pt(idx1stJet) - genJetPt[gen1stJetidx]);
       else return 0;
